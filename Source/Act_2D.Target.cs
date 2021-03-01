@@ -11,5 +11,6 @@ public class Act_2DTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 
 		ExtraModuleNames.AddRange( new string[] { "Act_2D" } );
+
 	}
 }
