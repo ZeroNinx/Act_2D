@@ -1,35 +1,26 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "PlayerAttackComponent.h"
 
-// Sets default values for this component's properties
+//构造函数
 UPlayerAttackComponent::UPlayerAttackComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
+	//缩放设置
+	SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+
 }
 
 
-// Called when the game starts
+//游戏开始时执行
 void UPlayerAttackComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
-
-	// ...
-	
 }
 
-
-// Called every frame
+//Tick函数
 void UPlayerAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
 }
 

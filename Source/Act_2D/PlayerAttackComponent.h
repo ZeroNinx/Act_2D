@@ -1,9 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PaperSprite.h"
 #include "PaperFlipbook.h"
+#include "PaperFlipbookComponent.h"
 #include "Components/ActorComponent.h"
 #include "PlayerAttackComponent.generated.h"
 
@@ -42,21 +42,23 @@ struct FAttackAction
 
 //攻击组件
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class ACT_2D_API UPlayerAttackComponent : public UActorComponent
+class ACT_2D_API UPlayerAttackComponent : public UPaperFlipbookComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
+	
+	//构造函数
 	UPlayerAttackComponent();
 
 protected:
-	// Called when the game starts
+
+	//游戏开始执行
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	//Tick函数
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 };
