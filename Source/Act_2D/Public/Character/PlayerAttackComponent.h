@@ -4,9 +4,9 @@
 #include <string>
 #include "sqlite3.h"
 
+
 //UE4
 #include "Misc/Paths.h"
-#include "Containers/UnrealString.h"
 #include "CoreMinimal.h"
 #include "PaperSprite.h"
 #include "PaperFlipbook.h"
@@ -15,19 +15,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PlayerAttackComponent.generated.h"
 
-//攻击动作
-USTRUCT(BlueprintType)
-struct FAttackAction
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadWrite)
-	UPaperSprite* AttackSprite;//攻击动画
-
-	UPROPERTY(BlueprintReadWrite)
-	int AttackFrames;//攻击判定帧数
-
-};
 
 //攻击组件
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -40,13 +27,34 @@ public:
 	//构造函数
 	UPlayerAttackComponent();
 
-	//攻击开始
+	//攻击
 	UFUNCTION(BlueprintCallable)
-	void BeginAttack();
+	void Attack(int AttackID = 1);
+
 
 protected:
 
-
-
+	//下一个攻击帧
+	UPROPERTY(BlueprintReadOnly)
+	int NextAttackFrame;
 	
+	//攻击判定标记
+	UPROPERTY(BlueprintReadOnly)
+	bool bShouldJudge;
+
+	//设定攻击范围
+	UFUNCTION()
+	void SetupAttack(FString resource, int AttackFrame);
+
+	//攻击判定
+	UFUNCTION()
+	void AttackJudge();
+
+	//获得当前攻击动画播放位置
+	UFUNCTION(BlueprintCallable)
+	int GetCurrentActionFrame();
+
+	//Tick函数
+	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 };
