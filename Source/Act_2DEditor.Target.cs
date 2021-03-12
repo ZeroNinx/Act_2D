@@ -10,6 +10,6 @@ public class Act_2DEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 
-		ExtraModuleNames.AddRange( new string[] { "Act_2D" } );
+		ExtraModuleNames.AddRange( new string[] { "Act_2D"} );
 	}
 }

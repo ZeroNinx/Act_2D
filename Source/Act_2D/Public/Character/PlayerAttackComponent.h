@@ -1,5 +1,12 @@
 #pragma once
 
+//第三方
+#include <string>
+#include "sqlite3.h"
+
+//UE4
+#include "Misc/Paths.h"
+#include "Containers/UnrealString.h"
 #include "CoreMinimal.h"
 #include "PaperSprite.h"
 #include "PaperFlipbook.h"
