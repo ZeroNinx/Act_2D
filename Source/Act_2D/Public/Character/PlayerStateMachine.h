@@ -25,11 +25,11 @@ public:
 	// Sets default values for this component's properties
 	UPlayerStateMachine();
 
-	//ȡ��״̬
+	//取得状态
 	UFUNCTION(BlueprintCallable)
 	CharacterState GetState();
 
-	//����״̬
+	//设置状态
 	UFUNCTION(BlueprintCallable)
 	void SetState(CharacterState NewState);
 
@@ -37,7 +37,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	//ȡ��״̬
+	//取得状态
 	UPROPERTY(BlueprintReadWrite)
 	CharacterState State;
 

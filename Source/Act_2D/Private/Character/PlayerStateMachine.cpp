@@ -23,13 +23,13 @@ void UPlayerStateMachine::BeginPlay()
 	
 }
 
-//ȡ��״̬
+//取得状态
 CharacterState UPlayerStateMachine::GetState()
 {
 	return State;
 }
 
-//����״̬
+//设置状态
 void UPlayerStateMachine::SetState(CharacterState NewState)
 {
 	State = NewState;

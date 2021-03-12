@@ -1,6 +1,6 @@
 #include "Character/PlayerAttackComponent.h"
 
-//¹¹Ôìº¯Êý
+//æž„é€ å‡½æ•°
 UPlayerAttackComponent::UPlayerAttackComponent()
 {
 
@@ -8,12 +8,12 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 
 }
 
-//¹¥»÷¿ªÊ¼
+//æ”»å‡»å¼€å§‹
 void UPlayerAttackComponent::BeginAttack()
 {
 	UPaperSprite* AttackSprite= LoadObject<UPaperSprite>(GetWorld(), TEXT("PaperSprite'/Game/Paper2D/Character/Attack/Attack_I/Attack_I_Range_Sprite.Attack_I_Range_Sprite'"));
 	
-	//ÉèÖÃ¹¥»÷×é¼þ
+	//è®¾ç½®æ”»å‡»ç»„ä»¶
 	if (AttackSprite)
 	{
 		SetSprite(AttackSprite);

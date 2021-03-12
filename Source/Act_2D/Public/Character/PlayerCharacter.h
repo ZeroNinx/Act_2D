@@ -15,33 +15,33 @@ class ACT_2D_API APlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// ¹¹Ôìº¯Êı
+	// æ„é€ å‡½æ•°
 	APlayerCharacter();
 
 protected:
 
 
-	// ÓÎÏ·¿ªÊ¼Ö´ĞĞ
+	// æ¸¸æˆå¼€å§‹æ‰§è¡Œ
 	virtual void BeginPlay() override;
 
-	//½ÇÉ«¶¯»­
+	//è§’è‰²åŠ¨ç”»
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 	UPaperFlipbookComponent* Flipbook;
 
-	//×´Ì¬»ú
+	//çŠ¶æ€æœº
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 	UPlayerStateMachine* StateMachine;
 
-	//¹¥»÷×é¼ş
+	//æ”»å‡»ç»„ä»¶
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 	UPlayerAttackComponent* AttackComponent;
 
 
 public:	
-	//Tickº¯Êı
+	//Tickå‡½æ•°
 	virtual void Tick(float DeltaTime) override;
 
-	//ÊäÈë°ó¶¨
+	//è¾“å…¥ç»‘å®š
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

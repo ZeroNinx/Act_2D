@@ -9,16 +9,16 @@ APlayerCharacter::APlayerCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//角色动画
+	//瑙掕壊鍔ㄧ敾
 	Flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipBook"));
 	Flipbook->SetupAttachment(RootComponent);
 	Flipbook->SetRelativeLocation(FVector(0.0f, 0.0f, 5.0f));
 	Flipbook->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
 
-	//状态机
+	//鐘舵�佹満
 	StateMachine = CreateDefaultSubobject<UPlayerStateMachine>(TEXT("StateMachine"));
 
-	//攻击组件
+	//鏀诲嚮缁勪欢
 	AttackComponent = CreateDefaultSubobject<UPlayerAttackComponent>(TEXT("AttackComponent"));
 	AttackComponent->SetupAttachment(Flipbook);
 

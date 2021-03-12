@@ -8,21 +8,21 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PlayerAttackComponent.generated.h"
 
-//¹¥»÷¶¯×÷
+//æ”»å‡»åŠ¨ä½œ
 USTRUCT(BlueprintType)
 struct FAttackAction
 {
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite)
-	UPaperSprite* AttackSprite;//¹¥»÷¶¯»­
+	UPaperSprite* AttackSprite;//æ”»å‡»åŠ¨ç”»
 
 	UPROPERTY(BlueprintReadWrite)
-	int AttackFrames;//¹¥»÷ÅÐ¶¨Ö¡Êý
+	int AttackFrames;//æ”»å‡»åˆ¤å®šå¸§æ•°
 
 };
 
-//¹¥»÷×é¼þ
+//æ”»å‡»ç»„ä»¶
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACT_2D_API UPlayerAttackComponent : public UPaperSpriteComponent
 {
@@ -30,10 +30,10 @@ class ACT_2D_API UPlayerAttackComponent : public UPaperSpriteComponent
 
 public:	
 	
-	//¹¹Ôìº¯Êý
+	//æž„é€ å‡½æ•°
 	UPlayerAttackComponent();
 
-	//¹¥»÷¿ªÊ¼
+	//æ”»å‡»å¼€å§‹
 	UFUNCTION(BlueprintCallable)
 	void BeginAttack();
 
