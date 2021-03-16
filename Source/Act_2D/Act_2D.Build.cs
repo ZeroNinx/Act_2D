@@ -25,7 +25,14 @@ public class Act_2D : ModuleRules
 		);
 
 		//添加自定义头文件
-		PublicIncludePaths.Add( "Act_2D/Public" );
+		PublicIncludePaths.AddRange
+		(
+			new string[]
+			{
+				"Act_2D/Public",
+				"Act_2D/Public/Character"
+			}
+		);
 
 	}
 }

@@ -1,4 +1,4 @@
-#include "Character/PlayerAttackComponent.h"
+#include "PlayerAttackComponent.h"
 
 //构造函数
 UPlayerAttackComponent::UPlayerAttackComponent()
@@ -25,7 +25,7 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	if (bShouldJudge&&GetCurrentActionFrame()==NextAttackFrame)
 	{
 		bShouldJudge = false;
-		UKismetSystemLibrary::PrintString(GetWorld(), FString("Judge"));
+		//UKismetSystemLibrary::PrintString(GetWorld(), FString("Judge"));
 		//启用判定
 		AttackJudge();
 	}
@@ -146,7 +146,7 @@ void UPlayerAttackComponent::ResetAttack()
 {
 	bShouldJudge = false;
 	NextAttackFrame = 0;
-	SetSprite(nullptr);
+	//SetSprite(nullptr);
 }
 
 
