@@ -7,6 +7,7 @@
 #include "Character/PlayerStateMachine.h"
 #include "Character/PlayerAttackComponent.h"
 #include "GameFramework/Character.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -19,7 +20,6 @@ public:
 	APlayerCharacter();
 
 protected:
-
 
 	// 游戏开始执行
 	virtual void BeginPlay() override;
@@ -36,6 +36,13 @@ protected:
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 	UPlayerAttackComponent* AttackComponent;
 
+	//按下攻击键
+	UFUNCTION(BlueprintCallable)
+	void AttackPresssed();
+
+	//从攻击中恢复
+	UFUNCTION()
+	void AttackRestore();
 
 public:	
 	//Tick函数

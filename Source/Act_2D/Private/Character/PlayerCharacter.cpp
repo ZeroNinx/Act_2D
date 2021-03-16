@@ -25,24 +25,51 @@ APlayerCharacter::APlayerCharacter()
 
 }
 
-// Called when the game starts or when spawned
+//开始游戏
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
+//Tick函数
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-// Called to bind functionality to input
+//按键绑定
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	//按下攻击
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacter::AttackPresssed);
 }
 
+//按下攻击键
+void APlayerCharacter::AttackPresssed()
+{
+
+	//改变状态为攻击
+	StateMachine->SetState(CharacterState::Attacking);
+	Flipbook->SetLooping(false);
+	AttackComponent->Attack();
+
+	//设置延迟
+	FLatentActionInfo LatentInfo;
+	LatentInfo.CallbackTarget = this;
+	LatentInfo.ExecutionFunction = "AttackRestore";
+	UKismetSystemLibrary::Delay(this,Flipbook->GetFlipbookLength(),LatentInfo);
+
+
+}
+
+//攻击恢复
+void APlayerCharacter::AttackRestore()
+{
+	AttackComponent->ResetAttack();
+	StateMachine->SetState(CharacterState::Idle);
+	Flipbook->SetLooping(true);
+}

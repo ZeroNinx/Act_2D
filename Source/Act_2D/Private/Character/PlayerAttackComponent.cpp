@@ -6,13 +6,8 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 	//启用tick
 	PrimaryComponentTick.bCanEverTick = true;
 
-	//默认ID为0
-	NextAttackFrame = 0;
-
 	//隐藏攻击模块
 	SetVisibility(false);
-
-	SetSprite(nullptr);
 
 	SetActive(true);
 }
@@ -33,7 +28,6 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		UKismetSystemLibrary::PrintString(GetWorld(), FString("Judge"));
 		//启用判定
 		AttackJudge();
-		
 	}
 }
 
@@ -77,16 +71,19 @@ void UPlayerAttackComponent::Attack(int AttackID)
 
 	//数据库对应列
 	int column_id = 0;
-	int column_attack_frame = 1;
-	int column_resource = 2;
-	int column_combo = 3;
+	int column_name = 1;
+	int column_attack_frame = 2;
+	int column_flipbook = 3;
+	int column_sprite = 4;
+	int column_combo = 5;
 
 	//取出数据
 	int attack_frame = sqlite3_column_int(row, column_attack_frame);
-	const char* resource = (const char*)sqlite3_column_text(row, column_resource);
+	const char* flipbook = (const char*)sqlite3_column_text(row, column_flipbook);
+	const char* sprite = (const char*)sqlite3_column_text(row, column_sprite);
 
 	//初始化攻击
-	SetupAttack(resource,attack_frame);
+	SetupAttack(flipbook,sprite,attack_frame);
 
 	//关闭查询
 	sqlite3_finalize(row);
@@ -95,18 +92,29 @@ void UPlayerAttackComponent::Attack(int AttackID)
 	sqlite3_close_v2(db);
 }
 
+
 //初始化攻击
-void UPlayerAttackComponent::SetupAttack(FString resource,int AttackFrame)
+void UPlayerAttackComponent::SetupAttack(FString FlipbookReference, FString SpriteReference,int AttackFrame)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Attack Set"));
 
 	//载入资源
-	UPaperSprite* AttackSprite = LoadObject<UPaperSprite>(GetWorld(), *resource);
+	UPaperFlipbook* AttackFlipbook = LoadObject<UPaperFlipbook>(GetWorld(), *FlipbookReference);
+	if (!AttackFlipbook)
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Flipbook Failed"));
+		return;
+	}
+
+	UPaperSprite* AttackSprite = LoadObject<UPaperSprite>(GetWorld(), *SpriteReference);
 	if (!AttackSprite)
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Sprite Failed"));
 		return;
 	}
+
+	//设定攻击动画
+	PlayerFlipbook->SetFlipbook(AttackFlipbook);
 
 	//设置当前的判定范围和判定帧
 	SetSprite(AttackSprite);
@@ -132,6 +140,15 @@ void UPlayerAttackComponent::AttackJudge()
 		UKismetSystemLibrary::PrintString(GetWorld(), ActorName);
 	}
 }
+
+//重置攻击
+void UPlayerAttackComponent::ResetAttack()
+{
+	bShouldJudge = false;
+	NextAttackFrame = 0;
+	SetSprite(nullptr);
+}
+
 
 //获得当前攻击动画播放位置
 int UPlayerAttackComponent::GetCurrentActionFrame()

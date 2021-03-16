@@ -9,6 +9,7 @@
 #include "Misc/Paths.h"
 #include "CoreMinimal.h"
 #include "PaperSprite.h"
+#include "PaPerFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperSpriteComponent.h"
 #include "Components/ActorComponent.h"
@@ -35,6 +36,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Attack(int AttackID = 1);
 
+	//重置攻击
+	UFUNCTION(BlueprintCallable)
+	void ResetAttack();
+
 protected:
 
 	//玩家动画指针
@@ -51,7 +56,7 @@ protected:
 
 	//设定攻击范围
 	UFUNCTION()
-	void SetupAttack(FString resource, int AttackFrame);
+	void SetupAttack(FString FlipbookReference, FString SpriteReference, int AttackFrame);
 
 	//攻击判定
 	UFUNCTION()
