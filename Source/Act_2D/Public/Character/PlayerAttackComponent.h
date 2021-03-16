@@ -9,7 +9,7 @@
 #include "Misc/Paths.h"
 #include "CoreMinimal.h"
 #include "PaperSprite.h"
-#include "PaperFlipbook.h"
+#include "PaperFlipbookComponent.h"
 #include "PaperSpriteComponent.h"
 #include "Components/ActorComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -27,12 +27,19 @@ public:
 	//构造函数
 	UPlayerAttackComponent();
 
+	//设定动画组件
+	UFUNCTION(BlueprintCallable)
+	void SetFlipbook(UPaperFlipbookComponent* Flipbook);
+
 	//攻击
 	UFUNCTION(BlueprintCallable)
 	void Attack(int AttackID = 1);
 
-
 protected:
+
+	//玩家动画指针
+	UPROPERTY(BlueprintReadOnly)
+	UPaperFlipbookComponent* PlayerFlipbook;
 
 	//下一个攻击帧
 	UPROPERTY(BlueprintReadOnly)

@@ -21,6 +21,7 @@ APlayerCharacter::APlayerCharacter()
 	//攻击组件
 	AttackComponent = CreateDefaultSubobject<UPlayerAttackComponent>(TEXT("AttackComponent"));
 	AttackComponent->SetupAttachment(Flipbook);
+	AttackComponent->SetFlipbook(Flipbook);
 
 }
 

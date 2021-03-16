@@ -12,13 +12,29 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 	//隐藏攻击模块
 	SetVisibility(false);
 
+	SetSprite(nullptr);
+
 	SetActive(true);
+}
+
+//设定动画组件
+void UPlayerAttackComponent::SetFlipbook(UPaperFlipbookComponent* Flipbook)
+{
+	PlayerFlipbook = Flipbook;
 }
 
 //Tick函数
 void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("123"));
+	//当判定启用
+	if (bShouldJudge&&GetCurrentActionFrame()==NextAttackFrame)
+	{
+		bShouldJudge = false;
+		UKismetSystemLibrary::PrintString(GetWorld(), FString("Judge"));
+		//启用判定
+		AttackJudge();
+		
+	}
 }
 
 //攻击
@@ -29,7 +45,7 @@ void UPlayerAttackComponent::Attack(int AttackID)
 	//数据读取
 
 	//读取数据库
-	FString DBPath = FPaths::Combine(FPaths::LaunchDir() + TEXT("Skill.db"));
+	FString DBPath = FPaths::Combine(FPaths::ProjectContentDir() , TEXT("Database") , TEXT("Skill.db"));
 	if (!FPaths::FileExists(DBPath))
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Missing Skill Database") + FString(DBPath));
@@ -69,7 +85,7 @@ void UPlayerAttackComponent::Attack(int AttackID)
 	int attack_frame = sqlite3_column_int(row, column_attack_frame);
 	const char* resource = (const char*)sqlite3_column_text(row, column_resource);
 
-	//进行攻击判定
+	//初始化攻击
 	SetupAttack(resource,attack_frame);
 
 	//关闭查询
@@ -79,9 +95,11 @@ void UPlayerAttackComponent::Attack(int AttackID)
 	sqlite3_close_v2(db);
 }
 
-//设定攻击范围
+//初始化攻击
 void UPlayerAttackComponent::SetupAttack(FString resource,int AttackFrame)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Attack Set"));
+
 	//载入资源
 	UPaperSprite* AttackSprite = LoadObject<UPaperSprite>(GetWorld(), *resource);
 	if (!AttackSprite)
@@ -90,13 +108,19 @@ void UPlayerAttackComponent::SetupAttack(FString resource,int AttackFrame)
 		return;
 	}
 
-	//设置当前的判定范围
+	//设置当前的判定范围和判定帧
 	SetSprite(AttackSprite);
+	NextAttackFrame = AttackFrame;
+
+	//设置启用判定
+	bShouldJudge = true;
 }
 
 //攻击判定
 void UPlayerAttackComponent::AttackJudge()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Attack Judge"));
+
 	//取得重叠的Actor，进行攻击判定
 	TSet<AActor*> OverlappingActors;
 	GetOverlappingActors(OverlappingActors);	
@@ -112,6 +136,6 @@ void UPlayerAttackComponent::AttackJudge()
 //获得当前攻击动画播放位置
 int UPlayerAttackComponent::GetCurrentActionFrame()
 {
-	return 0;
+	return PlayerFlipbook->GetPlaybackPositionInFrames();
 }
 
