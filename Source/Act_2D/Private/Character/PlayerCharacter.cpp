@@ -11,24 +11,20 @@ APlayerCharacter::APlayerCharacter()
 
 	//默认角色朝右
 	bFacingRight = true;
-
-	//使用自定义输入组件
-	MyPlayerInputComponent = CreateDefaultSubobject<UPlayerInputComponent>(TEXT("PlayerInputComponent"));
-	SetupPlayerInputComponent(MyPlayerInputComponent);
-
+	
 	//角色动画
-	Flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipBook"));
-	Flipbook->SetupAttachment(RootComponent);
-	Flipbook->SetRelativeLocation(FVector(0.0f, 0.0f, 5.0f));
-	Flipbook->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+	FlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipBook"));
+	FlipbookComponent->SetupAttachment(RootComponent);
+	FlipbookComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 5.0f));
+	FlipbookComponent->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
 
 	//状态机
 	StateMachine = CreateDefaultSubobject<UPlayerStateMachine>(TEXT("StateMachine"));
 
 	//攻击组件
 	AttackComponent = CreateDefaultSubobject<UPlayerAttackComponent>(TEXT("AttackComponent"));
-	AttackComponent->SetupAttachment(Flipbook);
-	AttackComponent->SetFlipbook(Flipbook);
+	AttackComponent->SetupAttachment(FlipbookComponent);
+	AttackComponent->Setup(FlipbookComponent, StateMachine);
 
 }
 
@@ -40,13 +36,16 @@ void APlayerCharacter::BeginPlay()
 }
 
 
+
 //Tick函数
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(Flipbook->IsLooping()));
+
 	//当非战斗时自动调整动画
-	if (StateMachine->GetState() != CharacterState::Attacking)
+	if (StateMachine->GetState() != ECharacterState::Attacking)
 	{
 		UpdateDirection();
 		UpdateState();
@@ -59,11 +58,11 @@ void APlayerCharacter::UpdateDirection()
 {
 	if (bFacingRight)
 	{
-		Flipbook->SetRelativeRotation(FRotator(0, 0, 0));
+		FlipbookComponent->SetRelativeRotation(FRotator(0, 0, 0));
 	}
 	else
 	{
-		Flipbook->SetRelativeRotation(FRotator(0, 180.0f, 0));
+		FlipbookComponent->SetRelativeRotation(FRotator(0, 180.0f, 0));
 	}
 }
 
@@ -76,22 +75,23 @@ void APlayerCharacter::UpdateState()
 	//根据Z轴速度判断起跳/下落
 	if (Velocy.Z> 0)
 	{
-		StateMachine->SetState(CharacterState::Jumping);
+		StateMachine->SetState(ECharacterState::Jumping);
 	}
 	else if(Velocy.Z <0)
 	{
-		StateMachine->SetState(CharacterState::Falling);
+		StateMachine->SetState(ECharacterState::Falling);
 	}
 	else
 	{
 		//否则根据X轴速度判断奔跑/静止
 		if (abs(Velocy.X) != 0)
 		{
-			StateMachine->SetState(CharacterState::Running);
+			StateMachine->SetState(ECharacterState::Running);
+			
 		}
 		else
 		{
-			StateMachine->SetState(CharacterState::Idle);
+			StateMachine->SetState(ECharacterState::Idle);
 		}
 		
 	}
@@ -102,20 +102,20 @@ void APlayerCharacter::UpdateAnimation()
 {
 	//动画路径
 	FString AnimationFlipbook;
-
+	
 	//根据不同状态调整动画
 	switch (StateMachine->GetState())
 	{
-	case CharacterState::Idle:
+	case ECharacterState::Idle:
 		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Character/PlayerCharacter.PlayerCharacter'";
 		break;
-	case CharacterState::Running:
+	case ECharacterState::Running:
 		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Character/Run/Character_Run.Character_Run'";
 		break;
-	case CharacterState::Jumping:
+	case ECharacterState::Jumping:
 		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Character/Jump/Character_Jump_Start.Character_Jump_Start'";
 		break;;
-	case CharacterState::Falling:
+	case ECharacterState::Falling:
 		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Character/Jump/Character_Jump_Fall.Character_Jump_Fall'";
 		break;
 	}
@@ -128,8 +128,9 @@ void APlayerCharacter::UpdateAnimation()
 		return;
 	}
 
-	Flipbook->SetFlipbook(NewAnimation);
+	FlipbookComponent->SetFlipbook(NewAnimation);
 }
+
 
 
 //按键绑定
@@ -137,14 +138,19 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	//绑定输入
+	//绑定轴输入
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
-
-	//按下攻击
+	PlayerInputComponent->BindAxis("MoveUp", this, &APlayerCharacter::MoveUp);
+	
+	//按下攻击键
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacter::AttackPresssed);
+	//松开攻击键
+	PlayerInputComponent->BindAction("Attack", IE_Released, this, &APlayerCharacter::AttackReleased);
 
-	//按下跳跃
+	//按下跳跃键
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerCharacter::JumpPressed);
+	//松开跳跃键
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &APlayerCharacter::JumpReleased);
 
 }
 
@@ -154,11 +160,24 @@ void APlayerCharacter::MoveRight(float AxisValue)
 	//当输入操作时
 	if (AxisValue != 0)
 	{
+		AttackComponent->bRightPressed = (fabs(AxisValue - 1.0f) <= eps);
+		AttackComponent->bLeftPressed = (fabs(AxisValue + 1.0f) <= eps);
+
 		//根据角色方向调整动画
 		bFacingRight = AxisValue > 0;
 
 		//添加移动
 		AddMovementInput(FVector(1,0,0), AxisValue);
+	}
+}
+
+void APlayerCharacter::MoveUp(float AxisValue)
+{
+	//当输入操作时
+	if (AxisValue != 0)
+	{
+		AttackComponent->bUpPressed = (fabs(AxisValue - 1.0f) <= eps);
+		AttackComponent->bDownPressed = (fabs(AxisValue + 1.0f) <= eps);
 
 	}
 }
@@ -166,10 +185,63 @@ void APlayerCharacter::MoveRight(float AxisValue)
 //按下攻击键
 void APlayerCharacter::AttackPresssed()
 {
+	AttackComponent->bAttackPressed = true;
 
-	//改变状态为攻击
-	StateMachine->SetState(CharacterState::Attacking);
-	Flipbook->SetLooping(false);
+	//非战斗时进入战斗状态
+	if (StateMachine->GetState() != ECharacterState::Attacking)
+	{
+		Attack();
+	}
+	else if(AttackComponent->IsAcceptInput())
+	{
+		AttackComponent->RecordKeyCombination();
+	}
+}
+
+//松开攻击键
+void APlayerCharacter::AttackReleased()
+{
+	AttackComponent->bAttackPressed = false;
+}
+
+//按下跳跃键
+void APlayerCharacter::JumpPressed()
+{
+	AttackComponent->bJumpPressed = true;
+	AttackComponent->RecordKeyCombination();
+
+	Jump();
+}
+
+//松开跳跃键
+void APlayerCharacter::JumpReleased()
+{
+	AttackComponent->bJumpPressed = false;
+}
+
+
+
+//取得状态
+ECharacterState APlayerCharacter::GetState()
+{
+	return StateMachine->GetState();
+}
+
+//取得动画组件
+UPaperFlipbookComponent* APlayerCharacter::GetFlipbookComponent()
+{
+	return FlipbookComponent;
+}
+
+//取得状态机
+UPlayerStateMachine* APlayerCharacter::GetStateMachine()
+{
+	return StateMachine;
+}
+
+//攻击
+void APlayerCharacter::Attack()
+{
 	AttackComponent->Attack();
 
 	//设置延迟执行攻击结束
@@ -178,23 +250,13 @@ void APlayerCharacter::AttackPresssed()
 	LatentInfo.ExecutionFunction = "AttackRestore";
 	LatentInfo.Linkage = 0;
 	LatentInfo.UUID = 0;
-	UKismetSystemLibrary::Delay(this,Flipbook->GetFlipbookLength(),LatentInfo);
-
-
+	UKismetSystemLibrary::Delay(this, FlipbookComponent->GetFlipbookLength(), LatentInfo);
 }
 
-//攻击恢复
+//从攻击恢复
 void APlayerCharacter::AttackRestore()
 {
 	AttackComponent->ResetAttack();
-	StateMachine->SetState(CharacterState::Idle);
-	Flipbook->SetLooping(true);
+	StateMachine->SetState(ECharacterState::Idle);
+	FlipbookComponent->SetLooping(true);
 }
-
-//按下跳跃键
-void APlayerCharacter::JumpPressed()
-{
-	Jump();
-}
-
-

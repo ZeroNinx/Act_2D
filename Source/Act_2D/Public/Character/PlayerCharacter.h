@@ -2,17 +2,23 @@
 
 #pragma once
 
+//第三方
+#include<cmath>
+
+//自定义
+#include "PlayerStateMachine.h"
+#include "PlayerAttackComponent.h"
+#define eps 1e-7//浮点数误差
+
+//UE4
 #include "CoreMinimal.h"
 #include "PaperFlipbookComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "PlayerStateMachine.h"
-#include "PlayerInputComponent.h"
-#include "PlayerAttackComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PlayerCharacter.generated.h"
 
-class UPlayerInputComponent;
+class UPlayerAttackComponent;
 
 /**
  * 玩家类
@@ -27,31 +33,23 @@ public:
 	// 构造函数
 	APlayerCharacter();
 
-	//角色移动
-	UFUNCTION()
-		void MoveRight(float AxisValue);
-
-	//按下攻击键
+	//取得状态
 	UFUNCTION(BlueprintCallable)
-		void AttackPresssed();
+	ECharacterState GetState();
 
-	//从攻击中恢复
-	UFUNCTION()
-		void AttackRestore();
-
-	//按下跳跃
+	//取得动画组件
 	UFUNCTION(BlueprintCallable)
-		void JumpPressed();
+	UPaperFlipbookComponent* GetFlipbookComponent();
+
+	//取得状态机
+	UFUNCTION(BlueprintCallable)
+	UPlayerStateMachine* GetStateMachine();
 
 protected:
 
 	//角色动画
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
-	UPaperFlipbookComponent* Flipbook;
-
-	//输入组件
-	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
-	UPlayerInputComponent* MyPlayerInputComponent;
+	UPaperFlipbookComponent* FlipbookComponent;
 	
 	//状态机
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
@@ -68,9 +66,33 @@ protected:
 	// 游戏开始执行
 	virtual void BeginPlay() override;
 
+	//输入绑定
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	//角色移动
+	UFUNCTION()
+	void MoveRight(float AxisValue);
+	UFUNCTION()
+	void MoveUp(float AxisValue);
+
+	//按下攻击键
+	UFUNCTION(BlueprintCallable)
+	void AttackPresssed();
+
+	//松开攻击键
+	UFUNCTION(BlueprintCallable)
+	void AttackReleased();
+
+	//按下跳跃
+	UFUNCTION(BlueprintCallable)
+	void JumpPressed();
+
+	//松开跳跃
+	UFUNCTION(BlueprintCallable)
+	void JumpReleased();
+
 	//Tick函数
 	virtual void Tick(float DeltaTime) override;
-
 
 	//调整方向
 	UFUNCTION(BlueprintCallable)
@@ -84,7 +106,12 @@ protected:
 	UFUNCTION()
 	void UpdateAnimation();
 
-	//输入绑定
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	//攻击
+	UFUNCTION()
+	void Attack();
+
+	//攻击恢复
+	UFUNCTION()
+	void AttackRestore();
 
 };

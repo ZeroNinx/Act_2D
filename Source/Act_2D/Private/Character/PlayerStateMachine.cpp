@@ -9,7 +9,7 @@ UPlayerStateMachine::UPlayerStateMachine()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	State = CharacterState::Idle;
+	State = ECharacterState::Idle;
 	// ...
 }
 
@@ -24,13 +24,13 @@ void UPlayerStateMachine::BeginPlay()
 }
 
 //取得状态
-CharacterState UPlayerStateMachine::GetState()
+ECharacterState UPlayerStateMachine::GetState()
 {
 	return State;
 }
 
 //设置状态
-void UPlayerStateMachine::SetState(CharacterState NewState)
+void UPlayerStateMachine::SetState(ECharacterState NewState)
 {
 	State = NewState;
 }

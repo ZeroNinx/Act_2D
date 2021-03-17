@@ -7,7 +7,7 @@
 #include "PlayerStateMachine.generated.h"
 
 UENUM(BlueprintType)
-enum class CharacterState :uint8
+enum class ECharacterState :uint8
 {
 	Idle,
 	Running,
@@ -27,11 +27,11 @@ public:
 
 	//取得状态
 	UFUNCTION(BlueprintCallable)
-	CharacterState GetState();
+	ECharacterState GetState();
 
 	//设置状态
 	UFUNCTION(BlueprintCallable)
-	void SetState(CharacterState NewState);
+	void SetState(ECharacterState NewState);
 
 protected:
 	// Called when the game starts
@@ -39,7 +39,7 @@ protected:
 
 	//取得状态
 	UPROPERTY(BlueprintReadWrite)
-	CharacterState State;
+	ECharacterState State;
 
 public:	
 	// Called every frame

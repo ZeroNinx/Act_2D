@@ -3,37 +3,79 @@
 //构造函数
 UPlayerAttackComponent::UPlayerAttackComponent()
 {
+	//初始化状态
+	bAttackPressed = false;
+	bUpPressed = false;
+	bDownPressed = false;
+	bLeftPressed = false;
+	bRightPressed = false;
+	ResetAttack();
+
 	//启用tick
 	PrimaryComponentTick.bCanEverTick = true;
 
 	//隐藏攻击模块
 	SetVisibility(false);
 
+	//启用攻击模块
 	SetActive(true);
-}
-
-//设定动画组件
-void UPlayerAttackComponent::SetFlipbook(UPaperFlipbookComponent* Flipbook)
-{
-	PlayerFlipbook = Flipbook;
 }
 
 //Tick函数
 void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	//当判定启用
-	if (bShouldJudge&&GetCurrentActionFrame()==NextAttackFrame)
+	if (bShouldJudge && GetAnimationPosition() == AttackFrame)
 	{
 		bShouldJudge = false;
-		//UKismetSystemLibrary::PrintString(GetWorld(), FString("Judge"));
 		//启用判定
 		AttackJudge();
 	}
+	else if(GetAnimationPosition()>AttackFrame)
+	{
+		ResetAttack();
+
+	}
 }
+
+//初始化
+void UPlayerAttackComponent::Setup(UPaperFlipbookComponent* NewFlipbookComponent, UPlayerStateMachine* NewStateMachine)
+{
+	FlipbookComponent = NewFlipbookComponent;
+	StateMachine = NewStateMachine;
+}
+
+//返回是否接受输入
+bool UPlayerAttackComponent::IsAcceptInput()
+{
+	//前摇时不接受输入
+	if (GetAnimationPosition() <= AttackFrame)
+	{
+		return false;
+	}
+	return true;
+}
+
+//获得当前攻击动画播放位置
+int UPlayerAttackComponent::GetAnimationPosition()
+{
+	return FlipbookComponent->GetPlaybackPositionInFrames();
+}
+
+//记录下一次攻击组合
+void UPlayerAttackComponent::RecordKeyCombination()
+{
+	NextkKeyCombation = FKeyCombination(bAttackPressed, bJumpPressed, bUpPressed, bDownPressed, bLeftPressed, bRightPressed);
+}
+
+
 
 //攻击
 void UPlayerAttackComponent::Attack(int AttackID)
 {
+	//改变状态为攻击
+	StateMachine->SetState(ECharacterState::Attacking);
+	FlipbookComponent->SetLooping(false);
 
 	//////////////////////////////////////////////////////////////////////////
 	//数据读取
@@ -92,9 +134,8 @@ void UPlayerAttackComponent::Attack(int AttackID)
 	sqlite3_close_v2(db);
 }
 
-
 //初始化攻击
-void UPlayerAttackComponent::SetupAttack(FString FlipbookReference, FString SpriteReference,int AttackFrame)
+void UPlayerAttackComponent::SetupAttack(FString FlipbookReference, FString SpriteReference,int SkillAttackFrame)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Attack Set"));
 
@@ -114,11 +155,11 @@ void UPlayerAttackComponent::SetupAttack(FString FlipbookReference, FString Spri
 	}
 
 	//设定攻击动画
-	PlayerFlipbook->SetFlipbook(AttackFlipbook);
+	FlipbookComponent->SetFlipbook(AttackFlipbook);
 
 	//设置当前的判定范围和判定帧
 	SetSprite(AttackSprite);
-	NextAttackFrame = AttackFrame;
+	AttackFrame = SkillAttackFrame;
 
 	//设置启用判定
 	bShouldJudge = true;
@@ -145,14 +186,11 @@ void UPlayerAttackComponent::AttackJudge()
 void UPlayerAttackComponent::ResetAttack()
 {
 	bShouldJudge = false;
-	NextAttackFrame = 0;
+	AttackFrame = 0;
+	NextkKeyCombation = FKeyCombination();
 	//SetSprite(nullptr);
 }
 
 
-//获得当前攻击动画播放位置
-int UPlayerAttackComponent::GetCurrentActionFrame()
-{
-	return PlayerFlipbook->GetPlaybackPositionInFrames();
-}
+
 
