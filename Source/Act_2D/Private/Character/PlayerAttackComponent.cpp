@@ -5,6 +5,8 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 {
 	//初始化状态
 	bAttackPressed = false;
+	bSpecialPressed = false;
+	bTriggerPressed = false;
 	bUpPressed = false;
 	bDownPressed = false;
 	bLeftPressed = false;
@@ -24,17 +26,22 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 //Tick函数
 void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	//当判定启用
-	if (bShouldJudge && GetAnimationPosition() == AttackFrame)
+	//仅当攻击时
+	if (StateMachine->GetState() == ECharacterState::Attacking)
 	{
-		bShouldJudge = false;
-		//启用判定
-		AttackJudge();
-	}
-	else if(GetAnimationPosition()>AttackFrame)
-	{
-		ResetAttack();
-
+		//当判定启用
+		if (bShouldJudge && GetAnimationPosition() == AttackFrame)
+		{
+			bShouldJudge = false;
+			//启用判定
+			AttackJudge();
+		}
+		else if (GetAnimationPosition() > AttackFrame && !NextkKeyCombation.IsAttackEmpty())
+		{
+			
+			UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(NextkKeyCombation.GetHash()));
+			NextkKeyCombation = FKeyCombination();
+		}
 	}
 }
 
@@ -65,7 +72,7 @@ int UPlayerAttackComponent::GetAnimationPosition()
 //记录下一次攻击组合
 void UPlayerAttackComponent::RecordKeyCombination()
 {
-	NextkKeyCombation = FKeyCombination(bAttackPressed, bJumpPressed, bUpPressed, bDownPressed, bLeftPressed, bRightPressed);
+	NextkKeyCombation = FKeyCombination(bAttackPressed,bSpecialPressed,bTriggerPressed, bJumpPressed, bUpPressed, bDownPressed, bLeftPressed, bRightPressed);
 }
 
 

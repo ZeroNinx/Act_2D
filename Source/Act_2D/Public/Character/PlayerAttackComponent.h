@@ -3,8 +3,16 @@
 //第三方
 #include "sqlite3.h"
 
-//自定义类
+//自定义
 #include "PlayerStateMachine.h"
+#define Combo1 0x001
+#define Combo2 0x010
+#define Combo3 0x100
+#define Combo4 0x101
+#define Combo5 0x110
+#define Combo6 0x011
+#define Combo7 0x111
+
 
 //UE4
 #include "Misc/Paths.h"
@@ -24,17 +32,29 @@ struct FKeyCombination
 	GENERATED_BODY()
 
 	bool AttackKey=false;
+	bool SpecialKey = false;
+	bool TriggerKey = false;
 	bool JumpKey = false;
 	bool UpKey=false;
 	bool DownKey=false;
 	bool LeftKey=false;
 	bool RighKey=false;
 
-
+	//构造函数
 	FKeyCombination() {};
-	FKeyCombination(bool isAttackPressed,bool isJumpPressed, bool isUpPressed, bool isDownPressed, bool isLeftPressed, bool isRightPressed)
+	FKeyCombination(
+		bool isAttackPressed,
+		bool isSpecialPressed,
+		bool isTriggerPressed,
+		bool isJumpPressed,
+		bool isUpPressed,
+		bool isDownPressed, 
+		bool isLeftPressed, 
+		bool isRightPressed)
 	{
-		AttackKey = isUpPressed;
+		AttackKey = isAttackPressed;
+		SpecialKey = isSpecialPressed;
+		TriggerKey = isTriggerPressed;
 		JumpKey = isJumpPressed;
 		UpKey = isUpPressed;
 		DownKey = isDownPressed;
@@ -42,9 +62,16 @@ struct FKeyCombination
 		RighKey = isRightPressed;
 	}
 
-	bool IsEmpty()
+	//判断是否为空
+	bool IsAttackEmpty()
 	{
-		return AttackKey | JumpKey | UpKey | DownKey | LeftKey | RighKey;
+		return !(AttackKey | SpecialKey | TriggerKey);
+	}
+
+	//获取哈希
+	int GetHash()
+	{
+		return (TriggerKey << 8) + (SpecialKey << 4) + AttackKey;
 	}
 };
 
@@ -62,6 +89,14 @@ public:
 	//攻击键是否按下
 	UPROPERTY(BlueprintReadOnly)
 	bool bAttackPressed;
+	
+	//特殊键是否按下
+	UPROPERTY(BlueprintReadOnly)
+	bool bSpecialPressed;
+	
+	//扳机键是否按下
+	UPROPERTY(BlueprintReadOnly)
+	bool bTriggerPressed;
 
 	//跳跃键是否按下
 	UPROPERTY(BlueprintReadOnly)

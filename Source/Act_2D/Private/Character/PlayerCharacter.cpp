@@ -142,14 +142,20 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("MoveUp", this, &APlayerCharacter::MoveUp);
 	
-	//按下攻击键
+	//攻击键
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacter::AttackPresssed);
-	//松开攻击键
 	PlayerInputComponent->BindAction("Attack", IE_Released, this, &APlayerCharacter::AttackReleased);
 
-	//按下跳跃键
+	//特殊键
+	PlayerInputComponent->BindAction("Special", IE_Pressed, this, &APlayerCharacter::SpecialPresssed);
+	PlayerInputComponent->BindAction("Special", IE_Released, this, &APlayerCharacter::SpecialReleased);
+
+	//扳机键
+	PlayerInputComponent->BindAction("Trigger", IE_Pressed, this, &APlayerCharacter::TriggerPresssed);
+	PlayerInputComponent->BindAction("Trigger", IE_Released, this, &APlayerCharacter::TriggerReleased);
+
+	//跳跃键
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerCharacter::JumpPressed);
-	//松开跳跃键
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &APlayerCharacter::JumpReleased);
 
 }
@@ -194,6 +200,7 @@ void APlayerCharacter::AttackPresssed()
 	}
 	else if(AttackComponent->IsAcceptInput())
 	{
+		UKismetSystemLibrary::PrintString(GetWorld(), FString("Accept"));
 		AttackComponent->RecordKeyCombination();
 	}
 }
@@ -202,6 +209,30 @@ void APlayerCharacter::AttackPresssed()
 void APlayerCharacter::AttackReleased()
 {
 	AttackComponent->bAttackPressed = false;
+}
+
+//按下特殊键
+void APlayerCharacter::SpecialPresssed()
+{
+	AttackComponent->bSpecialPressed = true;
+}
+
+//松开特殊键
+void APlayerCharacter::SpecialReleased()
+{
+	AttackComponent->bSpecialPressed = false;
+}
+
+//按下扳机键
+void APlayerCharacter::TriggerPresssed()
+{
+	AttackComponent->bTriggerPressed = true;
+}
+
+//松开扳机键
+void APlayerCharacter::TriggerReleased()
+{
+	AttackComponent->bTriggerPressed = false;
 }
 
 //按下跳跃键

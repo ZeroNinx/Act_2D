@@ -18,8 +18,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PlayerCharacter.generated.h"
 
-class UPlayerAttackComponent;
-
 /**
  * 玩家类
  */
@@ -65,6 +63,8 @@ protected:
 
 	// 游戏开始执行
 	virtual void BeginPlay() override;
+	
+
 
 	//输入绑定
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -75,21 +75,31 @@ protected:
 	UFUNCTION()
 	void MoveUp(float AxisValue);
 
-	//按下攻击键
+	//攻击键
 	UFUNCTION(BlueprintCallable)
 	void AttackPresssed();
-
-	//松开攻击键
 	UFUNCTION(BlueprintCallable)
 	void AttackReleased();
 
-	//按下跳跃
+	//特殊键
+	UFUNCTION(BlueprintCallable)
+	void SpecialPresssed();
+	UFUNCTION(BlueprintCallable)
+	void SpecialReleased();
+
+	//扳机键
+	UFUNCTION(BlueprintCallable)
+	void TriggerPresssed();
+	UFUNCTION(BlueprintCallable)
+	void TriggerReleased();
+
+	//跳跃键
 	UFUNCTION(BlueprintCallable)
 	void JumpPressed();
-
-	//松开跳跃
 	UFUNCTION(BlueprintCallable)
 	void JumpReleased();
+
+
 
 	//Tick函数
 	virtual void Tick(float DeltaTime) override;
