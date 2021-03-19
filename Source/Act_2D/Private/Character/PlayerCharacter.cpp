@@ -26,6 +26,9 @@ APlayerCharacter::APlayerCharacter()
 	AttackComponent->SetupAttachment(FlipbookComponent);
 	AttackComponent->Setup(FlipbookComponent, StateMachine);
 
+	//绑定代理到动画播放结束
+	OnAttackFinishedDelegate.BindDynamic(this,&APlayerCharacter::AttackRestore);
+	FlipbookComponent->OnFinishedPlaying.Add(OnAttackFinishedDelegate);
 }
 
 //开始游戏
@@ -42,7 +45,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(Flipbook->IsLooping()));
+	//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(FlipbookComponent->IsLooping()));
 
 	//当非战斗时自动调整动画
 	if (StateMachine->GetState() != ECharacterState::Attacking)
@@ -252,6 +255,7 @@ void APlayerCharacter::AddAttackInput()
 	//非攻击是进入攻击状态
 	if (GetState() != ECharacterState::Attacking)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Attack"));
 		Attack();
 	}
 	else if(AttackComponent->IsAcceptInput())
@@ -259,7 +263,6 @@ void APlayerCharacter::AddAttackInput()
 		//设置延迟接受输入
 		auto DelayAttackInput = [&]() -> void
 		{
-			UKismetSystemLibrary::PrintString(GetWorld(), FString("Delayed"));
 			AttackComponent->RecordKeyCombination();
 		};
 
@@ -291,14 +294,6 @@ UPlayerStateMachine* APlayerCharacter::GetStateMachine()
 void APlayerCharacter::Attack()
 {
 	AttackComponent->Attack();
-
-	//设置延迟执行攻击结束
-	FLatentActionInfo LatentInfo;
-	LatentInfo.CallbackTarget = this;
-	LatentInfo.ExecutionFunction = "AttackRestore";
-	LatentInfo.Linkage = 0;
-	LatentInfo.UUID = UUID_ATTACK_RESTORE;
-	UKismetSystemLibrary::Delay(GetWorld(), FlipbookComponent->GetFlipbookLength(), LatentInfo);
 }
 
 //从攻击恢复
@@ -307,4 +302,5 @@ void APlayerCharacter::AttackRestore()
 	AttackComponent->ResetAttack();
 	StateMachine->SetState(ECharacterState::Idle);
 	FlipbookComponent->SetLooping(true);
+	FlipbookComponent->Play();
 }

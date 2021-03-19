@@ -13,7 +13,6 @@
 #define Combo6 0x011
 #define Combo7 0x111
 
-
 //UE4
 #include "Misc/Paths.h"
 #include "CoreMinimal.h"
@@ -42,7 +41,8 @@ struct FKeyCombination
 
 	//构造函数
 	FKeyCombination() {};
-	FKeyCombination(
+	FKeyCombination
+	(
 		bool isAttackPressed,
 		bool isSpecialPressed,
 		bool isTriggerPressed,
@@ -50,7 +50,8 @@ struct FKeyCombination
 		bool isUpPressed,
 		bool isDownPressed, 
 		bool isLeftPressed, 
-		bool isRightPressed)
+		bool isRightPressed
+	)
 	{
 		AttackKey = isAttackPressed;
 		SpecialKey = isSpecialPressed;
@@ -132,7 +133,7 @@ public:
 
 	//攻击
 	UFUNCTION(BlueprintCallable)
-	void Attack(int AttackID = 1);
+	void Attack(int ID = 1);
 
 	//重置攻击
 	UFUNCTION(BlueprintCallable)
@@ -148,6 +149,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	UPlayerStateMachine* StateMachine;
 
+	//当前攻击ID
+	UPROPERTY(BlueprintReadOnly)
+	int AttackID;
+
 	//当前动作攻击帧
 	UPROPERTY(BlueprintReadOnly)
 	int AttackFrame;
@@ -160,9 +165,20 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	FKeyCombination NextkKeyCombation;
 
-	//设定攻击
+	//连续技列表
+	UPROPERTY(BlueprintReadOnly)
+	TMap<int, int> ComboMap;
+
+	//载入数据库
+	sqlite3* LoadDB();
+
+	//初始化攻击
 	UFUNCTION()
-	void SetupAttack(FString FlipbookReference, FString SpriteReference, int SkillAttackFrame);
+	void SetupAttack();
+
+	//初始化连续技
+	UFUNCTION()
+	void SetupCombo();
 
 	//攻击判定
 	UFUNCTION()
