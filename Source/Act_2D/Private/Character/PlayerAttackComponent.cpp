@@ -26,7 +26,7 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 //Tick函数
 void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	//仅当攻击时
+	//当攻击时检测攻击
 	if (StateMachine->GetState() == ECharacterState::Attacking)
 	{
 		//当判定启用
@@ -38,7 +38,6 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		}
 		else if (GetAnimationPosition() > AttackFrame && !NextkKeyCombation.IsAttackEmpty())
 		{
-			
 			UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(NextkKeyCombation.GetHash()));
 			NextkKeyCombation = FKeyCombination();
 		}

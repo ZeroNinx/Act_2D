@@ -8,10 +8,14 @@
 //自定义
 #include "PlayerStateMachine.h"
 #include "PlayerAttackComponent.h"
+#define UUID_ATTACK_INPUT_DELAY 0x1
+#define UUID_ATTACK_RESTORE 0x2
+
 #define eps 1e-7//浮点数误差
 
 //UE4
 #include "CoreMinimal.h"
+#include "TimerManager.h"
 #include "PaperFlipbookComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Character.h"
@@ -61,6 +65,18 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	bool bFacingRight;
 
+	//攻击延迟定时器句柄
+	UPROPERTY(BlueprintReadOnly)
+	FTimerHandle AttackDelayHandle;
+
+	//延迟输入间隔（秒）
+	UPROPERTY(BlueprintReadOnly)
+	float AttackInputDuration = 0.05f;
+
+	//是否等待延迟输入
+	UPROPERTY(BlueprintReadOnly)
+	bool bWaitingInput;
+
 	// 游戏开始执行
 	virtual void BeginPlay() override;
 	
@@ -99,6 +115,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void JumpReleased();
 
+	//添加攻击输入
+	UFUNCTION(BlueprintCallable)
+	void AddAttackInput();
 
 
 	//Tick函数

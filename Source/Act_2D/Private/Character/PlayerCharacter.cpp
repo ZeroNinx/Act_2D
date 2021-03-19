@@ -32,7 +32,7 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 
@@ -193,16 +193,8 @@ void APlayerCharacter::AttackPresssed()
 {
 	AttackComponent->bAttackPressed = true;
 
-	//非战斗时进入战斗状态
-	if (StateMachine->GetState() != ECharacterState::Attacking)
-	{
-		Attack();
-	}
-	else if(AttackComponent->IsAcceptInput())
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString("Accept"));
-		AttackComponent->RecordKeyCombination();
-	}
+	//延迟攻击输入
+	AddAttackInput();
 }
 
 //松开攻击键
@@ -215,6 +207,8 @@ void APlayerCharacter::AttackReleased()
 void APlayerCharacter::SpecialPresssed()
 {
 	AttackComponent->bSpecialPressed = true;
+	//延迟攻击输入
+	AddAttackInput();
 }
 
 //松开特殊键
@@ -227,6 +221,8 @@ void APlayerCharacter::SpecialReleased()
 void APlayerCharacter::TriggerPresssed()
 {
 	AttackComponent->bTriggerPressed = true;
+	//添加攻击输入
+	AddAttackInput();
 }
 
 //松开扳机键
@@ -250,6 +246,27 @@ void APlayerCharacter::JumpReleased()
 	AttackComponent->bJumpPressed = false;
 }
 
+//添加攻击输入
+void APlayerCharacter::AddAttackInput()
+{
+	//非攻击是进入攻击状态
+	if (GetState() != ECharacterState::Attacking)
+	{
+		Attack();
+	}
+	else if(AttackComponent->IsAcceptInput())
+	{
+		//设置延迟接受输入
+		auto DelayAttackInput = [&]() -> void
+		{
+			UKismetSystemLibrary::PrintString(GetWorld(), FString("Delayed"));
+			AttackComponent->RecordKeyCombination();
+		};
+
+		auto dlg = FTimerDelegate::CreateLambda(DelayAttackInput);
+		GetWorldTimerManager().SetTimer(AttackDelayHandle, dlg, (const float)AttackInputDuration, false);
+	}
+}
 
 
 //取得状态
@@ -280,8 +297,8 @@ void APlayerCharacter::Attack()
 	LatentInfo.CallbackTarget = this;
 	LatentInfo.ExecutionFunction = "AttackRestore";
 	LatentInfo.Linkage = 0;
-	LatentInfo.UUID = 0;
-	UKismetSystemLibrary::Delay(this, FlipbookComponent->GetFlipbookLength(), LatentInfo);
+	LatentInfo.UUID = UUID_ATTACK_RESTORE;
+	UKismetSystemLibrary::Delay(GetWorld(), FlipbookComponent->GetFlipbookLength(), LatentInfo);
 }
 
 //从攻击恢复
