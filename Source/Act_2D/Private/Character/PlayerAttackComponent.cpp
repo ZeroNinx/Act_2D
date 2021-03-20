@@ -39,6 +39,12 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		}
 		else if (GetAnimationPosition() > AttackFrame && !NextkKeyCombation.IsAttackEmpty())
 		{
+			//进入后摇
+			StateMachine->SetState(ECharacterState::AttackFinished);
+
+			//查看指令
+			//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(NextkKeyCombation.GetHash()));
+			
 			//获得命令
 			int NextCommand = NextkKeyCombation.GetHash();
 
@@ -63,11 +69,11 @@ void UPlayerAttackComponent::Setup(UPaperFlipbookComponent* NewFlipbookComponent
 bool UPlayerAttackComponent::IsAcceptInput()
 {
 	//前摇时不接受输入
-	if (GetAnimationPosition() <= AttackFrame)
+	if (GetAnimationPosition() < AttackFrame)
 	{
 		return false;
 	}
-	if (GetAnimationPosition() > AttackFrame && !NextkKeyCombation.IsAttackEmpty())
+	else if (!NextkKeyCombation.IsAttackEmpty())
 	{
 		return false;
 	}

@@ -13,7 +13,8 @@ enum class ECharacterState :uint8
 	Running,
 	Jumping,
 	Falling,
-	Attacking
+	Attacking,
+	AttackFinished
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )

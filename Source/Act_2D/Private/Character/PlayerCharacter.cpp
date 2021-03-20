@@ -48,7 +48,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(FlipbookComponent->IsLooping()));
 
 	//当非战斗时自动调整动画
-	if (StateMachine->GetState() != ECharacterState::Attacking)
+	if (!IsAttacking())
 	{
 		UpdateDirection();
 		UpdateState();
@@ -134,7 +134,11 @@ void APlayerCharacter::UpdateAnimation()
 	FlipbookComponent->SetFlipbook(NewAnimation);
 }
 
-
+//判断是否处于攻击状态
+bool APlayerCharacter::IsAttacking()
+{
+	return (GetState() == ECharacterState::Attacking) || (GetState() == ECharacterState::AttackFinished);
+}
 
 //按键绑定
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -175,8 +179,12 @@ void APlayerCharacter::MoveRight(float AxisValue)
 		//根据角色方向调整动画
 		bFacingRight = AxisValue > 0;
 
-		//添加移动
-		AddMovementInput(FVector(1,0,0), AxisValue);
+		//当非攻击时
+		if (!IsAttacking())
+		{
+			//添加移动
+			AddMovementInput(FVector(1, 0, 0), AxisValue);
+		}
 	}
 }
 
@@ -187,7 +195,6 @@ void APlayerCharacter::MoveUp(float AxisValue)
 	{
 		AttackComponent->bUpPressed = (fabs(AxisValue - 1.0f) <= eps);
 		AttackComponent->bDownPressed = (fabs(AxisValue + 1.0f) <= eps);
-
 	}
 }
 
@@ -252,14 +259,17 @@ void APlayerCharacter::JumpReleased()
 //添加攻击输入
 void APlayerCharacter::AddAttackInput()
 {
-	//非攻击是进入攻击状态
+
+	//非攻击进入攻击状态
 	if (GetState() != ECharacterState::Attacking)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Attack"));
+		UKismetSystemLibrary::PrintString(GetWorld(), "Attack");
 		Attack();
 	}
-	else if(AttackComponent->IsAcceptInput())
+	else if (AttackComponent->IsAcceptInput())
 	{
+		UKismetSystemLibrary::PrintString(GetWorld(), "input");
+
 		//设置延迟接受输入
 		auto DelayAttackInput = [&]() -> void
 		{
@@ -293,6 +303,7 @@ UPlayerStateMachine* APlayerCharacter::GetStateMachine()
 //攻击
 void APlayerCharacter::Attack()
 {
+	GetMovementComponent()->StopMovementImmediately();
 	AttackComponent->Attack();
 }
 

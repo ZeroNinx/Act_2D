@@ -73,7 +73,7 @@ protected:
 
 	//延迟输入间隔（秒）
 	UPROPERTY(BlueprintReadOnly)
-	float AttackInputDuration = 0.05f;
+	float AttackInputDuration = 0.03f;
 
 	//是否等待延迟输入
 	UPROPERTY(BlueprintReadOnly)
@@ -85,8 +85,6 @@ protected:
 	// 游戏开始执行
 	virtual void BeginPlay() override;
 	
-
-
 	//输入绑定
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -120,10 +118,6 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void JumpReleased();
 
-	//添加攻击输入
-	UFUNCTION(BlueprintCallable)
-	void AddAttackInput();
-
 
 	//Tick函数
 	virtual void Tick(float DeltaTime) override;
@@ -139,6 +133,14 @@ protected:
 	//调整动画
 	UFUNCTION()
 	void UpdateAnimation();
+
+	//判断是否处于攻击状态
+	UFUNCTION(BlueprintCallable)
+	bool IsAttacking();
+
+	//添加攻击输入
+	UFUNCTION(BlueprintCallable)
+	void AddAttackInput();
 
 	//攻击
 	UFUNCTION()
