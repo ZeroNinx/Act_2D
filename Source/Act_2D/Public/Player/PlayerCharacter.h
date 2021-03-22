@@ -16,9 +16,12 @@
 #include "CoreMinimal.h"
 #include "TimerManager.h"
 #include "PaperFlipbookComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/Character.h"
+#include "Camera/CameraComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "PlayerCharacter.generated.h"
 
 /**
@@ -51,6 +54,14 @@ public:
 
 protected:
 
+	//弹簧臂组件
+	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+	USpringArmComponent* SpringArmComponent;
+
+	//相机组件
+	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+	UCameraComponent* CameraComponent;
+
 	//角色动画
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 	UPaperFlipbookComponent* FlipbookComponent;
@@ -82,11 +93,13 @@ protected:
 	//攻击动画播放完成代理
 	FOnAttackFinishedDelegate OnAttackFinishedDelegate;
 
+
 	// 游戏开始执行
 	virtual void BeginPlay() override;
 	
 	//输入绑定
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 
 	//角色移动
 	UFUNCTION()
@@ -133,6 +146,7 @@ protected:
 	//调整动画
 	UFUNCTION()
 	void UpdateAnimation();
+
 
 	//判断是否处于攻击状态
 	UFUNCTION(BlueprintCallable)

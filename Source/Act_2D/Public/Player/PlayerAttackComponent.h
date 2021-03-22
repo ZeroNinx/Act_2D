@@ -123,6 +123,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Setup(UPaperFlipbookComponent *NewFlipbookComponent,UPlayerStateMachine* NewStateMachine);
 
+	//是否可以移动
+	UFUNCTION(BlueprintCallable)
+	bool IsMovable();
+
 	//返回是否接受输入
 	UFUNCTION(BlueprintCallable)
 	bool IsAcceptInput();
@@ -157,6 +161,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	int AttackFrame;
 	
+	//可移动帧
+	UPROPERTY(BlueprintReadOnly)
+	int MovableFrame; 
+
 	//攻击判定标记
 	UPROPERTY(BlueprintReadOnly)
 	bool bShouldJudge;

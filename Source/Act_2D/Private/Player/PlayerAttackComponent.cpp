@@ -19,40 +19,42 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 	//隐藏攻击模块
 	SetVisibility(false);
 
-	//启用攻击模块
-	SetActive(true);
 }
 
 //Tick函数
 void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+
 	//当攻击时检测攻击
-	if (StateMachine->GetState() == ECharacterState::Attacking)
+	if (StateMachine->GetState() == ECharacterState::Attacking|| StateMachine->GetState() == ECharacterState::AttackFinished)
 	{
 		//当判定启用
 		if (bShouldJudge && GetAnimationPosition() == AttackFrame)
 		{
 			bShouldJudge = false;
-
 			//启用判定
 			AttackJudge();
 		}
-		else if (GetAnimationPosition() > AttackFrame && !NextkKeyCombation.IsAttackEmpty())
+		else if (GetAnimationPosition() >= MovableFrame)
 		{
 			//进入后摇
 			StateMachine->SetState(ECharacterState::AttackFinished);
 
-			//查看指令
-			//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(NextkKeyCombation.GetHash()));
 			
-			//获得命令
-			int NextCommand = NextkKeyCombation.GetHash();
-
-			//如果可以接，则进行连续技
-			if (ComboMap.Contains(NextCommand))
+			if (!NextkKeyCombation.IsAttackEmpty())
 			{
-				ResetAttack();
-				Attack(ComboMap[NextCommand]);
+				//查看指令
+				//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(NextkKeyCombation.GetHash()));
+
+				//获得命令
+				int NextCommand = NextkKeyCombation.GetHash();
+
+				//如果可以接，则进行连续技
+				if (ComboMap.Contains(NextCommand))
+				{
+					ResetAttack();
+					Attack(ComboMap[NextCommand]);
+				}
 			}
 		}
 	}
@@ -65,18 +67,27 @@ void UPlayerAttackComponent::Setup(UPaperFlipbookComponent* NewFlipbookComponent
 	StateMachine = NewStateMachine;
 }
 
+//返回是否可以移动
+bool UPlayerAttackComponent::IsMovable()
+{
+	return GetAnimationPosition() >= MovableFrame;
+}
+
 //返回是否接受输入
 bool UPlayerAttackComponent::IsAcceptInput()
 {
+
 	//前摇时不接受输入
 	if (GetAnimationPosition() < AttackFrame)
 	{
+		UKismetSystemLibrary::PrintString(GetWorld(), FString("fast"));
 		return false;
 	}
 	else if (!NextkKeyCombation.IsAttackEmpty())
 	{
 		return false;
 	}
+
 	return true;
 }
 
@@ -178,12 +189,14 @@ void UPlayerAttackComponent::SetupAttack()
 	//数据库对应列
 	int column_id = 0;
 	int column_name = 1;
-	int column_attack_frame = 2;
-	int column_flipbook = 3;
-	int column_sprite = 4;
+	int column_flipbook = 2;
+	int column_sprite = 3;
+	int column_attack_frame = 4;
+	int column_pause_frame = 5;
 
 	//取出数据
 	int attack_frame = sqlite3_column_int(row, column_attack_frame);
+	int pause_frame = sqlite3_column_int(row, column_pause_frame);
 	FString flipbook_reference = (const char*)sqlite3_column_text(row, column_flipbook);
 	FString sprite_reference = (const char*)sqlite3_column_text(row, column_sprite);
 
@@ -211,9 +224,10 @@ void UPlayerAttackComponent::SetupAttack()
 	//设定攻击动画
 	FlipbookComponent->SetFlipbook(AttackFlipbook);
 
-	//设置当前的判定范围和判定帧
+	//设置当前的判定范围和帧
 	SetSprite(AttackSprite);
 	AttackFrame = attack_frame;
+	MovableFrame = attack_frame+pause_frame;
 
 #pragma endregion
 
@@ -288,11 +302,13 @@ void UPlayerAttackComponent::SetupCombo()
 //攻击判定
 void UPlayerAttackComponent::AttackJudge()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Attack Judge"));
+
+	//更新重叠状态
+	UpdateOverlaps();
 
 	//取得重叠的Actor，进行攻击判定
 	TSet<AActor*> OverlappingActors;
-	GetOverlappingActors(OverlappingActors);	
+	GetOverlappingActors(OverlappingActors);
 	for (AActor* Actor : OverlappingActors)
 	{
 		//判定逻辑
@@ -300,6 +316,8 @@ void UPlayerAttackComponent::AttackJudge()
 		Actor->GetName(ActorName);
 		UKismetSystemLibrary::PrintString(GetWorld(), ActorName);
 	}
+
+		
 }
 
 //重置攻击

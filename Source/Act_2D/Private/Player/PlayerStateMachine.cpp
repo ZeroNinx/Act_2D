@@ -3,23 +3,20 @@
 
 #include "PlayerStateMachine.h"
 
-// Sets default values for this component's properties
+//构造函数
 UPlayerStateMachine::UPlayerStateMachine()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	//初始化状态
+	PrimaryComponentTick.bCanEverTick = false;
 	State = ECharacterState::Idle;
 	// ...
 }
 
 
-// Called when the game starts
+//游戏开始时执行
 void UPlayerStateMachine::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
 	
 }
 
@@ -35,11 +32,10 @@ void UPlayerStateMachine::SetState(ECharacterState NewState)
 	State = NewState;
 }
 
-// Called every frame
+//每帧执行
 void UPlayerStateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
 }
 

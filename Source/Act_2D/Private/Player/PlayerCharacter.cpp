@@ -9,9 +9,24 @@ APlayerCharacter::APlayerCharacter()
  	//启用Tick
 	PrimaryActorTick.bCanEverTick = true;
 
+	//设定初始值
+	GetCapsuleComponent()->SetCapsuleHalfHeight(70.0f);
+	GetCharacterMovement()->GravityScale = 2.5f;
+	GetCharacterMovement()->JumpZVelocity = 1000.0f;
+	
 	//默认角色朝右
 	bFacingRight = true;
 	
+	//弹簧臂组件
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
+	SpringArmComponent->SetupAttachment(RootComponent);
+	SpringArmComponent->SetRelativeRotation(FRotator(0, -90.0f,0));//初始化旋转
+	SpringArmComponent->TargetArmLength = 500.0f;//初始化长度
+
+	//相机组件
+	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
+	CameraComponent->SetupAttachment(SpringArmComponent);
+
 	//角色动画
 	FlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipBook"));
 	FlipbookComponent->SetupAttachment(RootComponent);
@@ -167,12 +182,15 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 }
 
+
+
 //角色移动
 void APlayerCharacter::MoveRight(float AxisValue)
 {
 	//当输入操作时
 	if (AxisValue != 0)
 	{
+		//添加左右按键按下状态
 		AttackComponent->bRightPressed = (fabs(AxisValue - 1.0f) <= eps);
 		AttackComponent->bLeftPressed = (fabs(AxisValue + 1.0f) <= eps);
 
@@ -180,10 +198,17 @@ void APlayerCharacter::MoveRight(float AxisValue)
 		bFacingRight = AxisValue > 0;
 
 		//当非攻击时
-		if (!IsAttacking())
+		if (!IsAttacking()||AttackComponent->IsMovable())
 		{
+			//如果在攻击中
+			if (IsAttacking())
+			{
+				//中断当前攻击
+				AttackRestore();
+			}
+
 			//添加移动
-			AddMovementInput(FVector(1, 0, 0), AxisValue);
+			AddMovementInput(FVector(1, 0, 0), AxisValue > 0 ? 1.0f : -1.0f);
 		}
 	}
 }
@@ -261,7 +286,7 @@ void APlayerCharacter::AddAttackInput()
 {
 
 	//非攻击进入攻击状态
-	if (GetState() != ECharacterState::Attacking)
+	if (!IsAttacking())
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), "Attack");
 		Attack();

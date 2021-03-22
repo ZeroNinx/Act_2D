@@ -30,7 +30,8 @@ public class Act_2D : ModuleRules
 			new string[]
 			{
 				"Act_2D/Public",
-				"Act_2D/Public/Character"
+				"Act_2D/Public/Player",
+				"Act_2D/Public/Monster"
 			}
 		);
 
