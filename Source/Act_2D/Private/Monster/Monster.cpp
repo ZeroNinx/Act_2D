@@ -15,8 +15,6 @@ AMonster::AMonster()
 	FlipbookComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 5.0f));
 	FlipbookComponent->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
 
-
-
 }
 
 //游戏开始执行
