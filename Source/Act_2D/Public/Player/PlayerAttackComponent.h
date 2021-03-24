@@ -4,14 +4,8 @@
 #include "sqlite3.h"
 
 //自定义
-#include "PlayerStateMachine.h"
-#define Combo1 0x001
-#define Combo2 0x010
-#define Combo3 0x100
-#define Combo4 0x101
-#define Combo5 0x110
-#define Combo6 0x011
-#define Combo7 0x111
+#include "Act_2DTypes.h"
+#include "StateMachine.h"
 
 //UE4
 #include "Misc/Paths.h"
@@ -24,58 +18,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PlayerAttackComponent.generated.h"
 
-//组合键结构体
-USTRUCT(BlueprintType)
-struct FKeyCombination
-{
-	GENERATED_BODY()
-
-	bool AttackKey=false;
-	bool SpecialKey = false;
-	bool TriggerKey = false;
-	bool JumpKey = false;
-	bool UpKey=false;
-	bool DownKey=false;
-	bool LeftKey=false;
-	bool RighKey=false;
-
-	//构造函数
-	FKeyCombination() {};
-	FKeyCombination
-	(
-		bool isAttackPressed,
-		bool isSpecialPressed,
-		bool isTriggerPressed,
-		bool isJumpPressed,
-		bool isUpPressed,
-		bool isDownPressed, 
-		bool isLeftPressed, 
-		bool isRightPressed
-	)
-	{
-		AttackKey = isAttackPressed;
-		SpecialKey = isSpecialPressed;
-		TriggerKey = isTriggerPressed;
-		JumpKey = isJumpPressed;
-		UpKey = isUpPressed;
-		DownKey = isDownPressed;
-		LeftKey = isLeftPressed;
-		RighKey = isRightPressed;
-	}
-
-	//判断是否为空
-	bool IsAttackEmpty()
-	{
-		return !(AttackKey | SpecialKey | TriggerKey);
-	}
-
-	//获取哈希
-	int GetHash()
-	{
-		return (TriggerKey << 8) + (SpecialKey << 4) + AttackKey;
-	}
-};
-
 //攻击组件
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACT_2D_API UPlayerAttackComponent : public UPaperSpriteComponent
@@ -87,41 +29,9 @@ public:
 	//构造函数
 	UPlayerAttackComponent();
 
-	//攻击键是否按下
-	UPROPERTY(BlueprintReadOnly)
-	bool bAttackPressed;
-	
-	//特殊键是否按下
-	UPROPERTY(BlueprintReadOnly)
-	bool bSpecialPressed;
-	
-	//扳机键是否按下
-	UPROPERTY(BlueprintReadOnly)
-	bool bTriggerPressed;
-
-	//跳跃键是否按下
-	UPROPERTY(BlueprintReadOnly)
-	bool bJumpPressed;
-
-	//上方向键是否按下
-	UPROPERTY(BlueprintReadOnly)
-	bool bUpPressed;
-
-	//下方向键是否按下
-	UPROPERTY(BlueprintReadOnly)
-	bool bDownPressed;
-
-	//左方向键是否按下
-	UPROPERTY(BlueprintReadOnly)
-	bool bLeftPressed;
-
-	//右方向键是否按下
-	UPROPERTY(BlueprintReadOnly)
-	bool bRightPressed;
-
 	//初始化所有者
 	UFUNCTION(BlueprintCallable)
-	void Setup(UPaperFlipbookComponent *NewFlipbookComponent,UPlayerStateMachine* NewStateMachine);
+	void Setup(UPaperFlipbookComponent *NewFlipbookComponent,UStateMachine* NewStateMachine);
 
 	//是否可以移动
 	UFUNCTION(BlueprintCallable)
@@ -131,9 +41,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsAcceptInput();
 
-	//记录下一次攻击组合
+	//接收攻击键组合
 	UFUNCTION(BlueprintCallable)
-	void RecordKeyCombination();
+	void SetKeyCombination(FKeyCombination KeyCombation);
 
 	//攻击
 	UFUNCTION(BlueprintCallable)
@@ -151,7 +61,7 @@ protected:
 
 	//状态机
 	UPROPERTY(BlueprintReadOnly)
-	UPlayerStateMachine* StateMachine;
+	UStateMachine* StateMachine;
 
 	//当前攻击ID
 	UPROPERTY(BlueprintReadOnly)

@@ -15,7 +15,12 @@ class ACT_2D_API ASlime : public AMonster
 	GENERATED_BODY()
 	
 public:
+
 	//构造函数
 	ASlime();
 
+protected:
+
+	//tick函数
+	void Tick(float DeltaTime) override;
 };

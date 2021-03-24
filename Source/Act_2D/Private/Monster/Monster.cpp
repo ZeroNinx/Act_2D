@@ -8,12 +8,15 @@ AMonster::AMonster()
 {
 	//启用tick
 	PrimaryActorTick.bCanEverTick = true;
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 
-	//动画组件
-	FlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipbookComponent"));
-	FlipbookComponent->SetupAttachment(RootComponent);
-	FlipbookComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 5.0f));
-	FlipbookComponent->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+	//调整自定义碰撞体
+	RealCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("RealCapsuleComponent"));
+	RealCapsule->SetupAttachment(RootComponent);
+	RealCapsule->SetCollisionResponseToAllChannels(ECR_Ignore);
+	RealCapsule->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	RealCapsule->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 
 }
 

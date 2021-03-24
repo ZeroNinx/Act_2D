@@ -2,15 +2,20 @@
 
 #pragma once
 
-//UE4
+//自定义
+#include "StateMachine.h"
 
+//UE4
 #include "CoreMinimal.h"
+#include "PaperFlipbook.h"
+#include "PaperCharacter.h"
 #include "PaperFlipbookComponent.h"
-#include "GameFramework/Character.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Components/CapsuleComponent.h"
 #include "Monster.generated.h"
 
 UCLASS()
-class ACT_2D_API AMonster : public ACharacter
+class ACT_2D_API AMonster : public APaperCharacter
 {
 	GENERATED_BODY()
 
@@ -20,9 +25,13 @@ public:
 
 protected:
 
-	//动画组件
+	//碰撞胶囊
 	UPROPERTY(BlueprintReadOnly,EditAnywhere)
-	UPaperFlipbookComponent* FlipbookComponent;
+	UCapsuleComponent* RealCapsule;
+
+	//状态机
+	UPROPERTY(BlueprintReadOnly,EditAnywhere)
+	UStateMachine* StateMachine;
 
 	//游戏开始执行
 	virtual void BeginPlay() override;

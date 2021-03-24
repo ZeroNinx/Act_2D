@@ -3,14 +3,8 @@
 //构造函数
 UPlayerAttackComponent::UPlayerAttackComponent()
 {
+
 	//初始化状态
-	bAttackPressed = false;
-	bSpecialPressed = false;
-	bTriggerPressed = false;
-	bUpPressed = false;
-	bDownPressed = false;
-	bLeftPressed = false;
-	bRightPressed = false;
 	ResetAttack();
 
 	//启用tick
@@ -24,9 +18,21 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 //Tick函数
 void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	//当攻击外进入攻击
+	if (StateMachine->GetState() != EState::Attacking && StateMachine->GetState() != EState::AttackFinished&&!NextkKeyCombation.IsAttackEmpty())
+	{
+		//获得命令
+		int NextCommand = NextkKeyCombation.GetHash();
+		SetupCombo();
+		if (ComboMap.Contains(NextCommand))
+		{
+			ResetAttack();
+			Attack(ComboMap[NextCommand]);
+		}
+	}
 
-	//当攻击时检测攻击
-	if (StateMachine->GetState() == ECharacterState::Attacking|| StateMachine->GetState() == ECharacterState::AttackFinished)
+	//当处于攻击时
+	if (StateMachine->GetState() == EState::Attacking|| StateMachine->GetState() == EState::AttackFinished)
 	{
 		//当判定启用
 		if (bShouldJudge && GetAnimationPosition() == AttackFrame)
@@ -38,7 +44,7 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		else if (GetAnimationPosition() >= MovableFrame)
 		{
 			//进入后摇
-			StateMachine->SetState(ECharacterState::AttackFinished);
+			StateMachine->SetState(EState::AttackFinished);
 
 			
 			if (!NextkKeyCombation.IsAttackEmpty())
@@ -61,7 +67,7 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 }
 
 //初始化
-void UPlayerAttackComponent::Setup(UPaperFlipbookComponent* NewFlipbookComponent, UPlayerStateMachine* NewStateMachine)
+void UPlayerAttackComponent::Setup(UPaperFlipbookComponent* NewFlipbookComponent, UStateMachine* NewStateMachine)
 {
 	FlipbookComponent = NewFlipbookComponent;
 	StateMachine = NewStateMachine;
@@ -91,25 +97,24 @@ bool UPlayerAttackComponent::IsAcceptInput()
 	return true;
 }
 
+//接收下一次攻击组合
+void UPlayerAttackComponent::SetKeyCombination(FKeyCombination KeyCombation)
+{
+	NextkKeyCombation = KeyCombation;
+}
+
 //获得当前攻击动画播放位置
 int UPlayerAttackComponent::GetAnimationPosition()
 {
 	return FlipbookComponent->GetPlaybackPositionInFrames();
 }
 
-//记录下一次攻击组合
-void UPlayerAttackComponent::RecordKeyCombination()
-{
-	NextkKeyCombation = FKeyCombination(bAttackPressed,bSpecialPressed,bTriggerPressed, bJumpPressed, bUpPressed, bDownPressed, bLeftPressed, bRightPressed);
-}
-
-
 
 //攻击
 void UPlayerAttackComponent::Attack(int ID)
 {
 	//改变状态为攻击
-	StateMachine->SetState(ECharacterState::Attacking);
+	StateMachine->SetState(EState::Attacking);
 	FlipbookComponent->SetLooping(false);
 
 	//设定攻击ID
