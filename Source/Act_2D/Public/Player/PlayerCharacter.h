@@ -49,6 +49,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	EState GetState();
 
+	//调整状态
+	UFUNCTION()
+	void UpdateState();
+
 	//获得攻击组件
 	UFUNCTION(BlueprintCallable)
 	UPlayerAttackComponent* GetAttackComponent();
@@ -80,10 +84,6 @@ protected:
 	//调整方向
 	UFUNCTION(BlueprintCallable)
 	void UpdateDirection();
-
-	//调整状态
-	UFUNCTION()
-	void UpdateState();
 
 	//调整动画
 	UFUNCTION()

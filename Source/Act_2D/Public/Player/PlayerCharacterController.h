@@ -136,16 +136,8 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void AddAttackInput();
 
-	//攻击
-	UFUNCTION()
-	void Attack();
-
 	//攻击恢复
 	UFUNCTION()
 	void AttackRestore();
-
-	//判断是否处于攻击状态
-	UFUNCTION(BlueprintCallable)
-	bool IsAttacking();
 
 };

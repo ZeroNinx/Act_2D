@@ -36,7 +36,7 @@ APlayerCharacter::APlayerCharacter()
 	//攻击组件
 	AttackComponent = CreateDefaultSubobject<UPlayerAttackComponent>(TEXT("AttackComponent"));
 	AttackComponent->SetupAttachment(GetSprite());
-	AttackComponent->Setup(GetSprite(), StateMachine);
+	AttackComponent->Setup(GetSprite(), StateMachine,GetCharacterMovement());
 
 	//为了而在编辑器中方便显示动画
 	UpdateAnimation();

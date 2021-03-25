@@ -62,15 +62,8 @@ void APlayerCharacterController::MoveRight(float AxisValue)
 		PlayerCharacter->bFacingRight = AxisValue > 0;
 
 		//当非攻击时
-		if (!IsAttacking() || AttackComponent->IsMovable())
+		if (AttackComponent->IsMovable())
 		{
-			//如果在攻击中
-			if (IsAttacking())
-			{
-				//中断当前攻击
-				AttackRestore();
-			}
-
 			//添加移动
 			PlayerCharacter->AddMovementInput(FVector(1, 0, 0), AxisValue > 0 ? 1.0f : -1.0f);
 		}
@@ -154,7 +147,7 @@ void APlayerCharacterController::RecordKeyCombination()
 	NextkKeyCombation = FKeyCombination(bAttackPressed, bSpecialPressed, bTriggerPressed, bJumpPressed, bUpPressed, bDownPressed, bLeftPressed, bRightPressed);
 	
 	//如果包含攻击键
-	if (NextkKeyCombation.GetHash() > 0)
+	if (NextkKeyCombation.GetCommand() > 0)
 	{
 		AddAttackInput();
 	}
@@ -168,29 +161,17 @@ void APlayerCharacterController::AddAttackInput()
 	{
 		AttackComponent->SetKeyCombination(NextkKeyCombation);
 	};
-
 	auto dlg = FTimerDelegate::CreateLambda(DelayAttackInput);
 	GetWorldTimerManager().SetTimer(AttackDelayHandle, dlg, (const float)AttackInputDuration, false);
 }
 
-//攻击
-void APlayerCharacterController::Attack()
-{
-	PlayerCharacter->GetMovementComponent()->StopMovementImmediately();
-	AttackComponent->Attack();
-}
 
 //从攻击恢复
 void APlayerCharacterController::AttackRestore()
 {
 	AttackComponent->ResetAttack();
-	PlayerCharacter->SetState(EState::Idle);
+	PlayerCharacter->UpdateState();
 	PlayerCharacter->GetSprite()->SetLooping(true);
 	PlayerCharacter->GetSprite()->Play();
 }
 
-//判断是否处于攻击状态
-bool APlayerCharacterController::IsAttacking()
-{
-	return (PlayerCharacter->GetState() == EState::Attacking) || (PlayerCharacter->GetState() == EState::AttackFinished);
-}

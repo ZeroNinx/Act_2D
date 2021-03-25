@@ -40,6 +40,19 @@ struct FKeyCombination
 		RighKey = isRightPressed;
 	}
 
+	//清空
+	void Clear()
+	{
+		AttackKey = false;
+		SpecialKey = false;
+		TriggerKey = false;
+		JumpKey = false;
+		UpKey = false;
+		DownKey = false;
+		LeftKey = false;
+		RighKey = false;
+	}
+
 	//判断是否为空
 	bool IsAttackEmpty()
 	{
@@ -47,7 +60,7 @@ struct FKeyCombination
 	}
 
 	//获取哈希
-	int GetHash()
+	int GetCommand()
 	{
 		return (TriggerKey << 8) + (SpecialKey << 4) + AttackKey;
 	}

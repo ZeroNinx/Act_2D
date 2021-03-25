@@ -12,10 +12,11 @@
 #include "CoreMinimal.h"
 #include "PaperSprite.h"
 #include "PaPerFlipbook.h"
-#include "PaperFlipbookComponent.h"
 #include "PaperSpriteComponent.h"
-#include "Components/ActorComponent.h"
+#include "PaperFlipbookComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Components/ActorComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "PlayerAttackComponent.generated.h"
 
 //攻击组件
@@ -29,25 +30,22 @@ public:
 	//构造函数
 	UPlayerAttackComponent();
 
-	//初始化所有者
+	//初始化参数
 	UFUNCTION(BlueprintCallable)
-	void Setup(UPaperFlipbookComponent *NewFlipbookComponent,UStateMachine* NewStateMachine);
+	void Setup
+	(
+		UPaperFlipbookComponent *NewFlipbookComponent,
+		UStateMachine* NewStateMachine,
+		UCharacterMovementComponent* NewMovementComponent
+	);
 
 	//是否可以移动
 	UFUNCTION(BlueprintCallable)
 	bool IsMovable();
 
-	//返回是否接受输入
-	UFUNCTION(BlueprintCallable)
-	bool IsAcceptInput();
-
 	//接收攻击键组合
 	UFUNCTION(BlueprintCallable)
 	void SetKeyCombination(FKeyCombination KeyCombation);
-
-	//攻击
-	UFUNCTION(BlueprintCallable)
-	void Attack(int ID = 1);
 
 	//重置攻击
 	UFUNCTION(BlueprintCallable)
@@ -58,6 +56,10 @@ protected:
 	//动画组件
 	UPROPERTY(BlueprintReadOnly)
 	UPaperFlipbookComponent* FlipbookComponent;
+
+	//角色移动组件
+	UPROPERTY(BlueprintReadOnly)
+	UCharacterMovementComponent* MovementComponent;
 
 	//状态机
 	UPROPERTY(BlueprintReadOnly)
@@ -81,7 +83,7 @@ protected:
 
 	//下一次按键组合
 	UPROPERTY(BlueprintReadOnly)
-	FKeyCombination NextkKeyCombation;
+	FKeyCombination NextKeyCombation;
 
 	//连续技列表
 	UPROPERTY(BlueprintReadOnly)
@@ -89,6 +91,10 @@ protected:
 
 	//载入数据库
 	sqlite3* LoadDB();
+
+	//攻击
+	UFUNCTION(BlueprintCallable)
+	void Attack(int ID);
 
 	//初始化攻击
 	UFUNCTION()

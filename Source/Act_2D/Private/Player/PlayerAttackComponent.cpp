@@ -19,20 +19,24 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	//当攻击外进入攻击
-	if (StateMachine->GetState() != EState::Attacking && StateMachine->GetState() != EState::AttackFinished&&!NextkKeyCombation.IsAttackEmpty())
+	if (AttackID == 0 && !NextKeyCombation.IsAttackEmpty())
 	{
 		//获得命令
-		int NextCommand = NextkKeyCombation.GetHash();
+		int NextCommand = NextKeyCombation.GetCommand();
+		NextKeyCombation.Clear();
+
+		//进行对应攻击
 		SetupCombo();
 		if (ComboMap.Contains(NextCommand))
 		{
-			ResetAttack();
+			//立即停止移动，开始攻击
+			MovementComponent->StopMovementImmediately();
 			Attack(ComboMap[NextCommand]);
 		}
 	}
 
 	//当处于攻击时
-	if (StateMachine->GetState() == EState::Attacking|| StateMachine->GetState() == EState::AttackFinished)
+	if (AttackID != 0)
 	{
 		//当判定启用
 		if (bShouldJudge && GetAnimationPosition() == AttackFrame)
@@ -41,66 +45,52 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 			//启用判定
 			AttackJudge();
 		}
-		else if (GetAnimationPosition() >= MovableFrame)
+		else if (GetAnimationPosition() >= MovableFrame&& !NextKeyCombation.IsAttackEmpty())
 		{
-			//进入后摇
-			StateMachine->SetState(EState::AttackFinished);
 
-			
-			if (!NextkKeyCombation.IsAttackEmpty())
+			//查看指令
+			//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(NextkKeyCombation.GetHash()));
+
+			//获得命令
+			int NextCommand = NextKeyCombation.GetCommand();
+			NextKeyCombation.Clear();
+
+			//如果可以接，则进行连续技
+			if (ComboMap.Contains(NextCommand))
 			{
-				//查看指令
-				//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(NextkKeyCombation.GetHash()));
-
-				//获得命令
-				int NextCommand = NextkKeyCombation.GetHash();
-
-				//如果可以接，则进行连续技
-				if (ComboMap.Contains(NextCommand))
-				{
-					ResetAttack();
-					Attack(ComboMap[NextCommand]);
-				}
+				ResetAttack();
+				Attack(ComboMap[NextCommand]);
 			}
 		}
 	}
 }
 
 //初始化
-void UPlayerAttackComponent::Setup(UPaperFlipbookComponent* NewFlipbookComponent, UStateMachine* NewStateMachine)
+void UPlayerAttackComponent::Setup
+(
+	UPaperFlipbookComponent* NewFlipbookComponent,
+	UStateMachine* NewStateMachine,
+	UCharacterMovementComponent* NewMovementComponent
+)
 {
 	FlipbookComponent = NewFlipbookComponent;
 	StateMachine = NewStateMachine;
+	MovementComponent = NewMovementComponent;
 }
 
 //返回是否可以移动
 bool UPlayerAttackComponent::IsMovable()
 {
-	return GetAnimationPosition() >= MovableFrame;
-}
-
-//返回是否接受输入
-bool UPlayerAttackComponent::IsAcceptInput()
-{
-
-	//前摇时不接受输入
-	if (GetAnimationPosition() < AttackFrame)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString("fast"));
-		return false;
-	}
-	else if (!NextkKeyCombation.IsAttackEmpty())
-	{
-		return false;
-	}
-
-	return true;
+	return AttackID == 0|| GetAnimationPosition() >= MovableFrame;
 }
 
 //接收下一次攻击组合
 void UPlayerAttackComponent::SetKeyCombination(FKeyCombination KeyCombation)
 {
-	NextkKeyCombation = KeyCombation;
+	if (AttackID == 0 || GetAnimationPosition() >= MovableFrame)
+	{
+		NextKeyCombation = KeyCombation;
+	}
 }
 
 //获得当前攻击动画播放位置
@@ -331,7 +321,7 @@ void UPlayerAttackComponent::ResetAttack()
 	AttackID = 0;
 	bShouldJudge = false;
 	AttackFrame = 0;
-	NextkKeyCombation = FKeyCombination();
+	NextKeyCombation.Clear();
 }
 
 
