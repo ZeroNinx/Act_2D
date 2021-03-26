@@ -21,6 +21,9 @@ ASlime::ASlime():AMonster()
 		return;
 	}
 	GetSprite()->SetFlipbook(IdleFlipbook);
+
+	//初始化
+	BTComponent = CreateDefaultSubobject<USlimeBTComponent>(TEXT("BTComponent"));
 }
 
 //tick函数

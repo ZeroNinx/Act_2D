@@ -11,10 +11,12 @@ APlayerCharacterController::APlayerCharacterController()
 }
 
 //初始化控制器
-void APlayerCharacterController::Setup()
+void APlayerCharacterController::OnPossess(APawn* InPawn)
 {
+	Super::OnPossess(InPawn);
+
 	//获取玩家指针和攻击组件
-	PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	PlayerCharacter = Cast<APlayerCharacter>(InPawn);
 	AttackComponent = PlayerCharacter->GetAttackComponent();
 
 	//添加攻击结束事件
@@ -65,6 +67,7 @@ void APlayerCharacterController::MoveRight(float AxisValue)
 		if (AttackComponent->IsMovable())
 		{
 			//添加移动
+			AttackRestore();
 			PlayerCharacter->AddMovementInput(FVector(1, 0, 0), AxisValue > 0 ? 1.0f : -1.0f);
 		}
 

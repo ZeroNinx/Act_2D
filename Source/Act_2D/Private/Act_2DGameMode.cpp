@@ -9,6 +9,7 @@ AAct_2DGameMode::AAct_2DGameMode()
 	//设定默认类
 	PlayerControllerClass = APlayerCharacterController::StaticClass();
 	DefaultPawnClass = APlayerCharacter::StaticClass();
+
 }
 
 //游戏开始时执行
@@ -52,9 +53,9 @@ void AAct_2DGameMode::ResetPlayer()
 	if (!PlayerCharacter)
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), "Player Spawn Failed");
+		return;
 	}
 
 	//控制玩家
 	Controller->Possess(PlayerCharacter);
-	Controller->Setup();
 }

@@ -29,9 +29,9 @@ public:
 	//构造函数
 	APlayerCharacterController();
 
-	//初始化控制器
+	//当开始控制时
 	UFUNCTION(BlueprintCallable)
-	void Setup();
+	void OnPossess(APawn* InPawn) override;
 
 protected:
 

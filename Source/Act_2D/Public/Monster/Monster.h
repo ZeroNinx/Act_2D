@@ -12,8 +12,13 @@
 #include "PaperFlipbookComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/CapsuleComponent.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Monster.generated.h"
 
+
+/**
+ *	怪物类
+ */
 UCLASS()
 class ACT_2D_API AMonster : public APaperCharacter
 {
@@ -22,6 +27,14 @@ class ACT_2D_API AMonster : public APaperCharacter
 public:
 	//构造函数
 	AMonster();
+
+	//获取行为树
+	UFUNCTION(BlueprintCallable)
+	UBehaviorTree* GetBehaviorTree();
+
+	//被击中函数
+	UFUNCTION(BlueprintCallable)
+	virtual void Hit();
 
 protected:
 
@@ -32,6 +45,10 @@ protected:
 	//状态机
 	UPROPERTY(BlueprintReadOnly,EditAnywhere)
 	UStateMachine* StateMachine;
+
+	//行为树组件
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UBehaviorTreeComponent* BTComponent;
 
 	//游戏开始执行
 	virtual void BeginPlay() override;

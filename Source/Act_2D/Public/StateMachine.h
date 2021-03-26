@@ -14,8 +14,7 @@ enum class EState :uint8
 	Running,
 	Jumping,
 	Falling,
-	Attacking,
-	AttackFinished
+	Attacking
 };
 
 //基础状态机

@@ -6,6 +6,7 @@
 //自定义
 #include "Act_2DTypes.h"
 #include "StateMachine.h"
+#include "Monster.h"
 
 //UE4
 #include "Misc/Paths.h"

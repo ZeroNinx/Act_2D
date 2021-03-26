@@ -6,6 +6,7 @@
 //构造函数
 AMonster::AMonster()
 {
+
 	//启用tick
 	PrimaryActorTick.bCanEverTick = true;
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -18,6 +19,21 @@ AMonster::AMonster()
 	RealCapsule->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	RealCapsule->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 
+}
+
+
+//获取行为树
+UBehaviorTree* AMonster::GetBehaviorTree()
+{
+	return BTComponent->GetCurrentTree();
+}
+
+//被击中函数
+void AMonster::Hit()
+{
+	FString Name;
+	GetName(Name);
+	UKismetSystemLibrary::PrintString(GetWorld(), Name+FString(" Hit"));
 }
 
 //游戏开始执行

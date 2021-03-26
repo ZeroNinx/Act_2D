@@ -306,10 +306,11 @@ void UPlayerAttackComponent::AttackJudge()
 	GetOverlappingActors(OverlappingActors);
 	for (AActor* Actor : OverlappingActors)
 	{
+		//////////////////////////////////////////////////////////////////////////
 		//判定逻辑
-		FString ActorName;
-		Actor->GetName(ActorName);
-		UKismetSystemLibrary::PrintString(GetWorld(), ActorName);
+
+		//执行怪物被攻击函数
+		Cast<AMonster>(Actor)->Hit();
 	}
 
 		

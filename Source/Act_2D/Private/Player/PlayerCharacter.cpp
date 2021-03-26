@@ -56,7 +56,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//当非战斗时自动调整动画
-	if( (GetState() != EState::Attacking) && (GetState() != EState::AttackFinished))
+	if( GetState() != EState::Attacking)
 	{
 		UpdateDirection();
 		UpdateState();

@@ -2,6 +2,10 @@
 
 #pragma once
 
+//自定义
+#include "SlimeBTComponent.h"
+
+//UE4
 #include "CoreMinimal.h"
 #include "Monster/Monster.h"
 #include "Slime.generated.h"
