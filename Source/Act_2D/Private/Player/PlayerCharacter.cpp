@@ -14,7 +14,7 @@ APlayerCharacter::APlayerCharacter()
 	GetCapsuleComponent()->SetCapsuleHalfHeight(70.0f);
 	GetCharacterMovement()->GravityScale = 2.5f;
 	GetCharacterMovement()->JumpZVelocity = 1000.0f;
-	GetSprite()->SetRelativeLocation(FVector(0.0f, 0.0f, 5.0f));
+	GetSprite()->SetRelativeLocation(FVector(0.0f, 0.0f, 8.0f));
 	GetSprite()->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
 
 	//默认角色朝右
@@ -36,7 +36,7 @@ APlayerCharacter::APlayerCharacter()
 	//攻击组件
 	AttackComponent = CreateDefaultSubobject<UPlayerAttackComponent>(TEXT("AttackComponent"));
 	AttackComponent->SetupAttachment(GetSprite());
-	AttackComponent->Setup(GetSprite(), StateMachine,GetCharacterMovement());
+	AttackComponent->Setup(this);
 
 	//为了而在编辑器中方便显示动画
 	UpdateAnimation();

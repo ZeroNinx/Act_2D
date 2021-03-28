@@ -39,15 +39,15 @@ public:
 protected:
 
 	//碰撞胶囊
-	UPROPERTY(BlueprintReadOnly,EditAnywhere)
+	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	UCapsuleComponent* RealCapsule;
 
 	//状态机
-	UPROPERTY(BlueprintReadOnly,EditAnywhere)
+	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	UStateMachine* StateMachine;
 
 	//行为树组件
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	UBehaviorTreeComponent* BTComponent;
 
 	//游戏开始执行

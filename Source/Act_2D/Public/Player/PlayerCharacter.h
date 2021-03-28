@@ -60,19 +60,19 @@ public:
 protected:
 
 	//弹簧臂组件
-	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	USpringArmComponent* SpringArmComponent;
 
 	//相机组件
-	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	UCameraComponent* CameraComponent;
 	
 	//状态机
-	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	UStateMachine* StateMachine;
 
 	//攻击组件
-	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	UPlayerAttackComponent* AttackComponent;
 
 	// 游戏开始执行

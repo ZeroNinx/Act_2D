@@ -4,9 +4,10 @@
 #include "sqlite3.h"
 
 //自定义
+#include "Skill.h"
+#include "Monster.h"
 #include "Act_2DTypes.h"
 #include "StateMachine.h"
-#include "Monster.h"
 
 //UE4
 #include "Misc/Paths.h"
@@ -19,6 +20,9 @@
 #include "Components/ActorComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PlayerAttackComponent.generated.h"
+
+//互相包含
+class APlayerCharacter;
 
 //攻击组件
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -33,12 +37,7 @@ public:
 
 	//初始化参数
 	UFUNCTION(BlueprintCallable)
-	void Setup
-	(
-		UPaperFlipbookComponent *NewFlipbookComponent,
-		UStateMachine* NewStateMachine,
-		UCharacterMovementComponent* NewMovementComponent
-	);
+	void Setup(APlayerCharacter* NewCharacter);
 
 	//是否可以移动
 	UFUNCTION(BlueprintCallable)
@@ -54,17 +53,9 @@ public:
 
 protected:
 
-	//动画组件
+	//玩家指针
 	UPROPERTY(BlueprintReadOnly)
-	UPaperFlipbookComponent* FlipbookComponent;
-
-	//角色移动组件
-	UPROPERTY(BlueprintReadOnly)
-	UCharacterMovementComponent* MovementComponent;
-
-	//状态机
-	UPROPERTY(BlueprintReadOnly)
-	UStateMachine* StateMachine;
+	APlayerCharacter* PlayerCharacter;
 
 	//当前攻击ID
 	UPROPERTY(BlueprintReadOnly)
@@ -85,6 +76,10 @@ protected:
 	//下一次按键组合
 	UPROPERTY(BlueprintReadOnly)
 	FKeyCombination NextKeyCombation;
+
+	//当前技能
+	UPROPERTY(BlueprintReadOnly)
+	USkill* Skill;
 
 	//连续技列表
 	UPROPERTY(BlueprintReadOnly)

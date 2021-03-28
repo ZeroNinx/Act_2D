@@ -27,7 +27,7 @@ public:
 protected:
 
 	//怪物指针
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	ASlime* Slime;
 
 	//当开始控制时

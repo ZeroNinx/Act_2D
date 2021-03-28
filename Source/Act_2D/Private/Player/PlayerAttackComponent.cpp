@@ -1,5 +1,8 @@
 #include "PlayerAttackComponent.h"
 
+//互相包含
+#include "PlayerCharacter.h"
+
 //构造函数
 UPlayerAttackComponent::UPlayerAttackComponent()
 {
@@ -30,7 +33,7 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		if (ComboMap.Contains(NextCommand))
 		{
 			//立即停止移动，开始攻击
-			MovementComponent->StopMovementImmediately();
+			PlayerCharacter->GetCharacterMovement()->StopMovementImmediately();
 			Attack(ComboMap[NextCommand]);
 		}
 	}
@@ -66,16 +69,9 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 }
 
 //初始化
-void UPlayerAttackComponent::Setup
-(
-	UPaperFlipbookComponent* NewFlipbookComponent,
-	UStateMachine* NewStateMachine,
-	UCharacterMovementComponent* NewMovementComponent
-)
+void UPlayerAttackComponent::Setup(APlayerCharacter* NewCharacter)
 {
-	FlipbookComponent = NewFlipbookComponent;
-	StateMachine = NewStateMachine;
-	MovementComponent = NewMovementComponent;
+	PlayerCharacter = NewCharacter;
 }
 
 //返回是否可以移动
@@ -96,7 +92,7 @@ void UPlayerAttackComponent::SetKeyCombination(FKeyCombination KeyCombation)
 //获得当前攻击动画播放位置
 int UPlayerAttackComponent::GetAnimationPosition()
 {
-	return FlipbookComponent->GetPlaybackPositionInFrames();
+	return PlayerCharacter->GetSprite()->GetPlaybackPositionInFrames();
 }
 
 
@@ -104,17 +100,28 @@ int UPlayerAttackComponent::GetAnimationPosition()
 void UPlayerAttackComponent::Attack(int ID)
 {
 	//改变状态为攻击
-	StateMachine->SetState(EState::Attacking);
-	FlipbookComponent->SetLooping(false);
+	PlayerCharacter->SetState(EState::Attacking);
+	PlayerCharacter->GetSprite()->SetLooping(false);
 
-	//设定攻击ID
+	//设定攻击ID和类型
 	AttackID = ID;
+	switch (ID)
+	{
+	case 3:
+		Skill = NewObject<US_AttackIII>();
+		break;
+	default:
+		break;
+	}
 
-	//初始化攻击
+	//初始化攻击资源
 	SetupAttack();
 
-	//初始化连续技
+	//初始化连续技资源
 	SetupCombo();
+
+	//攻击前判定
+	Skill->BeforeAttack(PlayerCharacter);
 
 	//设置启用判定
 	bShouldJudge = true;
@@ -217,7 +224,7 @@ void UPlayerAttackComponent::SetupAttack()
 	}
 
 	//设定攻击动画
-	FlipbookComponent->SetFlipbook(AttackFlipbook);
+	PlayerCharacter->GetSprite()->SetFlipbook(AttackFlipbook);
 
 	//设置当前的判定范围和帧
 	SetSprite(AttackSprite);
@@ -309,8 +316,11 @@ void UPlayerAttackComponent::AttackJudge()
 		//////////////////////////////////////////////////////////////////////////
 		//判定逻辑
 
-		//执行怪物被攻击函数
-		Cast<AMonster>(Actor)->Hit();
+		AMonster* Monster = Cast<AMonster>(Actor);
+		if (Monster)
+		{
+			Skill->InAttack(PlayerCharacter, Monster);
+		}
 	}
 
 		
@@ -323,6 +333,7 @@ void UPlayerAttackComponent::ResetAttack()
 	bShouldJudge = false;
 	AttackFrame = 0;
 	NextKeyCombation.Clear();
+	Skill = NewObject<USkill>();
 }
 
 
