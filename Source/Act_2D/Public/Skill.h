@@ -5,15 +5,15 @@
 
 //UE4
 #include "CoreMinimal.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Skill.generated.h"
 
 class APlayerCharacter;
 
 /**
- * 攻击函数
+ * 技能类
  */
-
 UCLASS()
 class ACT_2D_API USkill :public UObject
 {
@@ -24,18 +24,57 @@ public:
 	//构造函数
 	USkill() {};
 
-	//攻击全程
+	//攻击属性
+	UPROPERTY(BlueprintReadOnly)
+	FAttackProperty AttackProperty;
+
+	//攻击全程执行
 	virtual void InAttack(APlayerCharacter* Player) {};
 
 	//攻击前执行
 	virtual void BeforeJudge(APlayerCharacter* Player) {};
 
 	//攻击命中时自身效果
-	virtual void InJudge(APlayerCharacter* Player, AMonster* Monster) {};
+	virtual void InJudge(APlayerCharacter* Player, AMonster* Monster);
+
+
+protected:
+
+	bool bShouldJudge = true;
+};
+
+/**
+ * AttackI
+ */
+UCLASS()
+class ACT_2D_API US_AttackI :public USkill
+{
+	GENERATED_BODY()
+
+public:
+
+	US_AttackI();
+
+};
+
+/**
+ * AttackII
+ */
+UCLASS()
+class ACT_2D_API US_AttackII :public USkill
+{
+	GENERATED_BODY()
+
+public:
+
+	US_AttackII();
+
 };
 
 
-//AttackIII
+/**
+ * AttackIII
+ */
 UCLASS()
 class ACT_2D_API US_AttackIII:public USkill
 {
@@ -44,9 +83,13 @@ class ACT_2D_API US_AttackIII:public USkill
 public:
 
 	US_AttackIII();
+	
+	bool Moved = false;
 
+	//加速度倍数
 	float SpeedScale = 1.0f;
 
+	//攻击中
 	void InAttack(APlayerCharacter* Player) override;
-
+	
 };

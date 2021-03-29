@@ -10,9 +10,12 @@
 #include "PaperFlipbook.h"
 #include "PaperCharacter.h"
 #include "PaperFlipbookComponent.h"
+#include "HAL/PlatformProcess.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Monster.generated.h"
 
 
@@ -27,14 +30,16 @@ class ACT_2D_API AMonster : public APaperCharacter
 public:
 	//构造函数
 	AMonster();
+	
+	//是否朝右
+	bool bFacingRight;
 
 	//获取行为树
 	UFUNCTION(BlueprintCallable)
 	UBehaviorTree* GetBehaviorTree();
 
 	//被击中函数
-	UFUNCTION(BlueprintCallable)
-	virtual void Hit();
+	virtual void Hit(FAttackProperty AttackProperty);
 
 protected:
 

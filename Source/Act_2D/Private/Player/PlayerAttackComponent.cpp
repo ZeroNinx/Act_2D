@@ -116,14 +116,7 @@ void UPlayerAttackComponent::Attack(int ID)
 
 	//设定攻击ID和类型
 	AttackID = ID;
-	switch (ID)
-	{
-	case 3:
-		Skill = NewObject<US_AttackIII>();
-		break;
-	default:
-		break;
-	}
+	SwitchAttack();
 
 	//绑定各种代理
 	InAttackDelegate.BindUObject(Skill, &USkill::InAttack);
@@ -138,6 +131,25 @@ void UPlayerAttackComponent::Attack(int ID)
 
 	//设置启用判定
 	bShouldJudge = true;
+}
+
+//选择攻击
+void UPlayerAttackComponent::SwitchAttack()
+{
+	switch (AttackID)
+	{
+	case 1:
+		Skill = NewObject<US_AttackI>();
+		break;
+	case 2:
+		Skill = NewObject<US_AttackII>();
+		break;
+	case 3:
+		Skill = NewObject<US_AttackIII>();
+		break;
+	default:
+		break;
+	}
 }
 
 //载入数据库

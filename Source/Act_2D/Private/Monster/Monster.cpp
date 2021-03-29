@@ -12,6 +12,10 @@ AMonster::AMonster()
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 
+	//状态机
+	StateMachine = CreateDefaultSubobject<UStateMachine>(TEXT("State Machine"));
+	StateMachine->SetState(EState::Idle);
+
 	//调整自定义碰撞体
 	RealCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("RealCapsuleComponent"));
 	RealCapsule->SetupAttachment(RootComponent);
@@ -29,7 +33,7 @@ UBehaviorTree* AMonster::GetBehaviorTree()
 }
 
 //被击中函数
-void AMonster::Hit()
+void AMonster::Hit(FAttackProperty AttackProperty)
 {
 	FString Name;
 	GetName(Name);

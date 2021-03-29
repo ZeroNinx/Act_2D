@@ -95,7 +95,7 @@ void APlayerCharacter::UpdateState()
 	else
 	{
 		//否则根据X轴速度判断奔跑/静止
-		if (abs(Velocy.X) != 0)
+		if (UKismetMathLibrary::Abs(Velocy.X) != 0)
 		{
 			StateMachine->SetState(EState::Running);
 			

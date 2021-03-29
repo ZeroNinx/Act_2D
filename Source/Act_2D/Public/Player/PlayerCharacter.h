@@ -1,9 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #pragma once
 
-//第三方
-#include<cmath>
-
 //自定义
 #include "StateMachine.h"
 #include "PlayerAttackComponent.h"
@@ -18,6 +15,7 @@
 #include "PaperCharacter.h"
 #include "PaperFlipbookComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"

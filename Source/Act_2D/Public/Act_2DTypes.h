@@ -1,6 +1,20 @@
 #pragma once
 #include "Act_2DTypes.generated.h"
 
+//基本状态
+UENUM(BlueprintType)
+enum class EState :uint8
+{
+	Idle,
+	Running,
+	Jumping,
+	Falling,
+	Attacking,
+	UnderAttack,
+	Sleeping
+};
+
+
 //组合键结构体
 USTRUCT(BlueprintType)
 struct FKeyCombination
@@ -74,3 +88,56 @@ struct FKeyCombination
 #define Combo5 0x110
 #define Combo6 0x011
 #define Combo7 0x111
+
+
+//攻击类型
+UENUM(BlueprintType)
+enum class EAttackType : uint8
+{
+	HarmfulAttack,//伤害型攻击
+	StateAttack//状态型攻击
+};
+
+//伤害类型
+UENUM(BlueprintType)
+enum class EAttackHarmfulType : uint8
+{
+	LightAttack,//轻攻击
+	HeavyAttack//重攻击
+};
+
+//状态类型
+UENUM(BlueprintType)
+enum class EAttackStateType : uint8 
+{
+	Default
+};
+
+//攻击属性结构体
+USTRUCT(BlueprintType)
+struct FAttackProperty
+{
+	GENERATED_BODY()
+
+	EAttackType AttackType;
+	EAttackHarmfulType HarmfulType;
+	int Damage;
+
+	EAttackStateType StateType;
+
+	FAttackProperty() {};
+
+	FAttackProperty(EAttackHarmfulType AttackHarmfulType, int AttackDamage)
+	{
+		AttackType = EAttackType::HarmfulAttack;
+		HarmfulType = AttackHarmfulType;
+		Damage = AttackDamage;
+	}
+
+	FAttackProperty(EAttackStateType AttackStateType)
+	{
+		AttackType = EAttackType::StateAttack;
+		StateType = AttackStateType;
+	}
+
+};

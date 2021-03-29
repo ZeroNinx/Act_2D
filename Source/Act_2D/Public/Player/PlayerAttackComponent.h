@@ -105,6 +105,10 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void Attack(int ID);
 
+	//选择攻击
+	UFUNCTION(BlueprintCallable)
+	void SwitchAttack();
+
 	//初始化攻击
 	UFUNCTION()
 	void SetupAttack();

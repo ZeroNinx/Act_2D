@@ -2,20 +2,13 @@
 
 #pragma once
 
+//自定义
+#include "Act_2DTypes.h"
+
+//UE4
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "StateMachine.generated.h"
-
-//基本状态
-UENUM(BlueprintType)
-enum class EState :uint8 
-{
-	Idle,
-	Running,
-	Jumping,
-	Falling,
-	Attacking
-};
 
 //基础状态机
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
