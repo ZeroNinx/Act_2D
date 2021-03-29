@@ -8,11 +8,11 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Skill.generated.h"
 
+class APlayerCharacter;
+
 /**
  * 攻击函数
  */
-
-class APlayerCharacter;
 
 UCLASS()
 class ACT_2D_API USkill :public UObject
@@ -24,14 +24,14 @@ public:
 	//构造函数
 	USkill() {};
 
+	//攻击全程
+	virtual void InAttack(APlayerCharacter* Player) {};
+
 	//攻击前执行
-	virtual void BeforeAttack(APlayerCharacter* Player) {};
+	virtual void BeforeJudge(APlayerCharacter* Player) {};
 
 	//攻击命中时自身效果
-	virtual void InAttack(APlayerCharacter* Player, AMonster* Monster) {};
-
-	//攻击结束后执行
-	virtual void AfterAttack(APlayerCharacter* Player, AMonster* Monster) {};
+	virtual void InJudge(APlayerCharacter* Player, AMonster* Monster) {};
 };
 
 
@@ -43,6 +43,10 @@ class ACT_2D_API US_AttackIII:public USkill
 
 public:
 
-	void BeforeAttack(APlayerCharacter* Player) override;
+	US_AttackIII();
+
+	float SpeedScale = 1.0f;
+
+	void InAttack(APlayerCharacter* Player) override;
 
 };

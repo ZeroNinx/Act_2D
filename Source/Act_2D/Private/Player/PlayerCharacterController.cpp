@@ -60,15 +60,14 @@ void APlayerCharacterController::MoveRight(float AxisValue)
 		bRightPressed = (fabs(AxisValue - 1.0f) <= eps);
 		bLeftPressed = (fabs(AxisValue + 1.0f) <= eps);
 
-		//根据角色方向调整动画
-		PlayerCharacter->bFacingRight = AxisValue > 0;
-
 		//当非攻击时
 		if (AttackComponent->IsMovable())
 		{
 			//添加移动
 			AttackRestore();
 			PlayerCharacter->AddMovementInput(FVector(1, 0, 0), AxisValue > 0 ? 1.0f : -1.0f);
+			//根据角色方向调整动画
+			PlayerCharacter->bFacingRight = AxisValue > 0;
 		}
 
 		RecordKeyCombination();

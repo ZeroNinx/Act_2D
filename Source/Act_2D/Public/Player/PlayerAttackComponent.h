@@ -24,7 +24,14 @@
 //互相包含
 class APlayerCharacter;
 
-//攻击组件
+//各种代理
+DECLARE_DELEGATE_OneParam(FInAttackDelegate, APlayerCharacter*);
+DECLARE_DELEGATE_OneParam(FBeforeJudgeDelegate,APlayerCharacter*);
+DECLARE_DELEGATE_TwoParams(FInJudgeDelegate,APlayerCharacter*,AMonster*);
+
+/**
+ * 攻击组件类
+ */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACT_2D_API UPlayerAttackComponent : public UPaperSpriteComponent
 {
@@ -73,13 +80,19 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	bool bShouldJudge;
 
-	//下一次按键组合
-	UPROPERTY(BlueprintReadOnly)
-	FKeyCombination NextKeyCombation;
 
 	//当前技能
 	UPROPERTY(BlueprintReadOnly)
 	USkill* Skill;
+
+	//三个攻击代理
+	FInAttackDelegate InAttackDelegate;
+	FBeforeJudgeDelegate BeforeJudgeDelegate;
+	FInJudgeDelegate InJudgeDelegate;
+
+	//下一次按键组合
+	UPROPERTY(BlueprintReadOnly)
+	FKeyCombination NextKeyCombation;
 
 	//连续技列表
 	UPROPERTY(BlueprintReadOnly)

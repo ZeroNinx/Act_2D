@@ -4,7 +4,16 @@
 //重复包含
 #include "PlayerCharacter.h"
 
-void US_AttackIII::BeforeAttack(APlayerCharacter* Player)
+US_AttackIII::US_AttackIII()
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), FString("aaa"));
+	
+}
+
+void US_AttackIII::InAttack(APlayerCharacter* Player)
+{
+	//根据速度换算加速度
+	FVector velocy=Player->GetCharacterMovement()->GetLastUpdateVelocity();
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(velocy.X));
+	Player->AddMovementInput(FVector(1.5f, 0, 0), (Player->bFacingRight ? 1.0f : -1.0f)*SpeedScale);
+	SpeedScale -= 0.027f;
 };

@@ -40,12 +40,16 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 
 	//当处于攻击时
 	if (AttackID != 0)
-	{
-		//当判定启用
-		if (bShouldJudge && GetAnimationPosition() == AttackFrame)
+	{	
+		//攻击帧前
+		if (bShouldJudge && GetAnimationPosition() < AttackFrame)
 		{
+			BeforeJudgeDelegate.Execute(PlayerCharacter);
+		}
+		else if (bShouldJudge && GetAnimationPosition() == AttackFrame)
+		{
+			//攻击帧，进行攻击判定
 			bShouldJudge = false;
-			//启用判定
 			AttackJudge();
 		}
 		else if (GetAnimationPosition() >= MovableFrame&& !NextKeyCombation.IsAttackEmpty())
@@ -63,8 +67,15 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 			{
 				ResetAttack();
 				Attack(ComboMap[NextCommand]);
+
 			}
 		}
+
+		if (PlayerCharacter->GetState() == EState::Attacking)
+		{
+			InAttackDelegate.Execute(PlayerCharacter);
+		}
+		
 	}
 }
 
@@ -114,14 +125,16 @@ void UPlayerAttackComponent::Attack(int ID)
 		break;
 	}
 
+	//绑定各种代理
+	InAttackDelegate.BindUObject(Skill, &USkill::InAttack);
+	BeforeJudgeDelegate.BindUObject(Skill, &USkill::BeforeJudge);
+	InJudgeDelegate.BindUObject(Skill, &USkill::InJudge);
+
 	//初始化攻击资源
 	SetupAttack();
 
 	//初始化连续技资源
 	SetupCombo();
-
-	//攻击前判定
-	Skill->BeforeAttack(PlayerCharacter);
 
 	//设置启用判定
 	bShouldJudge = true;
@@ -317,10 +330,7 @@ void UPlayerAttackComponent::AttackJudge()
 		//判定逻辑
 
 		AMonster* Monster = Cast<AMonster>(Actor);
-		if (Monster)
-		{
-			Skill->InAttack(PlayerCharacter, Monster);
-		}
+		InJudgeDelegate.Execute(PlayerCharacter, Monster);
 	}
 
 		
