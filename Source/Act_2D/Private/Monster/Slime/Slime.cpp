@@ -8,12 +8,14 @@ ASlime::ASlime():AMonster()
 {
 	bFacingRight = false;
 
+
+
 	//设置变换
-	RealCapsule->SetRelativeLocation(FVector(0, 0, -57.0f));
+	GetCapsuleComponent()->SetCapsuleHalfHeight(34.0f);
 	RealCapsule->SetRelativeRotation(FRotator(90.0f,0,0));
 	RealCapsule->SetCapsuleHalfHeight(44.0f);
 	RealCapsule->SetCapsuleRadius(33.0f);
-	GetSprite()->SetRelativeLocation(FVector(0, 0, -10.0f));
+	GetSprite()->SetRelativeLocation(FVector(0, 0, 44.0f));
 
 	//载入动画
 	UPaperFlipbook* IdleFlipbook = LoadObject<UPaperFlipbook>(this, TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Idle.Slime_Idle'"));
@@ -23,6 +25,19 @@ ASlime::ASlime():AMonster()
 		return;
 	}
 	GetSprite()->SetFlipbook(IdleFlipbook);
+
+	//设定特效
+	UPaperFlipbook* EffectFlipbook = LoadObject<UPaperFlipbook>(this, TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Effict.Slime_Effict'"));
+	if (!EffectFlipbook)
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Effect Failed"));
+		return;
+	}
+	Effect = CreateDefaultSubobject<UPaperFlipbookComponent>("Effect");
+	Effect->SetupAttachment(RootComponent);
+	Effect->SetFlipbook(EffectFlipbook);
+	Effect->SetLooping(false);
+	Effect->OnFinishedPlaying.Add(OnEffectPlayFinishedDelegate);
 
 	//设定行为树
 	BTComponent = CreateDefaultSubobject<USlimeBTComponent>(TEXT("BTComponent"));
@@ -35,58 +50,35 @@ ASlime::ASlime():AMonster()
 //被击中
 void ASlime::Hit(FAttackProperty AttackProperty)
 {
-	bThreadSleeped = false;
-	bMoved = false;
+	PrepareHit();
+	Effect->PlayFromStart();
+}
 
-	//设定受到攻击
-	StateMachine->SetState(EState::UnderAttack);
+//准备受击
+void ASlime::PrepareHit()
+{
+	//准备下一次攻击后退
+	bMovedOnHit = false;
 	SpeedScale = 1.0f;
 
-	//播放受击动画
+	//改变状态
+	StateMachine->SetState(EState::UnderAttack);
+
+	//初始化受击动画
 	UPaperFlipbook* HitFlipbook = LoadObject<UPaperFlipbook>(this, TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Hit.Slime_Hit'"));
 	if (!HitFlipbook)
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Hit Flipbook Failed"));
 		return;
 	}
+
 	if (GetSprite()->GetFlipbook() == HitFlipbook)
+	{
 		GetSprite()->PlayFromStart();
+	}
 	GetSprite()->SetFlipbook(HitFlipbook);
 	GetSprite()->SetLooping(false);
 	GetSprite()->OnFinishedPlaying.Add(OnDamagedDelegate);
-
-	//播放特效
-#pragma region Play Effect
-
-	//清理没用的特效
-	if (Effect)
-	{
-		Effect->Destroy();
-	}
-	Effect = GetWorld()->SpawnActor<APaperFlipbookActor>(APaperFlipbookActor::StaticClass(),
-		GetActorLocation() + FVector(-5.0f, 1.0f,10.0f), GetActorRotation());
-
-	if (!Effect)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Create Effect Failed"));
-		return;
-	}
-
-	UPaperFlipbook* EffectFlipbook = LoadObject<UPaperFlipbook>(this, TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Effict.Slime_Effict'"));
-	if (!EffectFlipbook)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Effect Failed"));
-		return;
-	}
-
-	Effect->GetRenderComponent()->SetFlipbook(EffectFlipbook);
-	Effect->GetRenderComponent()->SetLooping(false);
-	Effect->GetRenderComponent()->OnFinishedPlaying.Add(OnEffectPlayFinishedDelegate);
-	Effect->GetRenderComponent()->Play();
-#pragma endregion
-
-	
-
 }
 
 //tick函数
@@ -96,21 +88,32 @@ void ASlime::Tick(float DeltaTime)
 	if (StateMachine->GetState() == EState::UnderAttack)
 	{
 		MoveBack();
-		if (Effect->GetRenderComponent()->GetPlaybackPositionInFrames() == 1)
-		{
-			if (!bThreadSleeped)
-			{
-				bThreadSleeped = true;
-				FPlatformProcess::Sleep(0.1f);
-			}
-		}
 	}
 	else
 	{
+		UpdateDirection();
 		UpdateState();
 		UpdateAnimation();
 	}
 
+}
+
+//更新方向
+void ASlime::UpdateDirection()
+{
+	float PlayerLocationX = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetActorLocation().X;
+	if (PlayerLocationX < GetActorLocation().X)
+	{
+		bFacingRight = false;
+		GetSprite()->SetRelativeRotation(FRotator(0, 0, 0));
+		Effect->SetRelativeLocation(FVector(-5.0f, 1.0f, 50.0f));
+	}
+	else
+	{
+		bFacingRight = true;
+		GetSprite()->SetRelativeRotation(FRotator(0, 180.0f, 0));
+		Effect->SetRelativeLocation(FVector(40.0f, 1.0f, 50.0f));
+	}
 }
 
 //更新状态
@@ -165,8 +168,6 @@ void ASlime::UpdateAnimation()
 void ASlime::RemoveEffect()
 {
 	StateMachine->SetState(EState::Idle);
-	Effect->Destroy();
-	Effect->GetRenderComponent()->OnFinishedPlaying.Remove(OnEffectPlayFinishedDelegate);
 }
 
 //后退
@@ -174,13 +175,13 @@ void ASlime::MoveBack()
 {
 	//根据速度逐步减少加速度
 	FVector Velocy = GetCharacterMovement()->GetLastUpdateVelocity();
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(Velocy.X));
+	//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(Velocy.X));
 
 	float DirectMark = bFacingRight ? -1.0f : 1.0f;
 
-	if (!bMoved || Velocy.X * DirectMark > 0)//防止角色倒退
+	if (!bMovedOnHit || Velocy.X * DirectMark > 0)//防止角色倒退
 	{
-		bMoved = true;
+		bMovedOnHit = true;
 		AddMovementInput(FVector(1.5f, 0, 0), DirectMark * SpeedScale);
 		SpeedScale -= 0.1f;
 	}

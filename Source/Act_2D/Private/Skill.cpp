@@ -42,7 +42,7 @@ void US_AttackIII::InAttack(APlayerCharacter* Player)
 {
 	//根据速度逐步减少加速度
 	FVector Velocy=Player->GetCharacterMovement()->GetLastUpdateVelocity();
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(Velocy.X));
+	//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(Velocy.X));
 
 	float DirectMark = Player->bFacingRight ? 1.0f : -1.0f;
 

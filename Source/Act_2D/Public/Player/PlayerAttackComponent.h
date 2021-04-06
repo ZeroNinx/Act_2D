@@ -79,7 +79,10 @@ protected:
 	//攻击判定标记
 	UPROPERTY(BlueprintReadOnly)
 	bool bShouldJudge;
-
+	
+	//攻击停顿标记
+	UPROPERTY(BlueprintReadOnly)
+	bool bThreadSleeped = false;
 
 	//当前技能
 	UPROPERTY(BlueprintReadOnly)

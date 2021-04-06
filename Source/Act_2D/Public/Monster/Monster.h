@@ -11,6 +11,7 @@
 #include "PaperCharacter.h"
 #include "PaperFlipbookComponent.h"
 #include "HAL/PlatformProcess.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/CapsuleComponent.h"
@@ -60,5 +61,8 @@ protected:
 
 	//每帧执行
 	virtual void Tick(float DeltaTime) override;
+
+	//更新朝向
+	virtual void UpdateDirection();
 
 };

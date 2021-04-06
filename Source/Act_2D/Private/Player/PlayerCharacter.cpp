@@ -14,6 +14,8 @@ APlayerCharacter::APlayerCharacter()
 	GetCapsuleComponent()->SetCapsuleHalfHeight(70.0f);
 	GetCharacterMovement()->GravityScale = 2.5f;
 	GetCharacterMovement()->JumpZVelocity = 1000.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	GetCharacterMovement()->MinAnalogWalkSpeed = 100.0f;
 	GetSprite()->SetRelativeLocation(FVector(0.0f, 0.0f, 8.0f));
 	GetSprite()->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
 

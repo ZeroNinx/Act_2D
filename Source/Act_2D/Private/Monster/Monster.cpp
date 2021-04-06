@@ -54,3 +54,19 @@ void AMonster::Tick(float DeltaTime)
 
 }
 
+//更新朝向
+void AMonster::UpdateDirection()
+{
+	float PlayerLocationX = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetActorLocation().X;
+	if (PlayerLocationX < GetActorLocation().X)
+	{
+		bFacingRight = false;
+		GetSprite()->SetRelativeRotation(FRotator(0, 0, 0));
+	}
+	else
+	{
+		bFacingRight = true;
+		GetSprite()->SetRelativeRotation(FRotator(0, 180.0f, 0));
+	}
+}
+

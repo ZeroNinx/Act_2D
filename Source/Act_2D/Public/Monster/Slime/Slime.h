@@ -7,7 +7,7 @@
 
 //UE4
 #include "CoreMinimal.h"
-#include "PaperFlipbookActor.h"
+#include "PaperFlipbookComponent.h"
 #include "Monster/Monster.h"
 #include "Slime.generated.h"
 
@@ -34,10 +34,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Hit(FAttackProperty AttackProperty);
 
-protected:
+	//准备受击
+	UFUNCTION(BlueprintCallable)
+	void PrepareHit();
 	
-	bool bThreadSleeped = false;
-	bool bMoved = false;
+
+protected:
+
+	//是否后退过
+	bool bMovedOnHit = false;
+
+	//加速度
 	float SpeedScale = 1.0f;
 
 	//特效播放完成代理
@@ -47,10 +54,13 @@ protected:
 	FOnDamagedDelegate OnDamagedDelegate;
 
 	//特效
-	APaperFlipbookActor* Effect;
+	UPaperFlipbookComponent* Effect;
 
 	//tick函数
 	void Tick(float DeltaTime) override;
+
+	//更新方向
+	void UpdateDirection() override;
 
 	//更新状态
 	UFUNCTION()

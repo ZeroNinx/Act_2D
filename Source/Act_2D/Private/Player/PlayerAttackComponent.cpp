@@ -55,9 +55,6 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		else if (GetAnimationPosition() >= MovableFrame&& !NextKeyCombation.IsAttackEmpty())
 		{
 
-			//查看指令
-			//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(NextkKeyCombation.GetHash()));
-
 			//获得命令
 			int NextCommand = NextKeyCombation.GetCommand();
 			NextKeyCombation.Clear();
@@ -343,6 +340,8 @@ void UPlayerAttackComponent::AttackJudge()
 
 		AMonster* Monster = Cast<AMonster>(Actor);
 		InJudgeDelegate.Execute(PlayerCharacter, Monster);
+
+		FPlatformProcess::Sleep(0.05f);
 	}
 
 		
