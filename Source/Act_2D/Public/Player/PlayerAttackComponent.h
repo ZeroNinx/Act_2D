@@ -76,6 +76,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	int MovableFrame; 
 
+	//跳跃攻击标记
+	UPROPERTY(BlueprintReadOnly)
+	bool bJumpingAttack;
+
 	//攻击判定标记
 	UPROPERTY(BlueprintReadOnly)
 	bool bShouldJudge;

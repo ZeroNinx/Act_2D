@@ -39,6 +39,11 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool bFacingRight;
 
+	//角色是否正在跳跃
+	UPROPERTY(BlueprintReadOnly)
+	bool bJumping;
+
+
 	//设置状态
 	UFUNCTION(BlueprintCallable)
 	void SetState(EState NewState);

@@ -71,6 +71,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 		UpdateState();
 		UpdateAnimation();
 	}
+	
 }
 
 //调整方向
@@ -96,13 +97,16 @@ void APlayerCharacter::UpdateState()
 	if (Velocy.Z> 0)
 	{
 		StateMachine->SetState(EState::Jumping);
+		bWasJumping = true;
 	}
 	else if(Velocy.Z <0)
 	{
 		StateMachine->SetState(EState::Falling);
+		bWasJumping = true;
 	}
 	else
 	{
+		bWasJumping = false;
 		//否则根据X轴速度判断奔跑/静止
 		if (UKismetMathLibrary::Abs(Velocy.X) != 0)
 		{

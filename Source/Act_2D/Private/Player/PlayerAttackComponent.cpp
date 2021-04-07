@@ -21,9 +21,24 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 //Tick函数
 void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+
+	if (bJumpingAttack&& UKismetMathLibrary::Abs(PlayerCharacter->GetVelocity().Z)- 0<=eps)
+	{
+		bJumpingAttack = false;
+
+		UPaperFlipbookComponent* FlipbookComponent = PlayerCharacter->GetSprite();
+		FlipbookComponent->SetPlaybackPosition(FlipbookComponent->GetFlipbookLength() - 0.01f,false);
+	}
+
 	//当攻击外进入攻击
 	if (AttackID == 0 && !NextKeyCombation.IsAttackEmpty())
 	{
+		if (PlayerCharacter->GetState()==EState::Jumping|| PlayerCharacter->GetState() == EState::Falling)
+		{
+			Attack(4);
+			bJumpingAttack = true;
+		}
+
 		//获得命令
 		int NextCommand = NextKeyCombation.GetCommand();
 		NextKeyCombation.Clear();
@@ -340,16 +355,16 @@ void UPlayerAttackComponent::AttackJudge()
 		AMonster* Monster = Cast<AMonster>(Actor);
 		InJudgeDelegate.Execute(PlayerCharacter, Monster);
 
-		FPlatformProcess::Sleep(0.05f);
+		FPlatformProcess::Sleep(0.07f);
 	}
 
-		
 }
 
 //重置攻击
 void UPlayerAttackComponent::ResetAttack()
 {
 	AttackID = 0;
+	bJumpingAttack = false;
 	bShouldJudge = false;
 	AttackFrame = 0;
 	NextKeyCombation.Clear();

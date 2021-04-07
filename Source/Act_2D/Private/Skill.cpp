@@ -42,7 +42,7 @@ void US_AttackIII::BeforeJudge(APlayerCharacter* Player)
 {
 	//添加瞬时速度
 	float DirectMark = Player->bFacingRight ? 1.0f : -1.0f;
-	float VelocyX = 800.0f * DirectMark;
+	float VelocyX = 900.0f * DirectMark;
 	Player->GetCharacterMovement()->Velocity = FVector(VelocyX, 0, 0);
 };
 
