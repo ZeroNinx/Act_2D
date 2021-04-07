@@ -33,7 +33,7 @@ UBehaviorTree* AMonster::GetBehaviorTree()
 }
 
 //被击中函数
-void AMonster::Hit(FAttackProperty AttackProperty)
+void AMonster::Hit(FAttackProperty HitAttackProperty)
 {
 	FString Name;
 	GetName(Name);

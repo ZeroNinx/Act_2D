@@ -84,12 +84,8 @@ public:
 
 	US_AttackIII();
 	
-	bool Moved = false;
 
-	//加速度倍数
-	float SpeedScale = 1.0f;
-
-	//攻击中
-	void InAttack(APlayerCharacter* Player) override;
+	//攻击前
+	void BeforeJudge(APlayerCharacter* Player) override;
 	
 };

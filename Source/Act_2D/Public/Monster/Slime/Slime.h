@@ -9,13 +9,11 @@
 #include "CoreMinimal.h"
 #include "PaperFlipbookComponent.h"
 #include "Monster/Monster.h"
+#include "Components/ArrowComponent.h"
 #include "Slime.generated.h"
 
 //收到攻击代理
 DECLARE_DYNAMIC_DELEGATE(FOnDamagedDelegate);
-
-//特效播放完成代理
-DECLARE_DYNAMIC_DELEGATE(FOnEffectPlayFinishedDelegate);
 
 /**
  * 史莱姆
@@ -32,7 +30,7 @@ public:
 
 	//被击中
 	UFUNCTION(BlueprintCallable)
-	void Hit(FAttackProperty AttackProperty);
+	void Hit(FAttackProperty HitAttackProperty);
 
 	//准备受击
 	UFUNCTION(BlueprintCallable)
@@ -40,20 +38,16 @@ public:
 	
 
 protected:
-
-	//是否后退过
-	bool bMovedOnHit = false;
-
-	//加速度
-	float SpeedScale = 1.0f;
-
-	//特效播放完成代理
-	FOnEffectPlayFinishedDelegate OnEffectPlayFinishedDelegate;
 	
 	//收到攻击时代理
 	FOnDamagedDelegate OnDamagedDelegate;
 
+	//受击动画
+	UPROPERTY()
+	UPaperFlipbook* HitFlipbook;
+
 	//特效
+	UPROPERTY()
 	UPaperFlipbookComponent* Effect;
 
 	//tick函数
@@ -69,14 +63,6 @@ protected:
 	//更新动画
 	UFUNCTION()
 	void UpdateAnimation();
-
-	//结束播放
-	UFUNCTION()
-	void RemoveEffect();
-
-	//结束播放
-	UFUNCTION()
-	void MoveBack();
 
 	//完成受击
 	UFUNCTION()

@@ -64,7 +64,6 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 			{
 				ResetAttack();
 				Attack(ComboMap[NextCommand]);
-
 			}
 		}
 

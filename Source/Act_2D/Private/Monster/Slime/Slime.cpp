@@ -8,14 +8,17 @@ ASlime::ASlime():AMonster()
 {
 	bFacingRight = false;
 
-
-
 	//设置变换
 	GetCapsuleComponent()->SetCapsuleHalfHeight(34.0f);
 	RealCapsule->SetRelativeRotation(FRotator(90.0f,0,0));
 	RealCapsule->SetCapsuleHalfHeight(44.0f);
 	RealCapsule->SetCapsuleRadius(33.0f);
 	GetSprite()->SetRelativeLocation(FVector(0, 0, 44.0f));
+	GetArrowComponent()->SetRelativeRotation(FRotator(0, 180.0f, 0));
+
+	//设置摩擦力
+	GetCharacterMovement()->BrakingDecelerationWalking = 200.0f;
+	GetCharacterMovement()->GroundFriction = 2.0f;
 
 	//载入动画
 	UPaperFlipbook* IdleFlipbook = LoadObject<UPaperFlipbook>(this, TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Idle.Slime_Idle'"));
@@ -37,48 +40,55 @@ ASlime::ASlime():AMonster()
 	Effect->SetupAttachment(RootComponent);
 	Effect->SetFlipbook(EffectFlipbook);
 	Effect->SetLooping(false);
-	Effect->OnFinishedPlaying.Add(OnEffectPlayFinishedDelegate);
 
-	//设定行为树
-	BTComponent = CreateDefaultSubobject<USlimeBTComponent>(TEXT("BTComponent"));
-
-
-	OnEffectPlayFinishedDelegate.BindDynamic(this, &ASlime::RemoveEffect);
-	OnDamagedDelegate.BindDynamic(this, &ASlime::FinishDamaged);
-}
-
-//被击中
-void ASlime::Hit(FAttackProperty AttackProperty)
-{
-	PrepareHit();
-	Effect->PlayFromStart();
-}
-
-//准备受击
-void ASlime::PrepareHit()
-{
-	//准备下一次攻击后退
-	bMovedOnHit = false;
-	SpeedScale = 1.0f;
-
-	//改变状态
-	StateMachine->SetState(EState::UnderAttack);
-
-	//初始化受击动画
-	UPaperFlipbook* HitFlipbook = LoadObject<UPaperFlipbook>(this, TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Hit.Slime_Hit'"));
+	//设定受击动画
+	HitFlipbook = LoadObject<UPaperFlipbook>(this, TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Hit.Slime_Hit'"));
 	if (!HitFlipbook)
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Hit Flipbook Failed"));
 		return;
 	}
 
-	if (GetSprite()->GetFlipbook() == HitFlipbook)
-	{
-		GetSprite()->PlayFromStart();
-	}
-	GetSprite()->SetFlipbook(HitFlipbook);
-	GetSprite()->SetLooping(false);
+	//设定行为树
+	BTComponent = CreateDefaultSubobject<USlimeBTComponent>(TEXT("BTComponent"));
+
+	//绑定代理
+	OnDamagedDelegate.BindDynamic(this, &ASlime::FinishDamaged);
 	GetSprite()->OnFinishedPlaying.Add(OnDamagedDelegate);
+}
+
+//被击中
+void ASlime::Hit(FAttackProperty HitAttackProperty)
+{
+	AttackProperty = HitAttackProperty;
+	PrepareHit();
+	Effect->PlayFromStart();
+
+	//添加瞬时速度
+	float DirectMark = bFacingRight ? -1.0f : 1.0f;
+	float LightVelocyX = 200.0f * DirectMark;
+	float HeavyVelocyX = 500.0f * DirectMark;
+
+	if (AttackProperty.HarmfulType == EAttackHarmfulType::HeavyAttack)
+	{
+		GetCharacterMovement()->Velocity = FVector(HeavyVelocyX, 0, 0);
+	}
+	else
+	{
+		GetCharacterMovement()->Velocity = FVector(LightVelocyX, 0, 0);
+	}
+}
+
+//准备受击
+void ASlime::PrepareHit()
+{
+	//改变状态
+	StateMachine->SetState(EState::UnderAttack);
+
+	//初始化受击动画
+	GetSprite()->SetLooping(false);
+	GetSprite()->SetFlipbook(HitFlipbook);
+	GetSprite()->PlayFromStart();
 }
 
 //tick函数
@@ -87,7 +97,8 @@ void ASlime::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (StateMachine->GetState() == EState::UnderAttack)
 	{
-		MoveBack();
+		FVector Velocy = GetCharacterMovement()->GetLastUpdateVelocity();
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(Velocy.X));
 	}
 	else
 	{
@@ -164,34 +175,11 @@ void ASlime::UpdateAnimation()
 	GetSprite()->SetFlipbook(NewAnimation);
 }
 
-//移除特效
-void ASlime::RemoveEffect()
-{
-	StateMachine->SetState(EState::Idle);
-}
-
-//后退
-void ASlime::MoveBack()
-{
-	//根据速度逐步减少加速度
-	FVector Velocy = GetCharacterMovement()->GetLastUpdateVelocity();
-	//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(Velocy.X));
-
-	float DirectMark = bFacingRight ? -1.0f : 1.0f;
-
-	if (!bMovedOnHit || Velocy.X * DirectMark > 0)//防止角色倒退
-	{
-		bMovedOnHit = true;
-		AddMovementInput(FVector(1.5f, 0, 0), DirectMark * SpeedScale);
-		SpeedScale -= 0.1f;
-	}
-}
-
 //完成受击
 void ASlime::FinishDamaged()
 {
-	UpdateState();
 	GetSprite()->SetLooping(true);
+	UpdateState();
 	GetSprite()->Play();
 }
 

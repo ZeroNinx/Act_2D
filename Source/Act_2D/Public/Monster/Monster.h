@@ -40,7 +40,7 @@ public:
 	UBehaviorTree* GetBehaviorTree();
 
 	//被击中函数
-	virtual void Hit(FAttackProperty AttackProperty);
+	virtual void Hit(FAttackProperty HitAttackProperty);
 
 protected:
 
@@ -55,6 +55,10 @@ protected:
 	//行为树组件
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	UBehaviorTreeComponent* BTComponent;
+
+	//攻击特性
+	UPROPERTY(BlueprintReadOnly)
+	FAttackProperty AttackProperty;
 
 	//游戏开始执行
 	virtual void BeginPlay() override;

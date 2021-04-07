@@ -38,20 +38,12 @@ US_AttackIII::US_AttackIII()
 	AttackProperty = FAttackProperty(EAttackHarmfulType::HeavyAttack, 2);
 }
 
-void US_AttackIII::InAttack(APlayerCharacter* Player)
+void US_AttackIII::BeforeJudge(APlayerCharacter* Player)
 {
-	//根据速度逐步减少加速度
-	FVector Velocy=Player->GetCharacterMovement()->GetLastUpdateVelocity();
-	//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(Velocy.X));
-
+	//添加瞬时速度
 	float DirectMark = Player->bFacingRight ? 1.0f : -1.0f;
-
-	if (!Moved || Velocy.X*DirectMark > 0)//防止角色倒退
-	{
-		Moved = true;
-		Player->AddMovementInput(FVector(1.5f, 0, 0), DirectMark * SpeedScale);
-		SpeedScale -= 0.035f;
-	}
+	float VelocyX = 800.0f * DirectMark;
+	Player->GetCharacterMovement()->Velocity = FVector(VelocyX, 0, 0);
 };
 
 

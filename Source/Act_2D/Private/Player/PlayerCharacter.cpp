@@ -10,14 +10,21 @@ APlayerCharacter::APlayerCharacter()
  	//启用Tick
 	PrimaryActorTick.bCanEverTick = true;
 
-	//设定初始值
+	//设定模型
 	GetCapsuleComponent()->SetCapsuleHalfHeight(70.0f);
-	GetCharacterMovement()->GravityScale = 2.5f;
-	GetCharacterMovement()->JumpZVelocity = 1000.0f;
-	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
-	GetCharacterMovement()->MinAnalogWalkSpeed = 100.0f;
 	GetSprite()->SetRelativeLocation(FVector(0.0f, 0.0f, 8.0f));
 	GetSprite()->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+
+	//设定移动组件
+	GetCharacterMovement()->GravityScale = 2.5f;
+	GetCharacterMovement()->JumpZVelocity = 1000.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+	GetCharacterMovement()->MinAnalogWalkSpeed = 100.0f;
+	GetCharacterMovement()->bUseSeparateBrakingFriction = true;
+	GetCharacterMovement()->BrakingFriction = 8.0f;
+	GetCharacterMovement()->AirControl = 1;
+
+
 
 	//默认角色朝右
 	bFacingRight = true;
