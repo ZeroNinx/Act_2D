@@ -92,42 +92,42 @@ void APlayerCharacterController::MoveUp(float AxisValue)
 void APlayerCharacterController::AttackPresssed()
 {
 	bAttackPressed = true;
-	RecordKeyCombination();
+	AddAttackInput();
 }
 
 //松开攻击键
 void APlayerCharacterController::AttackReleased()
 {
 	bAttackPressed = false;
-	RecordKeyCombination();
+	AddAttackInput();
 }
 
 //按下特殊键
 void APlayerCharacterController::SpecialPresssed()
 {
 	bSpecialPressed = true;
-	RecordKeyCombination();
+	AddAttackInput();
 }
 
 //松开特殊键
 void APlayerCharacterController::SpecialReleased()
 {
 	bSpecialPressed = false;
-	RecordKeyCombination();
+	AddAttackInput();
 }
 
 //按下扳机键
 void APlayerCharacterController::TriggerPresssed()
 {
 	bTriggerPressed = true;
-	RecordKeyCombination();
+	AddAttackInput();
 }
 
 //松开扳机键
 void APlayerCharacterController::TriggerReleased()
 {
 	bTriggerPressed = false;
-	RecordKeyCombination();
+	AddAttackInput();
 }
 
 //按下跳跃键
@@ -151,16 +151,15 @@ void APlayerCharacterController::RecordKeyCombination()
 {
 	NextkKeyCombation = FKeyCombination(bAttackPressed, bSpecialPressed, bTriggerPressed, bJumpPressed, bUpPressed, bDownPressed, bLeftPressed, bRightPressed);
 	
-	//如果包含攻击键
-	if (!NextkKeyCombation.IsAttackEmpty())
-	{
-		AddAttackInput();
-	}
+	
 }
 
 //添加攻击输入
 void APlayerCharacterController::AddAttackInput()
 {
+	NextkKeyCombation = FKeyCombination(bAttackPressed, bSpecialPressed, bTriggerPressed, bJumpPressed, bUpPressed, bDownPressed, bLeftPressed, bRightPressed);
+
+
 	//设置延迟接受输入
 	auto DelayAttackInput = [&]() -> void
 	{
