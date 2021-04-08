@@ -42,6 +42,10 @@ public:
 	//构造函数
 	UPlayerAttackComponent();
 
+	//当前攻击ID
+	UPROPERTY(BlueprintReadOnly)
+	int AttackID;
+
 	//初始化参数
 	UFUNCTION(BlueprintCallable)
 	void Setup(APlayerCharacter* NewCharacter);
@@ -63,10 +67,6 @@ protected:
 	//玩家指针
 	UPROPERTY(BlueprintReadOnly)
 	APlayerCharacter* PlayerCharacter;
-
-	//当前攻击ID
-	UPROPERTY(BlueprintReadOnly)
-	int AttackID;
 
 	//当前动作攻击帧
 	UPROPERTY(BlueprintReadOnly)

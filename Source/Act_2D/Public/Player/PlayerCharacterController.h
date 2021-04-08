@@ -49,7 +49,7 @@ protected:
 
 	//延迟输入间隔（秒）
 	UPROPERTY(BlueprintReadOnly)
-	float AttackInputDuration = 0.05f;
+	float AttackInputDuration = 0.03f;
 
 	//是否等待延迟输入
 	UPROPERTY(BlueprintReadOnly)

@@ -21,22 +21,13 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 //Tick函数
 void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-
-	if (bJumpingAttack&& UKismetMathLibrary::Abs(PlayerCharacter->GetVelocity().Z)- 0<=eps)
-	{
-		bJumpingAttack = false;
-
-		UPaperFlipbookComponent* FlipbookComponent = PlayerCharacter->GetSprite();
-		FlipbookComponent->SetPlaybackPosition(FlipbookComponent->GetFlipbookLength() - 0.01f,false);
-	}
-
 	//当攻击外进入攻击
 	if (AttackID == 0 && !NextKeyCombation.IsAttackEmpty())
 	{
-		if (PlayerCharacter->GetState()==EState::Jumping|| PlayerCharacter->GetState() == EState::Falling)
+		bool bPlayerJumping = PlayerCharacter->GetState() == EState::Jumping || PlayerCharacter->GetState() == EState::Falling;
+		if (bPlayerJumping)
 		{
 			Attack(4);
-			bJumpingAttack = true;
 		}
 
 		//获得命令
@@ -105,7 +96,11 @@ bool UPlayerAttackComponent::IsMovable()
 //接收下一次攻击组合
 void UPlayerAttackComponent::SetKeyCombination(FKeyCombination KeyCombation)
 {
-	if (AttackID == 0 || GetAnimationPosition() >= MovableFrame)
+	
+	bool bAccetpInput = AttackID == 0 || GetAnimationPosition() >= MovableFrame;
+	bool bHasAttackInput = !KeyCombation.IsAttackEmpty();
+	
+	if (bAccetpInput && bHasAttackInput)
 	{
 		NextKeyCombation = KeyCombation;
 	}

@@ -65,13 +65,24 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//当非战斗时自动调整动画
-	if( GetState() != EState::Attacking)
+	if (AttackComponent->AttackID == 0)
 	{
 		UpdateDirection();
 		UpdateState();
 		UpdateAnimation();
 	}
-	
+	else if (AttackComponent->AttackID == 4)
+	{
+		//攻击落地强制恢复
+		UpdateState();
+		if (GetState() == EState::Idle || GetState() == EState::Running)
+		{
+			AttackComponent->ResetAttack();
+			GetSprite()->SetLooping(true);
+			GetSprite()->Play();
+		}
+	}
+
 }
 
 //调整方向
@@ -97,27 +108,22 @@ void APlayerCharacter::UpdateState()
 	if (Velocy.Z> 0)
 	{
 		StateMachine->SetState(EState::Jumping);
-		bWasJumping = true;
 	}
 	else if(Velocy.Z <0)
 	{
 		StateMachine->SetState(EState::Falling);
-		bWasJumping = true;
 	}
 	else
 	{
-		bWasJumping = false;
 		//否则根据X轴速度判断奔跑/静止
 		if (UKismetMathLibrary::Abs(Velocy.X) != 0)
 		{
-			StateMachine->SetState(EState::Running);
-			
+			StateMachine->SetState(EState::Running);	
 		}
 		else
 		{
 			StateMachine->SetState(EState::Idle);
-		}
-		
+		}	
 	}
 }
 

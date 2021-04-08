@@ -60,17 +60,21 @@ void APlayerCharacterController::MoveRight(float AxisValue)
 		bRightPressed = (fabs(AxisValue - 1.0f) <= eps);
 		bLeftPressed = (fabs(AxisValue + 1.0f) <= eps);
 
+		//可移动帧取消攻击
+		if (PlayerCharacter->GetState() == EState::Attacking && AttackComponent->IsMovable())
+		{
+			AttackRestore();
+		}
+
 		//当非攻击时
-		if (AttackComponent->IsMovable())
+		if (PlayerCharacter->GetState() != EState::Attacking)
 		{
 			//添加移动
-			AttackRestore();
 			PlayerCharacter->AddMovementInput(FVector(1, 0, 0), AxisValue > 0 ? 1.0f : -1.0f);
 			//根据角色方向调整动画
 			PlayerCharacter->bFacingRight = AxisValue > 0;
 		}
-
-		RecordKeyCombination();
+		
 	}
 }
 
@@ -81,7 +85,6 @@ void APlayerCharacterController::MoveUp(float AxisValue)
 	{
 		bUpPressed = (fabs(AxisValue - 1.0f) <= eps);
 		bDownPressed = (fabs(AxisValue + 1.0f) <= eps);
-		RecordKeyCombination();
 	}
 }
 
@@ -149,7 +152,7 @@ void APlayerCharacterController::RecordKeyCombination()
 	NextkKeyCombation = FKeyCombination(bAttackPressed, bSpecialPressed, bTriggerPressed, bJumpPressed, bUpPressed, bDownPressed, bLeftPressed, bRightPressed);
 	
 	//如果包含攻击键
-	if (NextkKeyCombation.GetCommand() > 0)
+	if (!NextkKeyCombation.IsAttackEmpty())
 	{
 		AddAttackInput();
 	}

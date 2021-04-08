@@ -4,8 +4,6 @@
 //自定义
 #include "StateMachine.h"
 #include "PlayerAttackComponent.h"
-#define UUID_ATTACK_INPUT_DELAY 0x1
-#define UUID_ATTACK_RESTORE 0x2
 
 #define eps 1e-7//浮点数误差
 
@@ -38,11 +36,6 @@ public:
 	//角色方向是否朝右
 	UPROPERTY(BlueprintReadOnly)
 	bool bFacingRight;
-
-	//角色是否正在跳跃
-	UPROPERTY(BlueprintReadOnly)
-	bool bJumping;
-
 
 	//设置状态
 	UFUNCTION(BlueprintCallable)

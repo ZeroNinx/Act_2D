@@ -98,7 +98,6 @@ void ASlime::Tick(float DeltaTime)
 	if (StateMachine->GetState() == EState::UnderAttack)
 	{
 		FVector Velocy = GetCharacterMovement()->GetLastUpdateVelocity();
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(Velocy.X));
 	}
 	else
 	{
