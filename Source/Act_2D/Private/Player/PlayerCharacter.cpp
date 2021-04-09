@@ -17,13 +17,13 @@ APlayerCharacter::APlayerCharacter()
 
 	//设定移动组件
 	GetCharacterMovement()->GravityScale = 2.5f;
-	GetCharacterMovement()->JumpZVelocity = 1000.0f;
+	GetCharacterMovement()->JumpZVelocity = 600.0f;
 	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 100.0f;
 	GetCharacterMovement()->bUseSeparateBrakingFriction = true;
 	GetCharacterMovement()->BrakingFriction = 8.0f;
 	GetCharacterMovement()->AirControl = 1;
-
+	JumpMaxHoldTime = 0.2f;
 
 
 	//默认角色朝右
@@ -33,7 +33,7 @@ APlayerCharacter::APlayerCharacter()
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
 	SpringArmComponent->SetupAttachment(RootComponent);
 	SpringArmComponent->SetRelativeRotation(FRotator(0, -90.0f,0));//初始化旋转
-	SpringArmComponent->TargetArmLength = 500.0f;//初始化长度
+	SpringArmComponent->TargetArmLength = 700.0f;//初始化长度
 
 	//相机组件
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));

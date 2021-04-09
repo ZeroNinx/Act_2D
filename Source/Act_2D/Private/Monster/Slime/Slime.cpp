@@ -67,7 +67,7 @@ void ASlime::Hit(FAttackProperty HitAttackProperty)
 	//添加瞬时速度
 	float DirectMark = bFacingRight ? -1.0f : 1.0f;
 	float LightVelocyX = 200.0f * DirectMark;
-	float HeavyVelocyX = 500.0f * DirectMark;
+	float HeavyVelocyX = 600.0f * DirectMark;
 
 	if (AttackProperty.HarmfulType == EAttackHarmfulType::HeavyAttack)
 	{

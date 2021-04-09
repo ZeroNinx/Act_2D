@@ -136,7 +136,19 @@ void APlayerCharacterController::JumpPressed()
 	bJumpPressed = true;
 	RecordKeyCombination();
 
-	PlayerCharacter->Jump();
+	//可移动帧取消攻击
+	if (PlayerCharacter->GetState() == EState::Attacking && AttackComponent->IsMovable())
+	{
+		AttackRestore();
+	}
+
+	//当非攻击时
+	if (PlayerCharacter->GetState() != EState::Attacking)
+	{
+		PlayerCharacter->Jump();
+	}
+
+
 }
 
 //松开跳跃键
@@ -144,6 +156,8 @@ void APlayerCharacterController::JumpReleased()
 {
 	bJumpPressed = false;
 	RecordKeyCombination();
+
+	PlayerCharacter->StopJumping();
 }
 
 //记录输入组合
