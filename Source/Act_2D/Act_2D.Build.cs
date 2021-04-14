@@ -32,7 +32,8 @@ public class Act_2D : ModuleRules
 				"Act_2D/Public",
 				"Act_2D/Public/Player",
 				"Act_2D/Public/Monster",
-				"Act_2D/Public/MOnster/Slime"
+				"Act_2D/Public/MOnster/Slime",
+				"Act_2D/Public/MOnster/RedGrass"
 			}
 		);
 

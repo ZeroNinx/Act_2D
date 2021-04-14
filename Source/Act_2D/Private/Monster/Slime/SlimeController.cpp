@@ -5,7 +5,16 @@
 
 //构造函数
 ASlimeController::ASlimeController()
-{
+{	
+	//初始化黑板
+	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
+	BlackboardComponent->SetValueAsVector(TEXT("PlayerLocation"), FVector(0, 0, 0));
+	BlackboardComponent->
+
+	//初始化行为树
+	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComponent"));
+	BehaviorTreeComponent->SearchStartBlackboard
+
 
 }
 

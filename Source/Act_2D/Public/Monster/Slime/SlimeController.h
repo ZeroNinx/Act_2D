@@ -9,6 +9,8 @@
 //UE4
 #include "CoreMinimal.h"
 #include "Monster/MonsterController.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "SlimeController.generated.h"
 
 /**
@@ -30,7 +32,17 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	ASlime* Slime;
 
+	//行为树组件
+	UPROPERTY();
+	UBehaviorTreeComponent* BehaviorTreeComponent;
+
+	//黑板组件
+	UPROPERTY()
+	UBlackboardComponent* BlackboardComponent;
+
 	//当开始控制时
 	void OnPossess(APawn* InPawn) override;
+
+	
 
 };
