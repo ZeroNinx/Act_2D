@@ -9,9 +9,6 @@
 #include "Components/ArrowComponent.h"
 #include "Slime.generated.h"
 
-//收到攻击代理
-DECLARE_DYNAMIC_DELEGATE(FOnDamagedDelegate);
-
 /**
  * 史莱姆
  */
@@ -25,6 +22,10 @@ public:
 	//构造函数
 	ASlime();
 
+	//史莱姆跳跃（攻击）
+	UFUNCTION(BlueprintCallable)
+	void JumpAttack();
+
 	//被击中
 	UFUNCTION(BlueprintCallable)
 	void Hit(FAttackProperty HitAttackProperty);
@@ -35,9 +36,6 @@ public:
 	
 
 protected:
-	
-	//受到攻击时代理
-	FOnDamagedDelegate OnDamagedDelegate;
 
 	//受击动画
 	UPROPERTY()
@@ -46,6 +44,15 @@ protected:
 	//特效
 	UPROPERTY()
 	UPaperFlipbookComponent* Effect;
+
+	//跳跃攻击定时器句柄
+	FTimerHandle JumpAttackHandle;
+
+	//跳跃准备时间
+	float JumpReadyTime = 0.05f;
+
+	//下落标记
+	bool bFalled = false;
 
 	//tick函数
 	void Tick(float DeltaTime) override;
@@ -61,7 +68,7 @@ protected:
 	UFUNCTION()
 	void UpdateAnimation();
 
-	//完成受击
+	//单帧动画完成时
 	UFUNCTION()
-	void FinishDamaged();
+	void OnFlipookFinishedPlaying();
 };

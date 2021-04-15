@@ -16,9 +16,6 @@
  * 玩家控制器类
  */
 
- //攻击完成代理
-DECLARE_DYNAMIC_DELEGATE(FOnAttackFinishedDelegate);
-
 UCLASS()
 class ACT_2D_API APlayerCharacterController : public APlayerController
 {
@@ -54,9 +51,6 @@ protected:
 	//是否等待延迟输入
 	UPROPERTY(BlueprintReadOnly)
 	bool bWaitingInput;
-
-	//攻击动画播放完成代理
-	FOnAttackFinishedDelegate OnAttackFinishedDelegate;
 
 	//初始化输入函数
 	void SetupInputComponent() override;

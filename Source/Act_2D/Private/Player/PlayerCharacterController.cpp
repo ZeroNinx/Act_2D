@@ -6,8 +6,7 @@
 //构造函数
 APlayerCharacterController::APlayerCharacterController()
 {
-	//绑定代理到动画播放结束
-	OnAttackFinishedDelegate.BindDynamic(this, &APlayerCharacterController::AttackRestore);
+
 }
 
 //初始化控制器
@@ -20,7 +19,7 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 	AttackComponent = PlayerCharacter->GetAttackComponent();
 
 	//添加攻击结束事件
-	PlayerCharacter->GetSprite()->OnFinishedPlaying.Add(OnAttackFinishedDelegate);
+	PlayerCharacter->GetSprite()->OnFinishedPlaying.AddDynamic(this, &APlayerCharacterController::AttackRestore);
 }
 
 //初始化输入

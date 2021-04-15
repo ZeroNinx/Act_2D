@@ -10,7 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTTaskNode_ScanPlayer.generated.h"
+#include "BTTaskNode_ScanDistanceToPlayer.generated.h"
 
 //玩家距离状态
 UENUM(BlueprintType)
@@ -25,14 +25,14 @@ enum class EDistance :uint8
  * 检测玩家位置
  */
 UCLASS()
-class ACT_2D_API UBTTaskNode_ScanPlayer : public UBTTaskNode
+class ACT_2D_API UBTTaskNode_ScanDistanceToPlayer : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
 public:
 
 	//构造函数
-	UBTTaskNode_ScanPlayer();
+	UBTTaskNode_ScanDistanceToPlayer();
 
 protected:
 

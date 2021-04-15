@@ -25,15 +25,10 @@ AMonsterController::AMonsterController()
 
 }
 
-//获取黑板组件
-UBlackboardComponent* AMonsterController::GetBlackboardComponent()
-{
-	return BlackboardComponent;
-}
-
 //开始控制时
 void AMonsterController::OnPossess(APawn* InPawn)
 {
+	Super::OnPossess(InPawn);
 	//设置怪物，启动行为树
 	Monster = Cast<AMonster>(InPawn);
 }

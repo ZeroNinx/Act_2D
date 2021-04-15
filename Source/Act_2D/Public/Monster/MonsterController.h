@@ -31,12 +31,6 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FName DistanceToPlayerID = TEXT("DistanceToPlayer");
 
-	//黑板组件
-	UFUNCTION(BlueprintCallable)
-	UBlackboardComponent* GetBlackboardComponent();
-
-
-
 protected:
 
 	//行为树组件

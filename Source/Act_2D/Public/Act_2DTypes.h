@@ -5,13 +5,14 @@
 UENUM(BlueprintType)
 enum class EState :uint8
 {
-	Idle,
-	Running,
-	Jumping,
-	Falling,
-	Attacking,
-	UnderAttack,
-	Sleeping
+	Idle=0,
+	Running=1,
+	Jumping=2,
+	Falling=3,
+	Falled=4,
+	Attacking=5,
+	UnderAttack=6,
+	Sleeping=7
 };
 
 

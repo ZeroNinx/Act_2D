@@ -1,16 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BTTaskNode_ScanPlayer.h"
+#include "BTTaskNode_ScanDistanceToPlayer.h"
 
 //执行函数
-UBTTaskNode_ScanPlayer::UBTTaskNode_ScanPlayer()
+UBTTaskNode_ScanDistanceToPlayer::UBTTaskNode_ScanDistanceToPlayer()
 {
 	
 }
 
 //执行任务
-EBTNodeResult::Type UBTTaskNode_ScanPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTTaskNode_ScanDistanceToPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	//获取控制器
 	AMonsterController* Controller = Cast<AMonsterController>(OwnerComp.GetAIOwner());

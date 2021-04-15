@@ -8,6 +8,7 @@
 ASlime::ASlime()
 {
 	bFacingRight = false;
+	bFalled = false;
 	AIControllerClass = ASlimeController::StaticClass();
 
 	//设置变换
@@ -19,6 +20,8 @@ ASlime::ASlime()
 	GetArrowComponent()->SetRelativeRotation(FRotator(0, 180.0f, 0));
 
 	//设置摩擦力
+	GetCharacterMovement()->AirControl = 0;
+	GetCharacterMovement()->GravityScale = 0.8f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 200.0f;
 	GetCharacterMovement()->GroundFriction = 2.0f;
 
@@ -52,8 +55,26 @@ ASlime::ASlime()
 	}
 
 	//绑定代理
-	OnDamagedDelegate.BindDynamic(this, &ASlime::FinishDamaged);
-	GetSprite()->OnFinishedPlaying.Add(OnDamagedDelegate);
+	GetSprite()->OnFinishedPlaying.AddDynamic(this, &ASlime::OnFlipookFinishedPlaying);
+}
+
+//跳跃攻击
+void ASlime::JumpAttack()
+{
+	if (StateMachine->GetState() == EState::Idle&&!bFalled)
+	{
+		//蓄力跳
+		auto DelayJumpAttack = [&]()->void
+		{
+			float DirectMark = bFacingRight ? 1.0f : -1.0f;
+			float JumpSpeed = 300.0f * DirectMark;
+			GetCharacterMovement()->Velocity = FVector(JumpSpeed, 0, 0);
+			Jump();
+		};
+		auto dlg = FTimerDelegate::CreateLambda(DelayJumpAttack);
+		GetWorldTimerManager().SetTimer(JumpAttackHandle, dlg, (const float)JumpReadyTime, false);
+	
+	}
 }
 
 //被击中
@@ -94,17 +115,12 @@ void ASlime::PrepareHit()
 void ASlime::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (StateMachine->GetState() == EState::UnderAttack)
-	{
-		FVector Velocy = GetCharacterMovement()->GetLastUpdateVelocity();
-	}
-	else
+	if (StateMachine->GetState() != EState::UnderAttack)
 	{
 		UpdateDirection();
 		UpdateState();
 		UpdateAnimation();
 	}
-
 }
 
 //更新方向
@@ -132,31 +148,53 @@ void ASlime::UpdateState()
 	FVector Velocy = GetCharacterMovement()->GetLastUpdateVelocity();
 
 	//判断速度
-	if (UKismetMathLibrary::Abs(Velocy.Z) > 0)
+	if (Velocy.Z > 0)
 	{
 		StateMachine->SetState(EState::Jumping);
 	}
+	else if (Velocy.Z < 0)
+	{
+		StateMachine->SetState(EState::Falling);
+	}
 	else
 	{
-		StateMachine->SetState(EState::Idle);
+		if (StateMachine->GetState() == EState::Falling)
+		{
+			StateMachine->SetState(EState::Falled);
+			bFalled = true;
+		}
+		else
+		{
+			StateMachine->SetState(EState::Idle);
+		}
 	}
+
 }
 
 //更新动画
 void ASlime::UpdateAnimation()
 {
-	//动画路径
-	FString AnimationFlipbook;
 
 	//根据不同状态调整动画
-	switch (StateMachine->GetState())
+	EState CurrentState = StateMachine->GetState();
+	if (CurrentState == EState::Falling)
+	{
+		return;
+	}
+
+	//动画路径
+	FString AnimationFlipbook;
+	switch (CurrentState)
 	{
 	case EState::Idle:
 		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Idle.Slime_Idle'";
 		break;
 	case EState::Jumping:
-		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Jump.Slime_Jump'";
-		break;;
+		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Jump_Start.Slime_Jump_Start'";
+		break;
+	case EState::Falled:
+		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Jump_End.Slime_Jump_End'";
+		break;
 	case EState::Sleeping:
 		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Sleep.Slime_Sleep'";
 		break;
@@ -170,14 +208,28 @@ void ASlime::UpdateAnimation()
 		return;
 	}
 
+	GetSprite()->SetLooping(true);
 	GetSprite()->SetFlipbook(NewAnimation);
+	GetSprite()->Play();
 }
 
 //完成受击
-void ASlime::FinishDamaged()
+void ASlime::OnFlipookFinishedPlaying()
 {
-	GetSprite()->SetLooping(true);
-	UpdateState();
-	GetSprite()->Play();
+	//单帧动画完成时
+	bool bShouldUpdate = (StateMachine->GetState() == EState::UnderAttack||bFalled);
+	if (bShouldUpdate)
+	{
+		//清除下落标记
+		if (bFalled)
+		{
+			bFalled = false;
+		}
+		UpdateState();
+		UpdateAnimation();
+		GetSprite()->SetLooping(true);
+		GetSprite()->Play();
+	}
 }
+
 
