@@ -36,7 +36,7 @@ public:
 
 protected:
 	
-	//收到攻击时代理
+	//受到攻击时代理
 	FOnDamagedDelegate OnDamagedDelegate;
 
 	//受击动画

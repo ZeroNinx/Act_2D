@@ -15,7 +15,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/CapsuleComponent.h"
-#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Monster.generated.h"
 
@@ -35,10 +34,6 @@ public:
 	//是否朝右
 	bool bFacingRight;
 
-	//获取行为树
-	UFUNCTION(BlueprintCallable)
-	UBehaviorTree* GetBehaviorTree();
-
 	//被击中函数
 	virtual void Hit(FAttackProperty HitAttackProperty);
 
@@ -51,10 +46,6 @@ protected:
 	//状态机
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	UStateMachine* StateMachine;
-
-	//行为树组件
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	UBehaviorTreeComponent* BTComponent;
 
 	//攻击特性
 	UPROPERTY(BlueprintReadOnly)

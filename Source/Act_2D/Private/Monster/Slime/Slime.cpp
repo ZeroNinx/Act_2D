@@ -2,11 +2,13 @@
 
 
 #include "Slime.h"
+#include "SlimeController.h"
 
 //构造函数
-ASlime::ASlime():AMonster()
+ASlime::ASlime()
 {
 	bFacingRight = false;
+	AIControllerClass = ASlimeController::StaticClass();
 
 	//设置变换
 	GetCapsuleComponent()->SetCapsuleHalfHeight(34.0f);
@@ -36,7 +38,7 @@ ASlime::ASlime():AMonster()
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Effect Failed"));
 		return;
 	}
-	Effect = CreateDefaultSubobject<UPaperFlipbookComponent>("Effect");
+	Effect = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Effect"));
 	Effect->SetupAttachment(RootComponent);
 	Effect->SetFlipbook(EffectFlipbook);
 	Effect->SetLooping(false);
@@ -48,9 +50,6 @@ ASlime::ASlime():AMonster()
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Hit Flipbook Failed"));
 		return;
 	}
-
-	//设定行为树
-	BTComponent = CreateDefaultSubobject<USlimeBTComponent>(TEXT("BTComponent"));
 
 	//绑定代理
 	OnDamagedDelegate.BindDynamic(this, &ASlime::FinishDamaged);

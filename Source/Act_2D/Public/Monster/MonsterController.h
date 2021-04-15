@@ -9,6 +9,9 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "MonsterController.generated.h"
 
 /**
@@ -24,7 +27,30 @@ public:
 	//构造函数
 	AMonsterController();
 
+	//玩家距离
+	UPROPERTY(BlueprintReadOnly)
+	FName DistanceToPlayerID = TEXT("DistanceToPlayer");
+
+	//黑板组件
+	UFUNCTION(BlueprintCallable)
+	UBlackboardComponent* GetBlackboardComponent();
+
+
+
 protected:
+
+	//行为树组件
+	UPROPERTY();
+	UBehaviorTree* BehaviorTree;
+
+	//行为树组件
+	UPROPERTY();
+	UBehaviorTreeComponent* BehaviorTreeComponent;
+
+	//黑板组件
+	UPROPERTY()
+	UBlackboardComponent* BlackboardComponent;
+
 
 	//怪物指针
 	UPROPERTY(BlueprintReadOnly)

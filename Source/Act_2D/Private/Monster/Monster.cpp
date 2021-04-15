@@ -26,12 +26,6 @@ AMonster::AMonster()
 }
 
 
-//获取行为树
-UBehaviorTree* AMonster::GetBehaviorTree()
-{
-	return BTComponent->GetCurrentTree();
-}
-
 //被击中函数
 void AMonster::Hit(FAttackProperty HitAttackProperty)
 {
