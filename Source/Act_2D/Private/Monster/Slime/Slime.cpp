@@ -1,13 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Slime.h"
 #include "SlimeController.h"
 
 //构造函数
 ASlime::ASlime()
 {
-
 	bFacingRight = false;
 	AIControllerClass = ASlimeController::StaticClass();
 
@@ -57,7 +53,10 @@ ASlime::ASlime()
 	//设定攻击组件
 	AttackCompnent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("AttackComponent"));
 	AttackCompnent->SetupAttachment(GetSprite());
-	AttackCompnent->OnComponentHit.AddDynamic(this, &ASlime::OnAttackComponentHit);
+	AttackCompnent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	AttackCompnent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	AttackCompnent->SetVisibility(false);
+	AttackCompnent->OnComponentBeginOverlap.AddDynamic(this, &ASlime::OnAttackComponentBeginOverlap);
 
 	//绑定代理
 	GetSprite()->OnFinishedPlaying.AddDynamic(this, &ASlime::OnFlipookFinishedPlaying);
@@ -72,7 +71,6 @@ void ASlime::JumpAttack()
 		auto DelayJumpAttack = [&]()->void
 		{
 			//设定攻击组件
-			//FString SpritePath = ;
 			UPaperSprite* AttackSprite = LoadObject<UPaperSprite>(this,TEXT("PaperSprite'/Game/Paper2D/Monster/Slime/Jump/Slime_Jump10_Sprite.Slime_Jump10_Sprite'"));
 			if (!AttackSprite)
 			{
@@ -230,12 +228,26 @@ void ASlime::UpdateAnimation()
 	GetSprite()->Play();
 }
 
-//攻击组件
-void ASlime::OnAttackComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+//攻击组件重叠时
+void ASlime::OnAttackComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	FString Name;
-	OtherActor->GetName(Name);
-	UKismetSystemLibrary::PrintString(nullptr, FString("Hit ") + Name);
+	bool bShouldJudge = (!bAttacked && (StateMachine->GetState() == EState::Jumping || StateMachine->GetState() == EState::Falling));
+	if (bShouldJudge)
+	{
+		//为玩家设定攻击
+		APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor);
+		if (!Player)
+		{
+			return;
+		}
+		bAttacked = true;
+
+		FString Name;
+		OtherActor->GetName(Name);
+		//UKismetSystemLibrary::PrintString(GetWorld(), FString("Hit Player"));
+		Skill = NewObject<UMS_SlimeAttack>();
+		Player->Hit(Skill->AttackProperty);
+	}
 }
 
 //完成受击
@@ -245,11 +257,14 @@ void ASlime::OnFlipookFinishedPlaying()
 	bool bShouldUpdate = (StateMachine->GetState() == EState::UnderAttack||bFalled);
 	if (bShouldUpdate)
 	{
-		//清除下落标记
+		//下落结束，清除下落标记及攻击标记
 		if (bFalled)
 		{
+			//UKismetSystemLibrary::PrintString(GetWorld(), FString("Restore"));
 			bFalled = false;
+			bAttacked = false;
 		}
+
 		UpdateState();
 		UpdateAnimation();
 		GetSprite()->SetLooping(true);

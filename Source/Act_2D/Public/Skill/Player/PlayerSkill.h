@@ -7,9 +7,10 @@
 #include "CoreMinimal.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Skill.generated.h"
+#include "PlayerSkill.generated.h"
 
 class APlayerCharacter;
+class AMonster;
 
 /**
  * 技能类
@@ -89,3 +90,4 @@ public:
 	void BeforeJudge(APlayerCharacter* Player) override;
 	
 };
+

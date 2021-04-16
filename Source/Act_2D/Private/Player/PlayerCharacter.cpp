@@ -1,7 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "PlayerCharacter.h"
+
+//重复包含
+#include "PlayerAttackComponent.h"
 
 //构造函数
 APlayerCharacter::APlayerCharacter()
@@ -176,5 +176,12 @@ EState APlayerCharacter::GetState()
 UPlayerAttackComponent* APlayerCharacter::GetAttackComponent()
 {
 	return AttackComponent;
+}
+
+//受击函数
+void APlayerCharacter::Hit(FAttackProperty HitAttackProperty)
+{
+	UKismetSystemLibrary::PrintString(GetWorld(), FString("Hit OK"));
+
 }
 

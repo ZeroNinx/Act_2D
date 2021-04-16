@@ -4,13 +4,15 @@
 
 //自定义
 #include "Act_2DTypes.h"
-#include "PlayerCharacter.h"
 
 //UE4
 #include "CoreMinimal.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/PlayerController.h"
 #include "PlayerCharacterController.generated.h"
+
+class APlayerCharacter;
+class UPlayerAttackComponent;
 
 /**
  * 玩家控制器类

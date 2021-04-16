@@ -1,21 +1,27 @@
 #include "PlayerAttackComponent.h"
 
 //互相包含
+#include "Monster.h"
+#include "PlayerSkill.h"
+#include "StateMachine.h"
 #include "PlayerCharacter.h"
 
 //构造函数
 UPlayerAttackComponent::UPlayerAttackComponent()
 {
 
-	//初始化状态
-	ResetAttack();
-
 	//启用tick
 	PrimaryComponentTick.bCanEverTick = true;
+
+	//设置重叠
+	SetCollisionResponseToAllChannels(ECR_Ignore);
+	SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 
 	//隐藏攻击模块
 	SetVisibility(false);
 
+	//初始化状态
+	ResetAttack();
 }
 
 //Tick函数

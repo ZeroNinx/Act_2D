@@ -3,7 +3,6 @@
 
 //自定义
 #include "StateMachine.h"
-#include "PlayerAttackComponent.h"
 
 #define eps 1e-7//浮点数误差
 
@@ -19,6 +18,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PlayerCharacter.generated.h"
+
+class UPlayerAttackComponent;
 
 /**
  * 玩家类
@@ -52,6 +53,10 @@ public:
 	//获得攻击组件
 	UFUNCTION(BlueprintCallable)
 	UPlayerAttackComponent* GetAttackComponent();
+
+	//受击函数
+	UFUNCTION(BlueprintCallable)
+	void Hit(FAttackProperty HitAttackProperty);
 
 protected:
 

@@ -4,6 +4,7 @@
 
 //UE4
 #include "CoreMinimal.h"
+#include "PaperSprite.h"
 #include "PaperSpriteComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "Monster/Monster.h"
@@ -50,6 +51,10 @@ protected:
 	UPROPERTY()
 	UPaperFlipbookComponent* Effect;
 
+	//攻击
+	UPROPERTY()
+	UMonsterSkill* Skill;
+
 	//跳跃攻击定时器句柄
 	FTimerHandle JumpAttackHandle;
 
@@ -76,9 +81,9 @@ protected:
 	UFUNCTION()
 	void UpdateAnimation();
 
-	//攻击组件命中时
+	//攻击组件重叠时
 	UFUNCTION()
-	void OnAttackComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void OnAttackComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	//单帧动画完成时
 	UFUNCTION()

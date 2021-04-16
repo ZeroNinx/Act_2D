@@ -1,7 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "PlayerCharacterController.h"
+
+//重复包含
+#include "PlayerCharacter.h"
+#include "PlayerAttackComponent.h"
 
 //构造函数
 APlayerCharacterController::APlayerCharacterController()

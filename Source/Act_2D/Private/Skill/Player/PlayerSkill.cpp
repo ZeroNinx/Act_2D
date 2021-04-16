@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-#include "Skill.h"
+#include "PlayerSkill.h"
 
 //循环包含
 #include "PlayerCharacter.h"
@@ -45,5 +45,4 @@ void US_AttackIII::BeforeJudge(APlayerCharacter* Player)
 	float VelocyX = 900.0f * DirectMark;
 	Player->GetCharacterMovement()->Velocity = FVector(VelocyX, 0, 0);
 };
-
 

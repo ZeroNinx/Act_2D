@@ -4,10 +4,8 @@
 #include "sqlite3.h"
 
 //自定义
-#include "Skill.h"
-#include "Monster.h"
+#include "PlayerSkill.h"
 #include "Act_2DTypes.h"
-#include "StateMachine.h"
 
 //UE4
 #include "Misc/Paths.h"
@@ -22,6 +20,8 @@
 #include "PlayerAttackComponent.generated.h"
 
 //互相包含
+class AMonster;
+class UStateMachine;
 class APlayerCharacter;
 
 //各种代理

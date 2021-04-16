@@ -25,7 +25,7 @@ public class Act_2D : ModuleRules
 			}
 		);
 
-		//添加自定义头文件
+		//添加自定义头文件目录
 		PublicIncludePaths.AddRange
 		(
 			new string[]
@@ -34,10 +34,12 @@ public class Act_2D : ModuleRules
 				"Act_2D/Public/Player",
 				"Act_2D/Public/Monster",
 				"Act_2D/Public/Monster/BehaviorTree",
-				"Act_2D/Public/MOnster/Slime",
-				"Act_2D/Public/MOnster/RedGrass"
-			}
-		);
+				"Act_2D/Public/Monster/Slime",
+				"Act_2D/Public/Monster/RedGrass",
+				"Act_2D/Public/Skill/Player",
+				"Act_2D/Public/Skill/Monster"
+            }
+        );
 
 	}
 }
