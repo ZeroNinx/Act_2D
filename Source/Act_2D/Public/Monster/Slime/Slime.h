@@ -4,6 +4,7 @@
 
 //UE4
 #include "CoreMinimal.h"
+#include "PaperSpriteComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "Monster/Monster.h"
 #include "Components/ArrowComponent.h"
@@ -37,11 +38,15 @@ public:
 
 protected:
 
+	//攻击组件
+	UPROPERTY()
+	UPaperSpriteComponent* AttackCompnent;
+
 	//受击动画
 	UPROPERTY()
 	UPaperFlipbook* HitFlipbook;
 
-	//特效
+	//受击特效
 	UPROPERTY()
 	UPaperFlipbookComponent* Effect;
 
@@ -50,6 +55,9 @@ protected:
 
 	//跳跃准备时间
 	float JumpReadyTime = 0.05f;
+
+	//攻击标记
+	bool bAttacked = false;
 
 	//下落标记
 	bool bFalled = false;
@@ -67,6 +75,10 @@ protected:
 	//更新动画
 	UFUNCTION()
 	void UpdateAnimation();
+
+	//攻击组件命中时
+	UFUNCTION()
+	void OnAttackComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	//单帧动画完成时
 	UFUNCTION()

@@ -25,7 +25,6 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->AirControl = 1;
 	JumpMaxHoldTime = 0.2f;
 
-
 	//默认角色朝右
 	bFacingRight = true;
 	

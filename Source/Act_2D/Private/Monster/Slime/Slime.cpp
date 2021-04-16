@@ -7,8 +7,8 @@
 //构造函数
 ASlime::ASlime()
 {
+
 	bFacingRight = false;
-	bFalled = false;
 	AIControllerClass = ASlimeController::StaticClass();
 
 	//设置变换
@@ -34,7 +34,7 @@ ASlime::ASlime()
 	}
 	GetSprite()->SetFlipbook(IdleFlipbook);
 
-	//设定特效
+	//设定受击特效
 	UPaperFlipbook* EffectFlipbook = LoadObject<UPaperFlipbook>(this, TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Effict.Slime_Effict'"));
 	if (!EffectFlipbook)
 	{
@@ -54,6 +54,11 @@ ASlime::ASlime()
 		return;
 	}
 
+	//设定攻击组件
+	AttackCompnent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("AttackComponent"));
+	AttackCompnent->SetupAttachment(GetSprite());
+	AttackCompnent->OnComponentHit.AddDynamic(this, &ASlime::OnAttackComponentHit);
+
 	//绑定代理
 	GetSprite()->OnFinishedPlaying.AddDynamic(this, &ASlime::OnFlipookFinishedPlaying);
 }
@@ -63,9 +68,20 @@ void ASlime::JumpAttack()
 {
 	if (StateMachine->GetState() == EState::Idle&&!bFalled)
 	{
-		//蓄力跳
+		//延迟跳跃
 		auto DelayJumpAttack = [&]()->void
 		{
+			//设定攻击组件
+			//FString SpritePath = ;
+			UPaperSprite* AttackSprite = LoadObject<UPaperSprite>(this,TEXT("PaperSprite'/Game/Paper2D/Monster/Slime/Jump/Slime_Jump10_Sprite.Slime_Jump10_Sprite'"));
+			if (!AttackSprite)
+			{
+				UKismetSystemLibrary::PrintString(nullptr, FString("Slime Attack Sprite Load Failed"));
+				return;
+			}
+			AttackCompnent->SetSprite(AttackSprite);
+
+			//设定起跳速度
 			float DirectMark = bFacingRight ? 1.0f : -1.0f;
 			float JumpSpeed = 300.0f * DirectMark;
 			GetCharacterMovement()->Velocity = FVector(JumpSpeed, 0, 0);
@@ -208,9 +224,18 @@ void ASlime::UpdateAnimation()
 		return;
 	}
 
-	GetSprite()->SetLooping(true);
+	bool bShouldLoop = (CurrentState != EState::Jumping && !bFalled);
+	GetSprite()->SetLooping(bShouldLoop);
 	GetSprite()->SetFlipbook(NewAnimation);
 	GetSprite()->Play();
+}
+
+//攻击组件
+void ASlime::OnAttackComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	FString Name;
+	OtherActor->GetName(Name);
+	UKismetSystemLibrary::PrintString(nullptr, FString("Hit ") + Name);
 }
 
 //完成受击
