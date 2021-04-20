@@ -30,13 +30,9 @@ EBTNodeResult::Type UBTTaskNode_ScanDistanceToPlayer::ExecuteTask(UBehaviorTreeC
 	{
 		DistanceMark = EDistance::Far;
 	}
-	else if(DurationToPlayer > MaxClose)
+	else 
 	{
 		DistanceMark = EDistance::Proper;
-	}
-	else
-	{
-		DistanceMark = EDistance::Close;
 	}
 
 	OwnerComp.GetBlackboardComponent()->SetValueAsEnum(Controller->DistanceToPlayerID, (uint8)DistanceMark);

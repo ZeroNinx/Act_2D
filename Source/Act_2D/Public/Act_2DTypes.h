@@ -1,21 +1,6 @@
 #pragma once
 #include "Act_2DTypes.generated.h"
 
-//基本状态
-UENUM(BlueprintType)
-enum class EState :uint8
-{
-	Idle=0,
-	Running=1,
-	Jumping=2,
-	Falling=3,
-	Falled=4,
-	Attacking=5,
-	UnderAttack=6,
-	Sleeping=7
-};
-
-
 //组合键结构体
 USTRUCT(BlueprintType)
 struct FKeyCombination

@@ -56,7 +56,7 @@ public:
 
 	//受击函数
 	UFUNCTION(BlueprintCallable)
-	void Hit(FAttackProperty HitAttackProperty);
+	void Hit(AMonster* Monster,FAttackProperty HitAttackProperty);
 
 protected:
 
@@ -86,8 +86,41 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void UpdateDirection();
 
+	/**
+	 * 动画资源区
+	 */
+	
+	//默认动画
+	UPROPERTY()
+	UPaperFlipbook* IdleFlipbook;
+
+	//奔跑动画
+	UPROPERTY()
+	UPaperFlipbook* RunningFlipbook;
+
+	//跳跃动画
+	UPROPERTY()
+	UPaperFlipbook* JumpingFlipbook;
+
+	//下落动画
+	UPROPERTY()
+	UPaperFlipbook* FallingFlipbook;
+
+	//受击动画
+	UPROPERTY()
+	UPaperFlipbook* HitFlipbook;
+
+
+	//初始化动画资源
+	UFUNCTION()
+	void InitAnimation();
+
 	//调整动画
 	UFUNCTION()
 	void UpdateAnimation();
+
+	//单帧动画完成时
+	UFUNCTION()
+	void OnFlipookFinishedPlaying();
 
 };

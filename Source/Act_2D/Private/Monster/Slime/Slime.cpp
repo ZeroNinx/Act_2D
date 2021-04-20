@@ -84,6 +84,14 @@ void ASlime::JumpAttack()
 			float JumpSpeed = 300.0f * DirectMark;
 			GetCharacterMovement()->Velocity = FVector(JumpSpeed, 0, 0);
 			Jump();
+
+			//检测已存在重叠
+			APlayerCharacter* Player = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+			bool bOverlappingPlayer=AttackCompnent->IsOverlappingActor(Player);
+			if (bOverlappingPlayer)
+			{
+				AttackJudge(Player);
+			}
 		};
 		auto dlg = FTimerDelegate::CreateLambda(DelayJumpAttack);
 		GetWorldTimerManager().SetTimer(JumpAttackHandle, dlg, (const float)JumpReadyTime, false);
@@ -117,7 +125,7 @@ void ASlime::Hit(FAttackProperty HitAttackProperty)
 void ASlime::PrepareHit()
 {
 	//改变状态
-	StateMachine->SetState(EState::UnderAttack);
+	StateMachine->SetState(EState::Hit);
 
 	//初始化受击动画
 	GetSprite()->SetLooping(false);
@@ -129,7 +137,7 @@ void ASlime::PrepareHit()
 void ASlime::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (StateMachine->GetState() != EState::UnderAttack)
+	if (StateMachine->GetState() != EState::Hit)
 	{
 		UpdateDirection();
 		UpdateState();
@@ -231,30 +239,32 @@ void ASlime::UpdateAnimation()
 //攻击组件重叠时
 void ASlime::OnAttackComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	//攻击判定
 	bool bShouldJudge = (!bAttacked && (StateMachine->GetState() == EState::Jumping || StateMachine->GetState() == EState::Falling));
 	if (bShouldJudge)
 	{
-		//为玩家设定攻击
 		APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor);
 		if (!Player)
 		{
 			return;
 		}
-		bAttacked = true;
-
-		FString Name;
-		OtherActor->GetName(Name);
-		//UKismetSystemLibrary::PrintString(GetWorld(), FString("Hit Player"));
-		Skill = NewObject<UMS_SlimeAttack>();
-		Player->Hit(Skill->AttackProperty);
+		AttackJudge(Player);
 	}
+}
+
+void ASlime::AttackJudge(APlayerCharacter* Player)
+{
+	//为玩家设定攻击
+	bAttacked = true;
+	Skill = NewObject<UMS_SlimeAttack>();
+	Player->Hit(this, Skill->AttackProperty);
 }
 
 //完成受击
 void ASlime::OnFlipookFinishedPlaying()
 {
 	//单帧动画完成时
-	bool bShouldUpdate = (StateMachine->GetState() == EState::UnderAttack||bFalled);
+	bool bShouldUpdate = (StateMachine->GetState() == EState::Hit||bFalled);
 	if (bShouldUpdate)
 	{
 		//下落结束，清除下落标记及攻击标记

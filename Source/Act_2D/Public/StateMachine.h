@@ -10,6 +10,20 @@
 #include "Components/ActorComponent.h"
 #include "StateMachine.generated.h"
 
+//基本状态
+UENUM(BlueprintType)
+enum class EState :uint8
+{
+	Idle,
+	Running,
+	Jumping,
+	Falling,
+	Falled,
+	Attacking,
+	Hit,
+	Sleeping
+};
+
 //基础状态机
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class ACT_2D_API UStateMachine : public UActorComponent

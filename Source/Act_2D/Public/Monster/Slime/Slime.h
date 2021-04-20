@@ -2,12 +2,15 @@
 
 #pragma once
 
+//自定义
+#include "Monster/Monster.h"
+
 //UE4
 #include "CoreMinimal.h"
 #include "PaperSprite.h"
 #include "PaperSpriteComponent.h"
 #include "PaperFlipbookComponent.h"
-#include "Monster/Monster.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/ArrowComponent.h"
 #include "Slime.generated.h"
 
@@ -84,6 +87,10 @@ protected:
 	//攻击组件重叠时
 	UFUNCTION()
 	void OnAttackComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	//攻击判定
+	UFUNCTION()
+	void AttackJudge(APlayerCharacter* Player);
 
 	//单帧动画完成时
 	UFUNCTION()

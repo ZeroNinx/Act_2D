@@ -6,7 +6,7 @@
 
 void UMonsterSkill::InJudge(AMonster* Monster, APlayerCharacter* Player)
 {
-	Monster->Hit(AttackProperty);
+	Player->Hit(Monster,AttackProperty);
 }
 
 

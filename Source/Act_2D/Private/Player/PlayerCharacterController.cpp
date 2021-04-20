@@ -66,8 +66,9 @@ void APlayerCharacterController::MoveRight(float AxisValue)
 			AttackRestore();
 		}
 
-		//当非攻击时
-		if (PlayerCharacter->GetState() != EState::Attacking)
+		//当可移动时
+		bool bPlayerMovable = PlayerCharacter->GetState() != EState::Attacking && PlayerCharacter->GetState() != EState::Hit;
+		if (bPlayerMovable)
 		{
 			//添加移动
 			PlayerCharacter->AddMovementInput(FVector(1, 0, 0), AxisValue > 0 ? 1.0f : -1.0f);
@@ -142,8 +143,9 @@ void APlayerCharacterController::JumpPressed()
 		AttackRestore();
 	}
 
-	//当非攻击时
-	if (PlayerCharacter->GetState() != EState::Attacking)
+	//当可移动时
+	bool bPlayerMovable = PlayerCharacter->GetState() != EState::Attacking && PlayerCharacter->GetState() != EState::Hit;
+	if (bPlayerMovable)
 	{
 		PlayerCharacter->Jump();
 	}
@@ -172,11 +174,11 @@ void APlayerCharacterController::AddAttackInput()
 {
 	NextkKeyCombation = FKeyCombination(bAttackPressed, bSpecialPressed, bTriggerPressed, bJumpPressed, bUpPressed, bDownPressed, bLeftPressed, bRightPressed);
 
-
 	//设置延迟接受输入
 	auto DelayAttackInput = [&]() -> void
 	{
-		AttackComponent->SetKeyCombination(NextkKeyCombation);
+		if (PlayerCharacter->GetState() != EState::Hit)
+			AttackComponent->SetKeyCombination(NextkKeyCombation);
 	};
 	auto dlg = FTimerDelegate::CreateLambda(DelayAttackInput);
 	GetWorldTimerManager().SetTimer(AttackDelayHandle, dlg, (const float)AttackInputDuration, false);

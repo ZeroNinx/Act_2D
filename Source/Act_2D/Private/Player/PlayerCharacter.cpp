@@ -27,6 +27,9 @@ APlayerCharacter::APlayerCharacter()
 
 	//默认角色朝右
 	bFacingRight = true;
+
+	//胶囊体组件
+	GetCapsuleComponent()->SetCapsuleRadius(20.0f);
 	
 	//弹簧臂组件
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
@@ -46,8 +49,11 @@ APlayerCharacter::APlayerCharacter()
 	AttackComponent->SetupAttachment(GetSprite());
 	AttackComponent->Setup(this);
 
-	//为了而在编辑器中方便显示动画
-	UpdateAnimation();
+	//初始化动画
+	InitAnimation();
+
+	//绑定动画
+	GetSprite()->OnFinishedPlaying.AddDynamic(this, &APlayerCharacter::OnFlipookFinishedPlaying);
 }
 
 //开始游戏
@@ -64,7 +70,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//当非战斗时自动调整动画
-	if (AttackComponent->AttackID == 0)
+	if (AttackComponent->AttackID == 0&& GetState() != EState::Hit)
 	{
 		UpdateDirection();
 		UpdateState();
@@ -126,38 +132,56 @@ void APlayerCharacter::UpdateState()
 	}
 }
 
+//初始化动画
+void APlayerCharacter::InitAnimation()
+{
+	IdleFlipbook	= LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Character/PlayerCharacter.PlayerCharacter'"));
+	RunningFlipbook = LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Character/Character_Run.Character_Run'"));
+	JumpingFlipbook = LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Character/Character_Jump_Start.Character_Jump_Start'"));
+	FallingFlipbook = LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Character/Character_Jump_Fall.Character_Jump_Fall'"));
+	HitFlipbook		= LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Character/Hit.Hit'"));
+	UpdateAnimation();
+}
+
 //调整动画
 void APlayerCharacter::UpdateAnimation()
 {
 	//动画路径
-	FString AnimationFlipbook;
+	UPaperFlipbook* AnimationFlipbook=nullptr;
 	
 	//根据不同状态调整动画
 	switch (StateMachine->GetState())
 	{
 	case EState::Idle:
-		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Character/PlayerCharacter.PlayerCharacter'";
+		AnimationFlipbook = IdleFlipbook;
 		break;
 	case EState::Running:
-		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Character/Run/Character_Run.Character_Run'";
+		AnimationFlipbook = RunningFlipbook;
 		break;
 	case EState::Jumping:
-		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Character/Jump/Character_Jump_Start.Character_Jump_Start'";
+		AnimationFlipbook = JumpingFlipbook;
 		break;;
 	case EState::Falling:
-		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Character/Jump/Character_Jump_Fall.Character_Jump_Fall'";
+		AnimationFlipbook = FallingFlipbook;
 		break;
 	}
 
 	//设定动画
-	UPaperFlipbook* NewAnimation = LoadObject<UPaperFlipbook>(GetWorld(),*AnimationFlipbook);
-	if (!NewAnimation)
+	if (!AnimationFlipbook)
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Animation Flipbook Failed"));
 		return;
 	}
 
-	GetSprite()->SetFlipbook(NewAnimation);
+	GetSprite()->SetFlipbook(AnimationFlipbook);
+}
+
+//单帧动画完成时
+void APlayerCharacter::OnFlipookFinishedPlaying()
+{
+	UpdateState();
+	GetSprite()->SetLooping(true);
+	GetSprite()->Play();
 }
 
 //设置状态
@@ -179,9 +203,25 @@ UPlayerAttackComponent* APlayerCharacter::GetAttackComponent()
 }
 
 //受击函数
-void APlayerCharacter::Hit(FAttackProperty HitAttackProperty)
+void APlayerCharacter::Hit(AMonster* Monster,FAttackProperty HitAttackProperty)
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), FString("Hit OK"));
+	if (GetState() != EState::Hit)
+	{
+		GetCharacterMovement()->StopMovementImmediately();
+		AttackComponent->ResetAttack();
 
+		//添加瞬时速度
+		bFacingRight = Monster->GetActorLocation().X > GetActorLocation().X;
+		UpdateDirection();
+		float DirectMark = bFacingRight ? -1.0f : 1.0f;
+		float VelocyX = 900.0f * DirectMark;
+		GetCharacterMovement()->Velocity = FVector(VelocyX, 0, 0);
+
+		//设定动画
+		SetState(EState::Hit);
+		GetSprite()->SetLooping(false);
+		GetSprite()->SetFlipbook(HitFlipbook);
+		GetSprite()->PlayFromStart();
+	}
 }
 
