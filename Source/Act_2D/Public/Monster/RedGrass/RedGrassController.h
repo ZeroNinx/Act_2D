@@ -3,31 +3,31 @@
 #pragma once
 
 //自定义
-#include "Slime.h"
+#include "RedGrass.h"
 
 //UE4
 #include "CoreMinimal.h"
-#include "Monster/MonsterController.h"
-#include "SlimeController.generated.h"
+#include "AIController.h"
+#include "RedGrassController.generated.h"
 
 /**
- * 史莱姆控制器
+ * 红草控制器
  */
 UCLASS()
-class ACT_2D_API ASlimeController : public AMonsterController
+class ACT_2D_API ARedGrassController : public AAIController
 {
 	GENERATED_BODY()
 	
 public:
-	
+
 	//构造函数
-	ASlimeController();
+	ARedGrassController();
 
 protected:
 
 	//怪物指针
 	UPROPERTY()
-	ASlime* Slime;
+	ARedGrass* RedGrass;
 
 	//当开始控制时
 	void OnPossess(APawn* InPawn) override;

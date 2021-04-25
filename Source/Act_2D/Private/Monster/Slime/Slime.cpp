@@ -21,34 +21,14 @@ ASlime::ASlime()
 	GetCharacterMovement()->BrakingDecelerationWalking = 200.0f;
 	GetCharacterMovement()->GroundFriction = 2.0f;
 
-	//载入动画
-	UPaperFlipbook* IdleFlipbook = LoadObject<UPaperFlipbook>(this, TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Idle.Slime_Idle'"));
-	if(!IdleFlipbook)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), "Load Failed");
-		return;
-	}
-	GetSprite()->SetFlipbook(IdleFlipbook);
+	//初始化动画
+	InitAnimation();
 
 	//设定受击特效
-	UPaperFlipbook* EffectFlipbook = LoadObject<UPaperFlipbook>(this, TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Effict.Slime_Effict'"));
-	if (!EffectFlipbook)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Effect Failed"));
-		return;
-	}
-	Effect = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Effect"));
-	Effect->SetupAttachment(RootComponent);
-	Effect->SetFlipbook(EffectFlipbook);
-	Effect->SetLooping(false);
-
-	//设定受击动画
-	HitFlipbook = LoadObject<UPaperFlipbook>(this, TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Hit.Slime_Hit'"));
-	if (!HitFlipbook)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Hit Flipbook Failed"));
-		return;
-	}
+	HitEffectComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("HitEffectComponent"));
+	HitEffectComponent->SetupAttachment(RootComponent);
+	HitEffectComponent->SetFlipbook(HitEffectFlipbook);
+	HitEffectComponent->SetLooping(false);
 
 	//设定攻击组件
 	AttackCompnent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("AttackComponent"));
@@ -102,9 +82,16 @@ void ASlime::JumpAttack()
 //被击中
 void ASlime::Hit(FAttackProperty HitAttackProperty)
 {
-	AttackProperty = HitAttackProperty;
-	PrepareHit();
-	Effect->PlayFromStart();
+	//改变状态
+	StateMachine->SetState(EState::Hit);
+
+	//重新播放受击动画
+	GetSprite()->SetLooping(false);
+	GetSprite()->SetFlipbook(HitFlipbook);
+	GetSprite()->PlayFromStart();
+
+	//重新播放效果
+	HitEffectComponent->PlayFromStart();
 
 	//添加瞬时速度
 	float DirectMark = bFacingRight ? -1.0f : 1.0f;
@@ -121,16 +108,15 @@ void ASlime::Hit(FAttackProperty HitAttackProperty)
 	}
 }
 
-//准备受击
-void ASlime::PrepareHit()
+//初始化动画资源
+void ASlime::InitAnimation()
 {
-	//改变状态
-	StateMachine->SetState(EState::Hit);
-
-	//初始化受击动画
-	GetSprite()->SetLooping(false);
-	GetSprite()->SetFlipbook(HitFlipbook);
-	GetSprite()->PlayFromStart();
+	IdleFlipbook		= LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Idle.Slime_Idle'"));
+	JumpingFlipbook		= LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Jump_Start.Slime_Jump_Start'"));
+	FalledFlipbook		= LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Jump_End.Slime_Jump_End'"));
+	HitFlipbook			= LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Hit.Slime_Hit'"));
+	HitEffectFlipbook	= LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Effict.Slime_Effict'"));
+	UpdateAnimation();
 }
 
 //tick函数
@@ -153,13 +139,13 @@ void ASlime::UpdateDirection()
 	{
 		bFacingRight = false;
 		GetSprite()->SetRelativeRotation(FRotator(0, 0, 0));
-		Effect->SetRelativeLocation(FVector(-5.0f, 1.0f, 50.0f));
+		HitEffectComponent->SetRelativeLocation(FVector(-5.0f, 1.0f, 50.0f));
 	}
 	else
 	{
 		bFacingRight = true;
 		GetSprite()->SetRelativeRotation(FRotator(0, 180.0f, 0));
-		Effect->SetRelativeLocation(FVector(40.0f, 1.0f, 50.0f));
+		HitEffectComponent->SetRelativeLocation(FVector(40.0f, 1.0f, 50.0f));
 	}
 }
 
@@ -205,34 +191,30 @@ void ASlime::UpdateAnimation()
 	}
 
 	//动画路径
-	FString AnimationFlipbook;
+	UPaperFlipbook* AnimationFlipbook=nullptr;
 	switch (CurrentState)
 	{
 	case EState::Idle:
-		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Idle.Slime_Idle'";
+		AnimationFlipbook = IdleFlipbook;
 		break;
 	case EState::Jumping:
-		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Jump_Start.Slime_Jump_Start'";
+		AnimationFlipbook = JumpingFlipbook;
 		break;
 	case EState::Falled:
-		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Jump_End.Slime_Jump_End'";
-		break;
-	case EState::Sleeping:
-		AnimationFlipbook = "PaperFlipbook'/Game/Paper2D/Monster/Slime/Slime_Sleep.Slime_Sleep'";
+		AnimationFlipbook = FalledFlipbook;
 		break;
 	}
 
-	//设定动画
-	UPaperFlipbook* NewAnimation = LoadObject<UPaperFlipbook>(GetWorld(), *AnimationFlipbook);
-	if (!NewAnimation)
+	if (AnimationFlipbook == nullptr)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Slime Animation Flipbook Failed"));
+		UKismetSystemLibrary::PrintString(GetWorld(), FString("Slime Flipbook Load Failed"));
 		return;
 	}
 
+	//设定动画
 	bool bShouldLoop = (CurrentState != EState::Jumping && !bFalled);
 	GetSprite()->SetLooping(bShouldLoop);
-	GetSprite()->SetFlipbook(NewAnimation);
+	GetSprite()->SetFlipbook(AnimationFlipbook);
 	GetSprite()->Play();
 }
 
@@ -252,6 +234,7 @@ void ASlime::OnAttackComponentBeginOverlap(UPrimitiveComponent* OverlappedCompon
 	}
 }
 
+//攻击判定
 void ASlime::AttackJudge(APlayerCharacter* Player)
 {
 	//为玩家设定攻击
@@ -260,7 +243,7 @@ void ASlime::AttackJudge(APlayerCharacter* Player)
 	Player->Hit(this, Skill->AttackProperty);
 }
 
-//完成受击
+//单帧动画播放完成时
 void ASlime::OnFlipookFinishedPlaying()
 {
 	//单帧动画完成时
@@ -270,7 +253,6 @@ void ASlime::OnFlipookFinishedPlaying()
 		//下落结束，清除下落标记及攻击标记
 		if (bFalled)
 		{
-			//UKismetSystemLibrary::PrintString(GetWorld(), FString("Restore"));
 			bFalled = false;
 			bAttacked = false;
 		}

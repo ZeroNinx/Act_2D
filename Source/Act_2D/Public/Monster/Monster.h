@@ -41,16 +41,20 @@ public:
 protected:
 
 	//碰撞胶囊
-	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly)
 	UCapsuleComponent* RealCapsule;
 
 	//状态机
-	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly)
 	UStateMachine* StateMachine;
 
 	//攻击特性
 	UPROPERTY(BlueprintReadOnly)
 	FAttackProperty AttackProperty;
+
+	//受击效果组件
+	UPROPERTY(BlueprintReadOnly)
+	UPaperFlipbookComponent* HitEffectComponent;
 
 	//游戏开始执行
 	virtual void BeginPlay() override;
@@ -60,5 +64,45 @@ protected:
 
 	//更新朝向
 	virtual void UpdateDirection();
+
+	//更新状态
+	virtual void UpdateState();
+
+	//更新动画
+	virtual void UpdateAnimation() {};
+
+	//标记一次攻击是否命中了玩家
+	bool bAttacked = false;
+
+	//单帧动画播放完成时
+	virtual void OnFlipookFinishedPlaying() {};
+
+
+	/**
+	* 动画资源区
+	*/
+
+	//空闲动画
+	UPROPERTY();
+	UPaperFlipbook* IdleFlipbook;
+
+	//跳跃动画
+	UPROPERTY()
+	UPaperFlipbook* JumpingFlipbook;
+
+	//着地动画
+	UPROPERTY()
+	UPaperFlipbook* FalledFlipbook;
+
+	//受击动画
+	UPROPERTY()
+	UPaperFlipbook* HitFlipbook;
+
+	//受击特效
+	UPROPERTY()
+	UPaperFlipbook* HitEffectFlipbook;
+
+	//初始化动画资源
+	virtual void InitAnimation() {};
 
 };

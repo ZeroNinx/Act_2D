@@ -3,7 +3,7 @@
 #pragma once
 
 //自定义
-#include "Monster/Monster.h"
+#include "Monster.h"
 
 //UE4
 #include "CoreMinimal.h"
@@ -28,17 +28,12 @@ public:
 	ASlime();
 
 	//史莱姆跳跃（攻击）
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void JumpAttack();
 
 	//被击中
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void Hit(FAttackProperty HitAttackProperty);
-
-	//准备受击
-	UFUNCTION(BlueprintCallable)
-	void PrepareHit();
-	
 
 protected:
 
@@ -46,15 +41,7 @@ protected:
 	UPROPERTY()
 	UPaperSpriteComponent* AttackCompnent;
 
-	//受击动画
-	UPROPERTY()
-	UPaperFlipbook* HitFlipbook;
-
-	//受击特效
-	UPROPERTY()
-	UPaperFlipbookComponent* Effect;
-
-	//攻击
+	//攻击技能
 	UPROPERTY()
 	UMonsterSkill* Skill;
 
@@ -64,11 +51,12 @@ protected:
 	//跳跃准备时间
 	float JumpReadyTime = 0.05f;
 
-	//攻击标记
-	bool bAttacked = false;
-
-	//下落标记
+	//标记是否刚着地
 	bool bFalled = false;
+
+	//初始化动画资源
+	UFUNCTION()
+	void InitAnimation() override;
 
 	//tick函数
 	void Tick(float DeltaTime) override;
@@ -77,12 +65,11 @@ protected:
 	void UpdateDirection() override;
 
 	//更新状态
-	UFUNCTION()
-	void UpdateState();
+	void UpdateState() override;
 
 	//更新动画
 	UFUNCTION()
-	void UpdateAnimation();
+	void UpdateAnimation() override;
 
 	//攻击组件重叠时
 	UFUNCTION()
@@ -94,5 +81,5 @@ protected:
 
 	//单帧动画完成时
 	UFUNCTION()
-	void OnFlipookFinishedPlaying();
+	void OnFlipookFinishedPlaying() override;
 };

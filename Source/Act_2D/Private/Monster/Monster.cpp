@@ -64,3 +64,24 @@ void AMonster::UpdateDirection()
 	}
 }
 
+//更新状态
+void AMonster::UpdateState()
+{
+	//获取速度
+	FVector Velocy = GetCharacterMovement()->GetLastUpdateVelocity();
+
+	//判断速度
+	if (Velocy.Z > 0)
+	{
+		StateMachine->SetState(EState::Jumping);
+	}
+	else if (Velocy.Z < 0)
+	{
+		StateMachine->SetState(EState::Falling);
+	}
+	else
+	{
+		StateMachine->SetState(EState::Idle);
+	}
+}
+
