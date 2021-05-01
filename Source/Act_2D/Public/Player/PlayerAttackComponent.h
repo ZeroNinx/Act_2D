@@ -24,11 +24,6 @@ class AMonster;
 class UStateMachine;
 class APlayerCharacter;
 
-//各种代理
-DECLARE_DELEGATE_OneParam(FInAttackDelegate, APlayerCharacter*);
-DECLARE_DELEGATE_OneParam(FBeforeJudgeDelegate,APlayerCharacter*);
-DECLARE_DELEGATE_TwoParams(FInJudgeDelegate,APlayerCharacter*,AMonster*);
-
 /**
  * 攻击组件类
  */
@@ -91,11 +86,6 @@ protected:
 	//当前技能
 	UPROPERTY(BlueprintReadOnly)
 	USkill* Skill;
-
-	//三个攻击代理
-	FInAttackDelegate InAttackDelegate;
-	FBeforeJudgeDelegate BeforeJudgeDelegate;
-	FInJudgeDelegate InJudgeDelegate;
 
 	//下一次按键组合
 	UPROPERTY(BlueprintReadOnly)

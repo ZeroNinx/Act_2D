@@ -9,7 +9,6 @@
 //构造函数
 UPlayerAttackComponent::UPlayerAttackComponent()
 {
-
 	//启用tick
 	PrimaryComponentTick.bCanEverTick = true;
 
@@ -56,7 +55,7 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		//攻击帧前
 		if (bShouldJudge && GetAnimationPosition() < AttackFrame)
 		{
-			BeforeJudgeDelegate.Execute(PlayerCharacter);
+			Skill->BeforeJudge(PlayerCharacter);
 		}
 		else if (bShouldJudge && GetAnimationPosition() == AttackFrame)
 		{
@@ -81,7 +80,7 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 
 		if (PlayerCharacter->GetState() == EState::Attacking)
 		{
-			InAttackDelegate.Execute(PlayerCharacter);
+			Skill->InAttack(PlayerCharacter);
 		}
 		
 	}
@@ -129,11 +128,6 @@ void UPlayerAttackComponent::Attack(int ID)
 	//设定攻击ID和类型
 	AttackID = ID;
 	SwitchAttack();
-
-	//绑定各种代理
-	InAttackDelegate.BindUObject(Skill, &USkill::InAttack);
-	BeforeJudgeDelegate.BindUObject(Skill, &USkill::BeforeJudge);
-	InJudgeDelegate.BindUObject(Skill, &USkill::InJudge);
 
 	//初始化攻击资源
 	SetupAttack();
@@ -354,7 +348,7 @@ void UPlayerAttackComponent::AttackJudge()
 		//判定逻辑
 
 		AMonster* Monster = Cast<AMonster>(Actor);
-		InJudgeDelegate.Execute(PlayerCharacter, Monster);
+		Skill->InJudge(PlayerCharacter, Monster);
 
 		FPlatformProcess::Sleep(0.07f);
 	}

@@ -13,8 +13,7 @@ ASlime::ASlime()
 	RealCapsule->SetCapsuleHalfHeight(44.0f);
 	RealCapsule->SetCapsuleRadius(33.0f);
 	GetSprite()->SetRelativeLocation(FVector(0, 0, 44.0f));
-	GetArrowComponent()->SetRelativeRotation(FRotator(0, 180.0f, 0));
-
+	
 	//设置摩擦力
 	GetCharacterMovement()->AirControl = 0;
 	GetCharacterMovement()->GravityScale = 0.8f;
@@ -98,7 +97,7 @@ void ASlime::Hit(FAttackProperty HitAttackProperty)
 	float LightVelocyX = 200.0f * DirectMark;
 	float HeavyVelocyX = 600.0f * DirectMark;
 
-	if (AttackProperty.HarmfulType == EAttackHarmfulType::HeavyAttack)
+	if (HitAttackProperty.HarmfulType == EAttackHarmfulType::HeavyAttack)
 	{
 		GetCharacterMovement()->Velocity = FVector(HeavyVelocyX, 0, 0);
 	}

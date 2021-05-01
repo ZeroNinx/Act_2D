@@ -17,8 +17,7 @@ ARedGrass::ARedGrass()
 	RealCapsule->SetCapsuleRadius(33.0f);
 	GetSprite()->SetRelativeLocation(FVector(0, 0, 28.0f));
 	GetSprite()->SetRelativeScale3D(FVector(4.0f, 4.0f, 4.0f));
-	GetArrowComponent()->SetRelativeRotation(FRotator(0, 180.0f, 0));
-
+	
 	//更新动画
 	InitAnimation();
 
@@ -51,8 +50,7 @@ void ARedGrass::Attack()
 //受击函数
 void ARedGrass::Hit(FAttackProperty HitAttackProperty)
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), "12xxxxxxxxxxxxxxxxxxxxxx1");
-
+	
 	//改变状态
 	StateMachine->SetState(EState::Hit);
 
@@ -121,7 +119,6 @@ void ARedGrass::UpdateAnimation()
 void ARedGrass::OnFlipookFinishedPlaying()
 {
 	//单帧动画完成时
-	UKismetSystemLibrary::PrintString(GetWorld(), "12xxxxxxxxxxxxxxxxxxxxxx3");
 	bool bShouldUpdate = (StateMachine->GetState() == EState::Hit);
 	if (bShouldUpdate)
 	{
