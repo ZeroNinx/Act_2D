@@ -39,12 +39,13 @@ public:
 	bool bFacingRight;
 
 	//设置状态
-	UFUNCTION(BlueprintCallable)
 	void SetState(EState NewState);
 
 	//取得状态
-	UFUNCTION(BlueprintCallable)
 	EState GetState();
+
+	//是否在状态中
+	bool IsInState(EState InState);
 
 	//调整状态
 	UFUNCTION()

@@ -4,7 +4,7 @@
 #include "Monster.h"
 #include "PlayerSkill.h"
 #include "StateMachine.h"
-#include "PlayerCharacter.h"
+#include "PlayerCharacterController.h"
 
 //构造函数
 UPlayerAttackComponent::UPlayerAttackComponent()
@@ -19,8 +19,6 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 	//隐藏攻击模块
 	SetVisibility(false);
 
-	//初始化状态
-	ResetAttack();
 }
 
 //Tick函数
@@ -29,23 +27,27 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	//当攻击外进入攻击
 	if (AttackID == 0 && !NextKeyCombation.IsAttackEmpty())
 	{
-		bool bPlayerJumping = PlayerCharacter->GetState() == EState::Jumping || PlayerCharacter->GetState() == EState::Falling;
+
+		//跳跃攻击
+		bool bPlayerJumping = PlayerCharacter->IsInState(EState::Jumping|EState::Falling);
 		if (bPlayerJumping)
 		{
 			Attack(4);
 		}
-
-		//获得命令
-		int NextCommand = NextKeyCombation.GetCommand();
-		NextKeyCombation.Clear();
-
-		//进行对应攻击
-		SetupCombo();
-		if (ComboMap.Contains(NextCommand))
+		else //一般攻击
 		{
-			//立即停止移动，开始攻击
-			PlayerCharacter->GetCharacterMovement()->StopMovementImmediately();
-			Attack(ComboMap[NextCommand]);
+			//获得命令
+			int NextCommand = NextKeyCombation.GetCommand();
+			NextKeyCombation.Clear();
+
+			//进行对应攻击
+			SetupCombo();
+			if (ComboMap.Contains(NextCommand))
+			{
+				//立即停止移动，开始攻击
+				PlayerCharacter->GetCharacterMovement()->StopMovementImmediately();
+				Attack(ComboMap[NextCommand]);
+			}
 		}
 	}
 
@@ -336,7 +338,7 @@ void UPlayerAttackComponent::SetupCombo()
 void UPlayerAttackComponent::AttackJudge()
 {
 
-	//更新重叠状态
+	//获取重叠的Actor之前，务必更新重叠状态
 	UpdateOverlaps();
 
 	//取得重叠的Actor，进行攻击判定
@@ -344,12 +346,14 @@ void UPlayerAttackComponent::AttackJudge()
 	GetOverlappingActors(OverlappingActors);
 	for (AActor* Actor : OverlappingActors)
 	{
-		//////////////////////////////////////////////////////////////////////////
 		//判定逻辑
-
 		AMonster* Monster = Cast<AMonster>(Actor);
-		Skill->InJudge(PlayerCharacter, Monster);
+		if (Monster)
+		{
+			Skill->InJudge(PlayerCharacter, Monster);
+		}
 
+		//打击感延迟
 		FPlatformProcess::Sleep(0.07f);
 	}
 
@@ -366,5 +370,12 @@ void UPlayerAttackComponent::ResetAttack()
 	Skill = NewObject<USkill>();
 }
 
-
+//玩家结束攻击
+void UPlayerAttackComponent::PlayerFinishAttack()
+{
+	ResetAttack();
+	PlayerCharacter->UpdateState();
+	PlayerCharacter->GetSprite()->SetLooping(true);
+	PlayerCharacter->GetSprite()->Play();
+}
 

@@ -11,18 +11,20 @@
 #include "StateMachine.generated.h"
 
 //基本状态
-UENUM(BlueprintType)
-enum class EState :uint8
+UENUM(BlueprintType, meta = (Bitflags))
+enum class EState : uint8
 {
-	Idle,
-	Running,
-	Jumping,
-	Falling,
-	Falled,
-	Attacking,
-	Hit,
-	Sleeping
+	None		= 0 UMETA(Hidden),
+	Idle		= 1 << 0,
+	Running		= 1 << 1,
+	Jumping		= 1 << 2,
+	Falling		= 1 << 3,
+	Falled		= 1 << 4,
+	Attacking	= 1 << 5,
+	Hit			= 1 << 6,
+	Sleeping	= 1 << 7
 };
+ENUM_CLASS_FLAGS(EState);
 
 //基础状态机
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -35,17 +37,17 @@ public:
 	UStateMachine();
 
 	//取得状态
-	UFUNCTION(BlueprintCallable)
 	EState GetState();
 
 	//设置状态
-	UFUNCTION(BlueprintCallable)
 	void SetState(EState NewState);
+
+	//判断是否处于状态中
+	bool IsInState(EState State);
 
 protected:
 
 	//取得状态
-	UPROPERTY(BlueprintReadWrite)
 	EState State;
 
 };

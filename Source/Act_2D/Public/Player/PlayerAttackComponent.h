@@ -57,6 +57,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetAttack();
 
+	//玩家结束攻击
+	UFUNCTION(BlueprintCallable)
+	void PlayerFinishAttack();
+
 protected:
 
 	//玩家指针

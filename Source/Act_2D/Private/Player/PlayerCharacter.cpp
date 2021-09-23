@@ -196,6 +196,11 @@ EState APlayerCharacter::GetState()
 	return StateMachine->GetState();
 }
 
+bool APlayerCharacter::IsInState(EState InState)
+{
+	return StateMachine->IsInState(InState);
+}
+
 //获得攻击组件
 UPlayerAttackComponent* APlayerCharacter::GetAttackComponent()
 {

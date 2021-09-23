@@ -152,14 +152,14 @@ void ASlime::UpdateDirection()
 void ASlime::UpdateState()
 {
 	//获取速度
-	FVector Velocy = GetCharacterMovement()->GetLastUpdateVelocity();
+	FVector Velocity = GetCharacterMovement()->GetLastUpdateVelocity();
 
 	//判断速度
-	if (Velocy.Z > 0)
+	if (Velocity.Z > 0)
 	{
 		StateMachine->SetState(EState::Jumping);
 	}
-	else if (Velocy.Z < 0)
+	else if (Velocity.Z < 0)
 	{
 		StateMachine->SetState(EState::Falling);
 	}

@@ -12,16 +12,19 @@ UStateMachine::UStateMachine()
 
 }
 
-
-//取得状态
 EState UStateMachine::GetState()
 {
 	return State;
 }
 
-//设置状态
 void UStateMachine::SetState(EState NewState)
 {
 	State = NewState;
 }
+
+bool UStateMachine::IsInState(EState InStates)
+{
+	return ((State & InStates) != EState::None);
+}
+
 

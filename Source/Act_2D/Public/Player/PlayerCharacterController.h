@@ -57,64 +57,85 @@ protected:
 	//初始化输入函数
 	void SetupInputComponent() override;
 
+	//Tick
+	void Tick(float DeltaSeconds) override;
+
 
 	//攻击键是否按下
 	UPROPERTY(BlueprintReadOnly)
-	bool bAttackPressed;
+	bool bAttackPressed = false;
 
 	//特殊键是否按下
 	UPROPERTY(BlueprintReadOnly)
-	bool bSpecialPressed;
+	bool bSpecialPressed = false;
 
 	//扳机键是否按下
 	UPROPERTY(BlueprintReadOnly)
-	bool bTriggerPressed;
+	bool bTriggerPressed = false;
 
 	//跳跃键是否按下
 	UPROPERTY(BlueprintReadOnly)
-	bool bJumpPressed;
+	bool bJumpPressed = false;
 
 	//上方向键是否按下
 	UPROPERTY(BlueprintReadOnly)
-	bool bUpPressed;
+	bool bUpPressed = false;
 
 	//下方向键是否按下
 	UPROPERTY(BlueprintReadOnly)
-	bool bDownPressed;
+	bool bDownPressed = false;
 
 	//左方向键是否按下
 	UPROPERTY(BlueprintReadOnly)
-	bool bLeftPressed;
+	bool bLeftPressed = false;
 
 	//右方向键是否按下
 	UPROPERTY(BlueprintReadOnly)
-	bool bRightPressed;
+	bool bRightPressed = false;
 
 	//输入组合
 	UPROPERTY(BlueprintReadOnly)
 	FKeyCombination NextkKeyCombation;
 
-	//角色移动
+	//上键
 	UFUNCTION()
-	void MoveRight(float AxisValue);
+	void UpPressed();
 	UFUNCTION()
-	void MoveUp(float AxisValue);
+	void UpReleased();
+
+	//下键
+	UFUNCTION()
+	void DownPressed();
+	UFUNCTION()
+	void DownReleased();
+
+	//左键
+	UFUNCTION()
+	void LeftPressed();
+	UFUNCTION()
+	void LeftReleased();
+
+	//右键
+	UFUNCTION()
+	void RightPressed();
+	UFUNCTION()
+	void RightReleased();
 
 	//攻击键
 	UFUNCTION(BlueprintCallable)
-	void AttackPresssed();
+	void AttackPressed();
 	UFUNCTION(BlueprintCallable)
 	void AttackReleased();
 
 	//特殊键
 	UFUNCTION(BlueprintCallable)
-	void SpecialPresssed();
+	void SpecialPressed();
 	UFUNCTION(BlueprintCallable)
 	void SpecialReleased();
 
 	//扳机键
 	UFUNCTION(BlueprintCallable)
-	void TriggerPresssed();
+	void TriggerPressed();
 	UFUNCTION(BlueprintCallable)
 	void TriggerReleased();
 
@@ -124,16 +145,19 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void JumpReleased();
 
+	//是否允许移动
+	bool IsAllowMove();
+
 	//记录输入组合
 	UFUNCTION(BlueprintCallable)
 	void RecordKeyCombination();
 
+	//准备攻击
+	UFUNCTION(BlueprintCallable)
+	void PrepareAttack();
+
 	//添加攻击输入
 	UFUNCTION(BlueprintCallable)
 	void AddAttackInput();
-
-	//攻击恢复
-	UFUNCTION()
-	void AttackRestore();
 
 };
