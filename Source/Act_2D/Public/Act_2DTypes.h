@@ -62,18 +62,9 @@ struct FKeyCombination
 	//获取哈希
 	int GetCommand()
 	{
-		return (TriggerKey << 8) + (SpecialKey << 4) + AttackKey;
+		return AttackKey + (SpecialKey << 1) + (TriggerKey << 2);
 	}
 };
-
-//Combo哈希
-#define Combo1 0x001
-#define Combo2 0x010
-#define Combo3 0x100
-#define Combo4 0x101
-#define Combo5 0x110
-#define Combo6 0x011
-#define Combo7 0x111
 
 
 //攻击类型

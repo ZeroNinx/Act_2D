@@ -54,25 +54,27 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	//当处于攻击时
 	if (AttackID != 0)
 	{	
-		//攻击帧前
-		if (bShouldJudge && GetAnimationPosition() < AttackFrame)
+		if (GetAnimationPosition() < AttackFrame)
 		{
-			Skill->BeforeJudge(PlayerCharacter);
+			//攻击帧前
+			if (bShouldJudge)
+			{
+				Skill->BeforeJudge(PlayerCharacter);
+			}
 		}
-		else if (bShouldJudge && GetAnimationPosition() == AttackFrame)
+		else if (GetAnimationPosition() == AttackFrame)
 		{
-			//攻击帧，进行攻击判定
-			bShouldJudge = false;
-			AttackJudge();
+			//攻击帧时
+			if (bShouldJudge)
+			{
+				bShouldJudge = false;
+				AttackJudge();
+			}
 		}
 		else if (GetAnimationPosition() >= MovableFrame&& !NextKeyCombation.IsAttackEmpty())
 		{
-
-			//获得命令
+			//可移动帧后，可以进行连续技
 			int NextCommand = NextKeyCombation.GetCommand();
-			NextKeyCombation.Clear();
-
-			//如果可以接，则进行连续技
 			if (ComboMap.Contains(NextCommand))
 			{
 				ResetAttack();
@@ -80,7 +82,7 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 			}
 		}
 
-		if (PlayerCharacter->GetState() == EState::Attacking)
+		if (PlayerCharacter->IsInState(EState::Attacking))
 		{
 			Skill->InAttack(PlayerCharacter);
 		}
@@ -125,6 +127,8 @@ void UPlayerAttackComponent::Attack(int ID)
 {
 	//改变状态为攻击
 	PlayerCharacter->SetState(EState::Attacking);
+
+	//使动画结束播放的代理得以触发
 	PlayerCharacter->GetSprite()->SetLooping(false);
 
 	//设定攻击ID和类型
@@ -155,6 +159,8 @@ void UPlayerAttackComponent::SwitchAttack()
 	case 3:
 		Skill = NewObject<US_AttackIII>();
 		break;
+	case 4:
+		Skill = NewObject<US_AttackJump>();
 	default:
 		break;
 	}

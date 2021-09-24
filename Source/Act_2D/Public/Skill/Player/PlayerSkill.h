@@ -91,3 +91,18 @@ public:
 	
 };
 
+
+/**
+ * JumpAttack
+ */
+UCLASS()
+class ACT_2D_API US_AttackJump :public USkill
+{
+	GENERATED_BODY()
+
+public:
+
+	US_AttackJump();
+
+};
+

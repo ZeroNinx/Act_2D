@@ -46,3 +46,11 @@ void US_AttackIII::BeforeJudge(APlayerCharacter* Player)
 	Player->GetCharacterMovement()->Velocity = FVector(VelocyX, 0, 0);
 };
 
+
+/**
+ * AttackJump
+ */
+US_AttackJump::US_AttackJump()
+{
+	AttackProperty = FAttackProperty(EAttackHarmfulType::HeavyAttack, 1);
+}
