@@ -106,3 +106,19 @@ public:
 
 };
 
+
+/**
+ * DashJump
+ */
+UCLASS()
+class ACT_2D_API US_AttackDash :public USkill
+{
+	GENERATED_BODY()
+
+public:
+
+	US_AttackDash();
+
+	//攻击前
+	void BeforeJudge(APlayerCharacter* Player) override;
+};

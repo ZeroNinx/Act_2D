@@ -48,9 +48,26 @@ void US_AttackIII::BeforeJudge(APlayerCharacter* Player)
 
 
 /**
- * AttackJump
+ * JumpAttack
  */
 US_AttackJump::US_AttackJump()
 {
 	AttackProperty = FAttackProperty(EAttackHarmfulType::HeavyAttack, 1);
+}
+
+
+/**
+ * DashAttack
+ */
+US_AttackDash::US_AttackDash()
+{
+	AttackProperty = FAttackProperty(EAttackHarmfulType::LightAttack, 1);
+}
+
+void US_AttackDash::BeforeJudge(APlayerCharacter* Player)
+{
+	//添加瞬时速度
+	float DirectMark = Player->bFacingRight ? 1.0f : -1.0f;
+	float VelocyX = 2000.0f * DirectMark;
+	Player->GetCharacterMovement()->Velocity = FVector(VelocyX, 0, 0);
 }

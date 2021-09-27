@@ -40,6 +40,8 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 			int NextCommand = NextKeyCombation.GetCommand();
 			NextKeyCombation.Clear();
 
+			UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(NextCommand));
+
 			//进行对应攻击
 			SetupCombo();
 			if (ComboMap.Contains(NextCommand))
@@ -161,6 +163,10 @@ void UPlayerAttackComponent::SwitchAttack()
 		break;
 	case 4:
 		Skill = NewObject<US_AttackJump>();
+		break;
+	case 5:
+		Skill = NewObject<US_AttackDash>();
+		break;
 	default:
 		break;
 	}
