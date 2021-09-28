@@ -25,18 +25,45 @@ public:
 	//构造函数
 	USkill() {};
 
+	//Player
+	UPROPERTY(BlueprintReadOnly)
+	APlayerCharacter* PlayerCharacter;
+
+	//击中的Actor
+	UPROPERTY(BlueprintReadOnly)
+	TSet<AActor*> HitActors;
+
+	//击中的Monster
+	UPROPERTY(BlueprintReadOnly)
+	TSet<AMonster*> HitMonsters;
+
 	//攻击属性
 	UPROPERTY(BlueprintReadOnly)
 	FAttackProperty AttackProperty;
 
-	//攻击全程执行
-	virtual void InAttack(APlayerCharacter* Player) {};
+	//检测击中的怪物
+	virtual void ScanHitActors();
 
-	//攻击前执行
-	virtual void BeforeJudge(APlayerCharacter* Player) {};
+	//攻击判定
+	virtual void ExcuteAttackJudge(APlayerCharacter* Player, AMonster* AMonster);
 
-	//攻击命中时自身效果
-	virtual void InJudge(APlayerCharacter* Player, AMonster* Monster);
+	//前摇执行一次
+	virtual void JudgeAtBeginAttack(APlayerCharacter* Player) {};
+
+	//攻击开始执行一次
+	virtual void JudgeAtStartAttack(APlayerCharacter* Player);
+
+	//攻击结束时执行一次
+	virtual void JudgeAtFinishAttack(APlayerCharacter* Player) {};
+
+	//前摇每帧执行
+	virtual void JudgeDuringBeforeAttack(APlayerCharacter* Player) {};
+
+	//攻击时每帧执行
+	virtual void JudgeDuringAttack(APlayerCharacter* Player) {};
+
+	//攻击结束时执行一次
+	virtual void JudgeDuringFinishAttack(APlayerCharacter* Player) {};
 
 
 protected:
@@ -85,9 +112,9 @@ public:
 
 	US_AttackIII();
 	
+	void JudgeAtStartAttack(APlayerCharacter* Player) override;
 
-	//攻击前
-	void BeforeJudge(APlayerCharacter* Player) override;
+	void JudgeDuringAttack(APlayerCharacter* Player) override;
 	
 };
 
@@ -119,6 +146,7 @@ public:
 
 	US_AttackDash();
 
-	//攻击前
-	void BeforeJudge(APlayerCharacter* Player) override;
+	void JudgeAtStartAttack(APlayerCharacter* Player) override;
+
+	void JudgeDuringAttack(APlayerCharacter* Player) override;
 };

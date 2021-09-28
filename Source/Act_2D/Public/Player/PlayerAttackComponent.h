@@ -67,25 +67,25 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	APlayerCharacter* PlayerCharacter;
 
-	//当前动作攻击帧
+	//当前动作攻击开始帧
 	UPROPERTY(BlueprintReadOnly)
-	int AttackFrame;
+	int AttackStartFrame;
 	
-	//可移动帧
+	//当前动作攻击结束帧
 	UPROPERTY(BlueprintReadOnly)
-	int MovableFrame; 
+	int AttackFinishFrame;
 
-	//跳跃攻击标记
+	//攻击前判定标记
 	UPROPERTY(BlueprintReadOnly)
-	bool bJumpingAttack;
+	bool bBeforeAttackShouldJudge;
 
-	//攻击判定标记
+	//攻击中判定标记
 	UPROPERTY(BlueprintReadOnly)
-	bool bShouldJudge;
-	
-	//攻击停顿标记
+	bool bInAttackShouldJudge;
+
+	//攻击后判定标记
 	UPROPERTY(BlueprintReadOnly)
-	bool bThreadSleeped = false;
+	bool bAfterAttackShouldJudge;
 
 	//当前技能
 	UPROPERTY(BlueprintReadOnly)
@@ -117,10 +117,6 @@ protected:
 	//初始化连续技
 	UFUNCTION()
 	void SetupCombo();
-
-	//攻击判定
-	UFUNCTION()
-	void AttackJudge();
 
 	//获得当前攻击动画播放位置
 	UFUNCTION(BlueprintCallable)

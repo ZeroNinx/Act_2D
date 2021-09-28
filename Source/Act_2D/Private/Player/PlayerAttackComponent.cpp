@@ -27,7 +27,6 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	//当攻击外进入攻击
 	if (AttackID == 0 && !NextKeyCombation.IsAttackEmpty())
 	{
-
 		//跳跃攻击
 		bool bPlayerJumping = PlayerCharacter->IsInState(EState::Jumping|EState::Falling);
 		if (bPlayerJumping)
@@ -39,8 +38,6 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 			//获得命令
 			int NextCommand = NextKeyCombation.GetCommand();
 			NextKeyCombation.Clear();
-
-			UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(NextCommand));
 
 			//进行对应攻击
 			SetupCombo();
@@ -56,37 +53,51 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	//当处于攻击时
 	if (AttackID != 0)
 	{	
-		if (GetAnimationPosition() < AttackFrame)
-		{
-			//攻击帧前
-			if (bShouldJudge)
-			{
-				Skill->BeforeJudge(PlayerCharacter);
-			}
-		}
-		else if (GetAnimationPosition() == AttackFrame)
-		{
-			//攻击帧时
-			if (bShouldJudge)
-			{
-				bShouldJudge = false;
-				AttackJudge();
-			}
-		}
-		else if (GetAnimationPosition() >= MovableFrame&& !NextKeyCombation.IsAttackEmpty())
-		{
-			//可移动帧后，可以进行连续技
-			int NextCommand = NextKeyCombation.GetCommand();
-			if (ComboMap.Contains(NextCommand))
-			{
-				ResetAttack();
-				Attack(ComboMap[NextCommand]);
-			}
-		}
+		//根据动画播放位置（攻击进行的阶段）触发不同逻辑
+		int AnimationPosition = GetAnimationPosition();
 
-		if (PlayerCharacter->IsInState(EState::Attacking))
+		if (AnimationPosition < AttackStartFrame)
 		{
-			Skill->InAttack(PlayerCharacter);
+			//攻击前摇帧
+			if (bBeforeAttackShouldJudge)
+			{
+				bBeforeAttackShouldJudge = false;
+				Skill->JudgeAtBeginAttack(PlayerCharacter);
+			}
+			Skill->JudgeDuringBeforeAttack(PlayerCharacter);
+		}
+		else if (AnimationPosition >= AttackStartFrame && AnimationPosition < AttackFinishFrame)
+		{
+			//攻击进行帧
+			if (bInAttackShouldJudge)
+			{
+				bInAttackShouldJudge = false;
+				Skill->JudgeAtStartAttack(PlayerCharacter);
+			}
+			Skill->JudgeDuringAttack(PlayerCharacter);
+		}
+		else if (AnimationPosition > AttackFinishFrame)
+		{
+			//若有指令，进行指令判定
+			if (!NextKeyCombation.IsAttackEmpty())
+			{
+				int NextCommand = NextKeyCombation.GetCommand();
+
+				if (ComboMap.Contains(NextCommand))
+				{
+					ResetAttack();
+					Attack(ComboMap[NextCommand]);
+					return;
+				}
+			}
+
+			//攻击后摇帧
+			if (bAfterAttackShouldJudge)
+			{
+				bAfterAttackShouldJudge = false;
+				Skill->JudgeAtFinishAttack(PlayerCharacter);
+			}
+			Skill->JudgeDuringFinishAttack(PlayerCharacter);
 		}
 		
 	}
@@ -101,17 +112,13 @@ void UPlayerAttackComponent::Setup(APlayerCharacter* NewCharacter)
 //返回是否可以移动
 bool UPlayerAttackComponent::IsMovable()
 {
-	return AttackID == 0|| GetAnimationPosition() >= MovableFrame;
+	return AttackID == 0 || GetAnimationPosition() >= AttackFinishFrame;
 }
 
 //接收下一次攻击组合
 void UPlayerAttackComponent::SetKeyCombination(FKeyCombination KeyCombation)
 {
-	
-	bool bAccetpInput = AttackID == 0 || GetAnimationPosition() >= MovableFrame;
-	bool bHasAttackInput = !KeyCombation.IsAttackEmpty();
-	
-	if (bAccetpInput && bHasAttackInput)
+	if (IsMovable() && !KeyCombation.IsAttackEmpty())
 	{
 		NextKeyCombation = KeyCombation;
 	}
@@ -143,8 +150,6 @@ void UPlayerAttackComponent::Attack(int ID)
 	//初始化连续技资源
 	SetupCombo();
 
-	//设置启用判定
-	bShouldJudge = true;
 }
 
 //选择攻击
@@ -153,19 +158,19 @@ void UPlayerAttackComponent::SwitchAttack()
 	switch (AttackID)
 	{
 	case 1:
-		Skill = NewObject<US_AttackI>();
+		Skill = NewObject<US_AttackI>(PlayerCharacter);
 		break;
 	case 2:
-		Skill = NewObject<US_AttackII>();
+		Skill = NewObject<US_AttackII>(PlayerCharacter);
 		break;
 	case 3:
-		Skill = NewObject<US_AttackIII>();
+		Skill = NewObject<US_AttackIII>(PlayerCharacter);
 		break;
 	case 4:
-		Skill = NewObject<US_AttackJump>();
+		Skill = NewObject<US_AttackJump>(PlayerCharacter);
 		break;
 	case 5:
-		Skill = NewObject<US_AttackDash>();
+		Skill = NewObject<US_AttackDash>(PlayerCharacter);
 		break;
 	default:
 		break;
@@ -238,12 +243,12 @@ void UPlayerAttackComponent::SetupAttack()
 	int column_name = 1;
 	int column_flipbook = 2;
 	int column_sprite = 3;
-	int column_attack_frame = 4;
-	int column_pause_frame = 5;
+	int column_attack_start_frame = 4;
+	int column_attack_finish_frame = 5;
 
 	//取出数据
-	int attack_frame = sqlite3_column_int(row, column_attack_frame);
-	int pause_frame = sqlite3_column_int(row, column_pause_frame);
+	int attack_start_frame = sqlite3_column_int(row, column_attack_start_frame);
+	int attack_finish_frame = sqlite3_column_int(row, column_attack_finish_frame);
 	FString flipbook_reference = (const char*)sqlite3_column_text(row, column_flipbook);
 	FString sprite_reference = (const char*)sqlite3_column_text(row, column_sprite);
 
@@ -273,8 +278,8 @@ void UPlayerAttackComponent::SetupAttack()
 
 	//设置当前的判定范围和帧
 	SetSprite(AttackSprite);
-	AttackFrame = attack_frame;
-	MovableFrame = attack_frame+pause_frame;
+	AttackStartFrame = attack_start_frame;
+	AttackFinishFrame = attack_finish_frame;
 
 #pragma endregion
 
@@ -346,38 +351,15 @@ void UPlayerAttackComponent::SetupCombo()
 
 }
 
-//攻击判定
-void UPlayerAttackComponent::AttackJudge()
-{
-
-	//获取重叠的Actor之前，务必更新重叠状态
-	UpdateOverlaps();
-
-	//取得重叠的Actor，进行攻击判定
-	TSet<AActor*> OverlappingActors;
-	GetOverlappingActors(OverlappingActors);
-	for (AActor* Actor : OverlappingActors)
-	{
-		//判定逻辑
-		AMonster* Monster = Cast<AMonster>(Actor);
-		if (Monster)
-		{
-			Skill->InJudge(PlayerCharacter, Monster);
-		}
-
-		//打击感延迟
-		FPlatformProcess::Sleep(0.07f);
-	}
-
-}
-
 //重置攻击
 void UPlayerAttackComponent::ResetAttack()
 {
 	AttackID = 0;
-	bJumpingAttack = false;
-	bShouldJudge = false;
-	AttackFrame = 0;
+	AttackStartFrame = 0;
+	AttackFinishFrame = 0;
+	bAfterAttackShouldJudge = true;
+	bInAttackShouldJudge = true;
+	bAfterAttackShouldJudge = true;
 	NextKeyCombation.Clear();
 	Skill = NewObject<USkill>();
 }
