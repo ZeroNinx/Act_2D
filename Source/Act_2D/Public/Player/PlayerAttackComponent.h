@@ -39,7 +39,7 @@ public:
 
 	//当前攻击ID
 	UPROPERTY(BlueprintReadOnly)
-	int AttackID;
+	int AttackID = 0;
 
 	//初始化参数
 	UFUNCTION(BlueprintCallable)
@@ -69,23 +69,23 @@ protected:
 
 	//当前动作攻击开始帧
 	UPROPERTY(BlueprintReadOnly)
-	int AttackStartFrame;
+	int AttackStartFrame = 0;
 	
 	//当前动作攻击结束帧
 	UPROPERTY(BlueprintReadOnly)
-	int AttackFinishFrame;
+	int AttackFinishFrame = 0;
 
 	//攻击前判定标记
 	UPROPERTY(BlueprintReadOnly)
-	bool bBeforeAttackShouldJudge;
+	bool bBeforeAttackShouldJudge = true;
 
 	//攻击中判定标记
 	UPROPERTY(BlueprintReadOnly)
-	bool bInAttackShouldJudge;
+	bool bInAttackShouldJudge = true;
 
 	//攻击后判定标记
 	UPROPERTY(BlueprintReadOnly)
-	bool bAfterAttackShouldJudge;
+	bool bAfterAttackShouldJudge = true;
 
 	//当前技能
 	UPROPERTY(BlueprintReadOnly)
