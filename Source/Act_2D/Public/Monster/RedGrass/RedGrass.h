@@ -29,7 +29,7 @@ public:
 	void Attack();
 
 	//受击函数
-	void Hit(FAttackProperty HitAttackProperty) override;
+	void Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackProperty) override;
 
 protected:
 

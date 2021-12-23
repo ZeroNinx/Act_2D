@@ -1,7 +1,7 @@
 #pragma once
 
 //自定义
-#include "Monster.h"
+#include "ActorInterface.h"
 
 //UE4
 #include "CoreMinimal.h"
@@ -33,19 +33,20 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	TSet<AActor*> HitActors;
 
-	//击中的Monster
+	//击中的Actor
 	UPROPERTY(BlueprintReadOnly)
-	TSet<AMonster*> HitMonsters;
+	TSet<AActor*> ActorsAppliedHit;
+
 
 	//攻击属性
 	UPROPERTY(BlueprintReadOnly)
 	FAttackProperty AttackProperty;
 
-	//检测击中的怪物
+	//检测击中的Actor
 	virtual void ScanHitActors();
 
 	//攻击判定
-	virtual void ExcuteAttackJudge(APlayerCharacter* Player, AMonster* AMonster);
+	virtual void ExecuteAttackJudge(APlayerCharacter* Player, AActor* AMonster);
 
 	//前摇执行一次
 	virtual void JudgeAtBeginAttack(APlayerCharacter* Player) {};

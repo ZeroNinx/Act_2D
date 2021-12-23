@@ -3,6 +3,7 @@
 #pragma once
 
 //自定义
+#include "ActorInterface.h"
 #include "StateMachine.h"
 #include "MonsterSkill.h"
 
@@ -24,7 +25,7 @@
  *	怪物类
  */
 UCLASS()
-class ACT_2D_API AMonster : public APaperCharacter
+class ACT_2D_API AMonster : public APaperCharacter ,public IActorInterface
 {
 	GENERATED_BODY()
 
@@ -34,9 +35,6 @@ public:
 	
 	//是否朝右
 	bool bFacingRight;
-
-	//被击中函数
-	virtual void Hit(FAttackProperty HitAttackProperty);
 
 protected:
 

@@ -33,7 +33,7 @@ public:
 
 	//被击中
 	UFUNCTION()
-	void Hit(FAttackProperty HitAttackProperty);
+	void Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackProperty) override;
 
 protected:
 
@@ -77,7 +77,7 @@ protected:
 
 	//攻击判定
 	UFUNCTION()
-	void AttackJudge(APlayerCharacter* Player);
+	void AttackJudge(AActor* HitActor);
 
 	//单帧动画完成时
 	UFUNCTION()

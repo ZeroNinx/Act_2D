@@ -5,14 +5,9 @@ ASceneActor::ASceneActor()
 
 }
 
-void ASceneActor::Hit()
-{
-
-}
-
 void ASceneActor::BeginPlay()
 {
-
+	Super::BeginPlay();
 }
 
 void ASceneActor::Tick(float DeltaTime)

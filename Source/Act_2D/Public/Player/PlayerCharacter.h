@@ -3,6 +3,7 @@
 
 //自定义
 #include "StateMachine.h"
+#include "ActorInterface.h"
 
 #define eps 1e-7//浮点数误差
 
@@ -26,7 +27,7 @@ class UPlayerAttackComponent;
  */
 
 UCLASS()
-class ACT_2D_API APlayerCharacter : public APaperCharacter
+class ACT_2D_API APlayerCharacter : public APaperCharacter, public IActorInterface
 {
 	GENERATED_BODY()
 
@@ -56,8 +57,7 @@ public:
 	UPlayerAttackComponent* GetAttackComponent();
 
 	//受击函数
-	UFUNCTION(BlueprintCallable)
-	void Hit(AMonster* Monster,FAttackProperty HitAttackProperty);
+	void Hit_Implementation(AActor* Attacker, FAttackProperty AttackProperty) override;
 
 protected:
 

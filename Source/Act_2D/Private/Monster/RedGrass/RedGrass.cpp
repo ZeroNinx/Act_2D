@@ -48,7 +48,7 @@ void ARedGrass::Attack()
 }
 
 //受击函数
-void ARedGrass::Hit(FAttackProperty HitAttackProperty)
+void ARedGrass::Hit_Implementation(AActor* HitActor, FAttackProperty HitAttackProperty)
 {
 	
 	//改变状态

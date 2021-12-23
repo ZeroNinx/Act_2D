@@ -25,15 +25,6 @@ AMonster::AMonster()
 
 }
 
-
-//被击中函数
-void AMonster::Hit(FAttackProperty HitAttackProperty)
-{
-	FString Name;
-	GetName(Name);
-	UKismetSystemLibrary::PrintString(GetWorld(), Name+FString(" Hit"));
-}
-
 //游戏开始执行
 void AMonster::BeginPlay()
 {

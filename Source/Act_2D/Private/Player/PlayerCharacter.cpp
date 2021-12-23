@@ -208,7 +208,7 @@ UPlayerAttackComponent* APlayerCharacter::GetAttackComponent()
 }
 
 //受击函数
-void APlayerCharacter::Hit(AMonster* Monster,FAttackProperty HitAttackProperty)
+void APlayerCharacter::Hit_Implementation(AActor* Attacker, FAttackProperty AttackProperty)
 {
 	if (GetState() != EState::Hit)
 	{
@@ -216,7 +216,7 @@ void APlayerCharacter::Hit(AMonster* Monster,FAttackProperty HitAttackProperty)
 		AttackComponent->ResetAttack();
 
 		//添加瞬时速度
-		bFacingRight = Monster->GetActorLocation().X > GetActorLocation().X;
+		bFacingRight = Attacker->GetActorLocation().X > GetActorLocation().X;
 		UpdateDirection();
 		float DirectMark = bFacingRight ? -1.0f : 1.0f;
 		float VelocyX = 900.0f * DirectMark;

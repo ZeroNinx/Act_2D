@@ -1,16 +1,17 @@
 #pragma once
 
+//自定义
+#include "ActorInterface.h"
+
 //UE4
 #include "CoreMinimal.h"
-#include "PaperFlipbook.h"
-#include "PaperSpriteActor.h"
 #include "SceneActor.generated.h"
 
 /**
  * 场景Actor基类
  */
 UCLASS()
-class ACT_2D_API ASceneActor : public APaperSpriteActor
+class ACT_2D_API ASceneActor : public AActor, public IActorInterface
 {
 	GENERATED_BODY()
 
@@ -18,9 +19,6 @@ public:
 
 	//构造函数
 	ASceneActor();
-
-	/** 受击函数 */
-	virtual void Hit();
 
 protected:
 

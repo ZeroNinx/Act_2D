@@ -1,19 +1,23 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "PlayerSkill.h"
 #include "Kismet/GameplayStatics.h"
+#include "Monster.h"
 
 //循环包含
 #include "PlayerAttackComponent.h"
 #include "PlayerCharacter.h"
 
-
 //执行攻击
-void USkill::ExcuteAttackJudge(APlayerCharacter* Player, AMonster* Monster)
+void USkill::ExecuteAttackJudge(APlayerCharacter* Player, AActor* HitActor)
 {
-	Monster->Hit(AttackProperty);
+
+	IActorInterface::Execute_Hit(HitActor, Player, AttackProperty);
 
 	//打击感延迟
-	FPlatformProcess::Sleep(0.07f);
+	if (HitActor->IsA<AMonster>())
+	{
+		FPlatformProcess::Sleep(0.07f);
+	}
 }
 
 void USkill::JudgeAtStartAttack(APlayerCharacter* Player)
@@ -21,11 +25,7 @@ void USkill::JudgeAtStartAttack(APlayerCharacter* Player)
 	ScanHitActors();
 	for (AActor* HitActor : HitActors)
 	{
-		AMonster* HitMonster = Cast<AMonster>(HitActor);
-		if(HitMonster)
-		{
-			ExcuteAttackJudge(Player, HitMonster);
-		}
+		ExecuteAttackJudge(Player, HitActor);
 	}
 }
 
@@ -35,7 +35,7 @@ void USkill::ScanHitActors()
 	if (PlayerCharacter)
 	{
 		PlayerCharacter->GetAttackComponent()->UpdateOverlaps();
-		PlayerCharacter->GetAttackComponent()->GetOverlappingActors(HitActors, TSubclassOf<AMonster>());
+		PlayerCharacter->GetAttackComponent()->GetOverlappingActors(HitActors);
 	}
 }
 
@@ -81,11 +81,10 @@ void US_AttackIII::JudgeDuringAttack(APlayerCharacter* Player)
 	ScanHitActors();
 	for (AActor* HitActor : HitActors)
 	{
-		AMonster* HitMonster = Cast<AMonster>(HitActor);
-		if (HitMonster&&!HitMonsters.Contains(HitMonster))
+		if (HitActor && !ActorsAppliedHit.Contains(HitActor))
 		{
-			ExcuteAttackJudge(Player, HitMonster);
-			HitMonsters.Add(HitMonster);
+			ExecuteAttackJudge(Player, HitActor);
+			ActorsAppliedHit.Add(HitActor);
 		}
 	}
 }
@@ -119,13 +118,12 @@ void US_AttackDash::JudgeAtStartAttack(APlayerCharacter* Player)
 void US_AttackDash::JudgeDuringAttack(APlayerCharacter* Player)
 {
 	ScanHitActors();
-	for (AActor* HitActor: HitActors)
+	for (AActor* HitActor : HitActors)
 	{
-		AMonster* HitMonster = Cast<AMonster>(HitActor);
-		if (HitMonster&&!HitMonsters.Contains(HitMonster))
+		if (HitActor && !ActorsAppliedHit.Contains(HitActor))
 		{
-			ExcuteAttackJudge(Player, HitMonster);
-			HitMonsters.Add(HitMonster);
+			ExecuteAttackJudge(Player, HitActor);
+			ActorsAppliedHit.Add(HitActor);
 		}
 	}
 }

@@ -79,7 +79,7 @@ void ASlime::JumpAttack()
 }
 
 //被击中
-void ASlime::Hit(FAttackProperty HitAttackProperty)
+void ASlime::Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackProperty)
 {
 	//改变状态
 	StateMachine->SetState(EState::Hit);
@@ -234,12 +234,12 @@ void ASlime::OnAttackComponentBeginOverlap(UPrimitiveComponent* OverlappedCompon
 }
 
 //攻击判定
-void ASlime::AttackJudge(APlayerCharacter* Player)
+void ASlime::AttackJudge(AActor* HitActor)
 {
 	//为玩家设定攻击
 	bAttacked = true;
 	Skill = NewObject<UMS_SlimeAttack>();
-	Player->Hit(this, Skill->AttackProperty);
+	IActorInterface::Execute_Hit(HitActor, this, Skill->AttackProperty);
 }
 
 //单帧动画播放完成时
