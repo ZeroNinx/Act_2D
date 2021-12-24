@@ -37,7 +37,6 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	TSet<AActor*> ActorsAppliedHit;
 
-
 	//攻击属性
 	UPROPERTY(BlueprintReadOnly)
 	FAttackProperty AttackProperty;

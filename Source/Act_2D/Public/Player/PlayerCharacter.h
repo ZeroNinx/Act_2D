@@ -59,6 +59,8 @@ public:
 	//受击函数
 	void Hit_Implementation(AActor* Attacker, FAttackProperty AttackProperty) override;
 
+	void SetGlobalDelay(float Delation, float DelayDuration);
+
 protected:
 
 	//弹簧臂组件
@@ -76,6 +78,10 @@ protected:
 	//攻击组件
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	UPlayerAttackComponent* AttackComponent;
+
+	//打击感延时定时器句柄
+	UPROPERTY(BlueprintReadOnly)
+	FTimerHandle HitDelayTimerHandle;
 
 	// 游戏开始执行
 	virtual void BeginPlay() override;

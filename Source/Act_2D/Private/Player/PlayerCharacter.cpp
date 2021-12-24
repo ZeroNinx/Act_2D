@@ -1,6 +1,7 @@
 #include "PlayerCharacter.h"
 
 //重复包含
+#include "Kismet/GameplayStatics.h"
 #include "PlayerAttackComponent.h"
 
 //构造函数
@@ -228,5 +229,17 @@ void APlayerCharacter::Hit_Implementation(AActor* Attacker, FAttackProperty Atta
 		GetSprite()->SetFlipbook(HitFlipbook);
 		GetSprite()->PlayFromStart();
 	}
+}
+
+void APlayerCharacter::SetGlobalDelay(float Delation, float DelayDuration)
+{
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), Delation);
+
+	auto RestoreFunction = [&]()->void
+	{
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+	};
+	auto dlg = FTimerDelegate::CreateLambda(RestoreFunction);
+	GetWorldTimerManager().SetTimer(HitDelayTimerHandle, dlg, DelayDuration * Delation, false);
 }
 

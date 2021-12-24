@@ -36,6 +36,7 @@ public class Act_2D : ModuleRules
 				"Act_2D/Public/Monster/BehaviorTree",
 				"Act_2D/Public/Monster/Slime",
 				"Act_2D/Public/Monster/RedGrass",
+				"Act_2D/Public/Skill",
 				"Act_2D/Public/Skill/Player",
 				"Act_2D/Public/Skill/Monster",
 				"Act_2D/Public/Scene"

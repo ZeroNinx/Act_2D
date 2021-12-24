@@ -16,7 +16,7 @@ void USkill::ExecuteAttackJudge(APlayerCharacter* Player, AActor* HitActor)
 	//打击感延迟
 	if (HitActor->IsA<AMonster>())
 	{
-		FPlatformProcess::Sleep(0.07f);
+		Player->SetGlobalDelay(0.07, 0.1);
 	}
 }
 
