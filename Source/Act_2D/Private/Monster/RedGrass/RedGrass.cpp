@@ -69,7 +69,7 @@ void ARedGrass::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (StateMachine->GetState() != EState::Hit)
 	{
-		UpdateDirection();
+		UpdateFacingDirection();
 		UpdateState();
 		UpdateAnimation();
 	}

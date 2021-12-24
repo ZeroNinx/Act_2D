@@ -61,7 +61,7 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 	//更新朝向
-	virtual void UpdateDirection();
+	virtual void UpdateFacingDirection();
 
 	//更新状态
 	virtual void UpdateState();

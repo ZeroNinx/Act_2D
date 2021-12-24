@@ -93,6 +93,7 @@ void ASlime::Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackPrope
 	HitEffectComponent->PlayFromStart();
 
 	//添加瞬时速度
+	UpdateFacingDirection();
 	float DirectMark = bFacingRight ? -1.0f : 1.0f;
 	float LightVelocyX = 200.0f * DirectMark;
 	float HeavyVelocyX = 600.0f * DirectMark;
@@ -124,14 +125,14 @@ void ASlime::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (StateMachine->GetState() != EState::Hit)
 	{
-		UpdateDirection();
+		UpdateFacingDirection();
 		UpdateState();
 		UpdateAnimation();
 	}
 }
 
 //更新方向
-void ASlime::UpdateDirection()
+void ASlime::UpdateFacingDirection()
 {
 	float PlayerLocationX = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetActorLocation().X;
 	if (PlayerLocationX < GetActorLocation().X)

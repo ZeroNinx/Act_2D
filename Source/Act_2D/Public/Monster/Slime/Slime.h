@@ -62,7 +62,7 @@ protected:
 	void Tick(float DeltaTime) override;
 
 	//更新方向
-	void UpdateDirection() override;
+	void UpdateFacingDirection() override;
 
 	//更新状态
 	void UpdateState() override;

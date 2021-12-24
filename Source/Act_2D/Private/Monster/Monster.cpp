@@ -40,7 +40,7 @@ void AMonster::Tick(float DeltaTime)
 }
 
 //更新朝向
-void AMonster::UpdateDirection()
+void AMonster::UpdateFacingDirection()
 {
 	float PlayerLocationX = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetActorLocation().X;
 	if (PlayerLocationX < GetActorLocation().X)
