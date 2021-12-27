@@ -20,7 +20,7 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 	AttackComponent = PlayerCharacter->GetAttackComponent();
 
 	//绑定攻击结束代理
-	PlayerCharacter->GetSprite()->OnFinishedPlaying.AddDynamic(AttackComponent, &UPlayerAttackComponent::PlayerFinishAttack);
+	PlayerCharacter->GetSprite()->OnFinishedPlaying.AddDynamic(this, &APlayerCharacterController::RestoreFromAttack);
 }
 
 
@@ -170,7 +170,7 @@ void APlayerCharacterController::JumpPressed()
 	//可移动帧取消攻击
 	if (PlayerCharacter->IsInState(EState::Attacking) && AttackComponent->IsMovable())
 	{
-		AttackComponent->PlayerFinishAttack();
+		RestoreFromAttack();
 	}
 
 	//当可移动时
@@ -222,4 +222,12 @@ void APlayerCharacterController::PrepareAttack()
 {
 	PlayerCharacter->GetCharacterMovement()->StopMovementImmediately();
 
+}
+
+void APlayerCharacterController::RestoreFromAttack()
+{
+	AttackComponent->ResetAttack();
+	PlayerCharacter->UpdateState();
+	PlayerCharacter->GetSprite()->SetLooping(true);
+	PlayerCharacter->GetSprite()->Play();
 }

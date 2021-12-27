@@ -28,21 +28,28 @@ public:
 	ASlime();
 
 	//史莱姆跳跃（攻击）
-	UFUNCTION()
 	void JumpAttack();
 
 	//被击中
-	UFUNCTION()
 	void Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackProperty) override;
 
 protected:
 
+	//攻击组件重叠时
+	UFUNCTION()
+	void OnAttackComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+
+	//单帧动画完成时
+	UFUNCTION()
+	void OnFlipookFinishedPlaying() override;
+
+protected:
+
 	//攻击组件
-	UPROPERTY()
 	UPaperSpriteComponent* AttackCompnent;
 
 	//攻击技能
-	UPROPERTY()
 	UMonsterSkill* Skill;
 
 	//跳跃攻击定时器句柄
@@ -55,7 +62,6 @@ protected:
 	bool bFalled = false;
 
 	//初始化动画资源
-	UFUNCTION()
 	void InitAnimation() override;
 
 	//tick函数
@@ -68,18 +74,9 @@ protected:
 	void UpdateState() override;
 
 	//更新动画
-	UFUNCTION()
 	void UpdateAnimation() override;
 
-	//攻击组件重叠时
-	UFUNCTION()
-	void OnAttackComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
 	//攻击判定
-	UFUNCTION()
 	void AttackJudge(AActor* HitActor);
 
-	//单帧动画完成时
-	UFUNCTION()
-	void OnFlipookFinishedPlaying() override;
 };

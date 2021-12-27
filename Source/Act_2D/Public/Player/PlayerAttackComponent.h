@@ -38,88 +38,65 @@ public:
 	UPlayerAttackComponent();
 
 	//当前攻击ID
-	UPROPERTY(BlueprintReadOnly)
 	int AttackID = 0;
 
 	//初始化参数
-	UFUNCTION(BlueprintCallable)
 	void Setup(APlayerCharacter* NewCharacter);
 
 	//是否可以移动
-	UFUNCTION(BlueprintCallable)
 	bool IsMovable();
 
 	//接收攻击键组合
-	UFUNCTION(BlueprintCallable)
 	void SetKeyCombination(FKeyCombination KeyCombation);
 
 	//重置攻击
-	UFUNCTION(BlueprintCallable)
 	void ResetAttack();
-
-	//玩家结束攻击
-	UFUNCTION(BlueprintCallable)
-	void PlayerFinishAttack();
 
 protected:
 
 	//玩家指针
-	UPROPERTY(BlueprintReadOnly)
 	APlayerCharacter* PlayerCharacter;
 
 	//当前动作攻击开始帧
-	UPROPERTY(BlueprintReadOnly)
 	int AttackStartFrame = 0;
 	
 	//当前动作攻击结束帧
-	UPROPERTY(BlueprintReadOnly)
 	int AttackFinishFrame = 0;
 
 	//攻击前判定标记
-	UPROPERTY(BlueprintReadOnly)
 	bool bBeforeAttackShouldJudge = true;
 
 	//攻击中判定标记
-	UPROPERTY(BlueprintReadOnly)
 	bool bInAttackShouldJudge = true;
 
 	//攻击后判定标记
-	UPROPERTY(BlueprintReadOnly)
 	bool bAfterAttackShouldJudge = true;
 
 	//当前技能
-	UPROPERTY(BlueprintReadOnly)
 	USkill* Skill;
 
 	//下一次按键组合
-	UPROPERTY(BlueprintReadOnly)
 	FKeyCombination NextKeyCombation;
 
 	//连续技列表
-	UPROPERTY(BlueprintReadOnly)
 	TMap<int, int> ComboMap;
 
 	//载入数据库
 	sqlite3* LoadDB();
 
 	//攻击
-	UFUNCTION(BlueprintCallable)
 	void Attack(int ID);
 
 	//选择攻击
-	UFUNCTION(BlueprintCallable)
 	void SwitchAttack();
 
 	//初始化攻击
-	UFUNCTION()
 	void SetupAttack();
 
 	//初始化连续技
-	UFUNCTION()
 	void SetupCombo();
 
 	//获得当前攻击动画播放位置
-	UFUNCTION(BlueprintCallable)
 	int GetAnimationPosition();
 
 	//Tick函数

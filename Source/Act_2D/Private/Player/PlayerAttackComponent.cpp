@@ -364,12 +364,3 @@ void UPlayerAttackComponent::ResetAttack()
 	Skill = NewObject<USkill>();
 }
 
-//玩家结束攻击
-void UPlayerAttackComponent::PlayerFinishAttack()
-{
-	ResetAttack();
-	PlayerCharacter->UpdateState();
-	PlayerCharacter->GetSprite()->SetLooping(true);
-	PlayerCharacter->GetSprite()->Play();
-}
-
