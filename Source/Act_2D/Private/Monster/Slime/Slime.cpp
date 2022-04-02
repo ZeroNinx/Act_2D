@@ -1,4 +1,5 @@
 #include "Slime.h"
+#include "Monster/MonsterController.h"
 #include "SlimeController.h"
 
 //构造函数
@@ -6,6 +7,8 @@ ASlime::ASlime()
 {
 	bFacingRight = false;
 	AIControllerClass = ASlimeController::StaticClass();
+
+	HealthPoint = 5;
 
 	//设置变换
 	GetCapsuleComponent()->SetCapsuleHalfHeight(34.0f);
@@ -101,10 +104,39 @@ void ASlime::Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackPrope
 	if (HitAttackProperty.HarmfulType == EAttackHarmfulType::HeavyAttack)
 	{
 		GetCharacterMovement()->Velocity = FVector(HeavyVelocyX, 0, 0);
+		HealthPoint -= 2;
 	}
 	else
 	{
 		GetCharacterMovement()->Velocity = FVector(LightVelocyX, 0, 0);
+		HealthPoint -= 1;
+	}
+
+	//死亡判断
+	if (HealthPoint <= 0)
+	{
+		SetActorEnableCollision(false);
+		SetActorTickEnabled(false);
+		GetCapsuleComponent()->SetEnableGravity(false);
+		GetSprite()->Stop();
+
+
+		AMonsterController* MonsterController = Cast<AMonsterController>(GetController());
+		MonsterController->StopBehaviorTree();
+
+		DeathFlashCounter  = 0;
+		auto  PlayDeathEffect = [&]()
+		{
+			bool bVisable = (DeathFlashCounter % 2 == 1);
+			this->GetSprite()->SetVisibility(bVisable);
+			DeathFlashCounter++;
+			if (DeathFlashCounter >= 5)
+			{
+				GetWorldTimerManager().ClearTimer(DeathEffectTimerHandle);
+				this->Destroy();
+			}
+		};
+		GetWorldTimerManager().SetTimer(DeathEffectTimerHandle, PlayDeathEffect, 0.3, true);
 	}
 }
 

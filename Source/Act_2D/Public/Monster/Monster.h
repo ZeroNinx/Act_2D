@@ -54,6 +54,15 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	UPaperFlipbookComponent* HitEffectComponent;
 
+	//HP
+	int HealthPoint = 5;
+
+	//死亡闪烁计数器
+	int DeathFlashCounter = 0;
+
+	//死亡效果定时器句柄
+	FTimerHandle DeathEffectTimerHandle;
+
 	//游戏开始执行
 	virtual void BeginPlay() override;
 

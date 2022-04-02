@@ -73,6 +73,7 @@ protected:
 	bool bAfterAttackShouldJudge = true;
 
 	//当前技能
+	UPROPERTY()
 	USkill* Skill;
 
 	//下一次按键组合

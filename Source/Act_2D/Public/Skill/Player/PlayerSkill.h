@@ -62,7 +62,7 @@ public:
 	//攻击时每帧执行
 	virtual void JudgeDuringAttack(APlayerCharacter* Player) {};
 
-	//攻击结束时执行一次
+	//后摇每帧执行
 	virtual void JudgeDuringFinishAttack(APlayerCharacter* Player) {};
 
 

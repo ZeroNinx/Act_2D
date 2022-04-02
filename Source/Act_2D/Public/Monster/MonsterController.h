@@ -31,6 +31,10 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FName DistanceToPlayerID = TEXT("DistanceToPlayer");
 
+	//停止行为树
+	UFUNCTION()
+	void StopBehaviorTree();
+
 protected:
 
 	//行为树组件

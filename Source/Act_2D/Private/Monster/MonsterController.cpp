@@ -25,6 +25,12 @@ AMonsterController::AMonsterController()
 
 }
 
+//停止行为树
+void AMonsterController::StopBehaviorTree()
+{
+	//BehaviorTreeComponent->PauseLogic("Dead");
+}
+
 //开始控制时
 void AMonsterController::OnPossess(APawn* InPawn)
 {
