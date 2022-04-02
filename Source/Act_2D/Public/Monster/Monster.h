@@ -33,6 +33,10 @@ public:
 	//构造函数
 	AMonster();
 	
+	//获取HP
+	UFUNCTION()
+	int& GetHealthPoint();
+
 	//是否朝右
 	bool bFacingRight;
 

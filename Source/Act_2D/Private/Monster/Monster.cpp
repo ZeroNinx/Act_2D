@@ -25,6 +25,12 @@ AMonster::AMonster()
 
 }
 
+//获取HP
+int& AMonster::GetHealthPoint()
+{
+	return HealthPoint;
+}
+
 //游戏开始执行
 void AMonster::BeginPlay()
 {

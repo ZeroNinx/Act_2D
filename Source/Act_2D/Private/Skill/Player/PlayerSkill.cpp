@@ -14,7 +14,8 @@ void USkill::ExecuteAttackJudge(APlayerCharacter* Player, AActor* HitActor)
 	IActorInterface::Execute_Hit(HitActor, Player, AttackProperty);
 
 	//打击感延迟
-	if (HitActor->IsA<AMonster>())
+	AMonster* HitMonster = Cast<AMonster>(HitActor);
+	if (HitMonster && HitMonster->GetHealthPoint() > 0)
 	{
 		Player->SetGlobalDelay(0.05, 0.07);
 	}

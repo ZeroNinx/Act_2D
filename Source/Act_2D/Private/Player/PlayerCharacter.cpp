@@ -19,7 +19,7 @@ APlayerCharacter::APlayerCharacter()
 	//设定移动组件
 	GetCharacterMovement()->GravityScale = 2.5f;
 	GetCharacterMovement()->JumpZVelocity = 600.0f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 100.0f;
 	GetCharacterMovement()->bUseSeparateBrakingFriction = true;
 	GetCharacterMovement()->BrakingFriction = 8.0f;
@@ -30,7 +30,7 @@ APlayerCharacter::APlayerCharacter()
 	bFacingRight = true;
 
 	//胶囊体组件
-	GetCapsuleComponent()->SetCapsuleRadius(20.0f);
+	GetCapsuleComponent()->SetCapsuleRadius(23.0f);
 	
 	//弹簧臂组件
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));

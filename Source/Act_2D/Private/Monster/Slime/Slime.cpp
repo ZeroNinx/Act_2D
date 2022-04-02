@@ -84,6 +84,9 @@ void ASlime::JumpAttack()
 //被击中
 void ASlime::Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackProperty)
 {
+	if (HealthPoint <= 0)
+		return;
+
 	//改变状态
 	StateMachine->SetState(EState::Hit);
 
@@ -115,17 +118,15 @@ void ASlime::Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackPrope
 	//死亡判断
 	if (HealthPoint <= 0)
 	{
-		SetActorEnableCollision(false);
 		SetActorTickEnabled(false);
 		GetCapsuleComponent()->SetEnableGravity(false);
 		GetSprite()->Stop();
-
 
 		AMonsterController* MonsterController = Cast<AMonsterController>(GetController());
 		MonsterController->StopBehaviorTree();
 
 		DeathFlashCounter  = 0;
-		auto  PlayDeathEffect = [&]()
+		auto PlayDeathEffect = [&]()
 		{
 			bool bVisable = (DeathFlashCounter % 2 == 1);
 			this->GetSprite()->SetVisibility(bVisable);
@@ -254,7 +255,7 @@ void ASlime::UpdateAnimation()
 void ASlime::OnAttackComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//攻击判定
-	bool bShouldJudge = (!bAttacked && (StateMachine->GetState() == EState::Jumping || StateMachine->GetState() == EState::Falling));
+	bool bShouldJudge = (HealthPoint > 0 && !bAttacked && (StateMachine->GetState() == EState::Jumping || StateMachine->GetState() == EState::Falling));
 	if (bShouldJudge)
 	{
 		APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor);
