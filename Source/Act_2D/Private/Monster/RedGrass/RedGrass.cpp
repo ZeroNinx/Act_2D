@@ -61,6 +61,21 @@ void ARedGrass::Hit_Implementation(AActor* HitActor, FAttackProperty HitAttackPr
 
 	//重新播放效果
 	HitEffectComponent->PlayFromStart();
+
+	if (HitAttackProperty.HarmfulType == EAttackHarmfulType::HeavyAttack)
+	{
+		HealthPoint -= 2;
+	}
+	else
+	{
+		HealthPoint -= 1;
+	}
+
+	//死亡判断
+	if (HealthPoint <= 0)
+	{
+		PlayDeathEffect();
+	}
 }
 
 //每帧执行

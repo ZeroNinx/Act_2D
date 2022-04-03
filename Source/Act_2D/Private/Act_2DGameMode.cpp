@@ -9,6 +9,7 @@ AAct_2DGameMode::AAct_2DGameMode()
 	//设定默认类
 	PlayerControllerClass = APlayerCharacterController::StaticClass();
 	DefaultPawnClass = APlayerCharacter::StaticClass();
+	
 
 }
 

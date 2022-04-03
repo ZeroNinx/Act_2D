@@ -38,6 +38,9 @@ public:
 	//角色方向是否朝右
 	bool bFacingRight;
 
+	//HP
+	int HealthPoint = 5;
+
 	//设置状态
 	void SetState(EState NewState);
 

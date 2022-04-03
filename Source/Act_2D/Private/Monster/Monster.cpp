@@ -2,6 +2,7 @@
 
 
 #include "Monster.h"
+#include "Monster/MonsterController.h"
 
 //构造函数
 AMonster::AMonster()
@@ -80,5 +81,29 @@ void AMonster::UpdateState()
 	{
 		StateMachine->SetState(EState::Idle);
 	}
+}
+
+void AMonster::PlayDeathEffect()
+{
+	SetActorTickEnabled(false);
+	GetCapsuleComponent()->SetEnableGravity(false);
+	GetSprite()->Stop();
+
+	AMonsterController* MonsterController = Cast<AMonsterController>(GetController());
+	MonsterController->StopBehaviorTree();
+
+	DeathFlashCounter = 0;
+	auto PlayDeathEffect = [&]()
+	{
+		bool bVisable = (DeathFlashCounter % 2 == 1);
+		this->GetSprite()->SetVisibility(bVisable);
+		DeathFlashCounter++;
+		if (DeathFlashCounter >= 5)
+		{
+			GetWorldTimerManager().ClearTimer(DeathEffectTimerHandle);
+			this->Destroy();
+		}
+	};
+	GetWorldTimerManager().SetTimer(DeathEffectTimerHandle, PlayDeathEffect, 0.3, true);
 }
 

@@ -21,7 +21,8 @@ public class Act_2D : ModuleRules
 				"InputCore",
 				"Paper2D",
 				"SQLite",
-				"GameplayTasks"
+				"GameplayTasks",
+				"UMG"
 			}
 		);
 

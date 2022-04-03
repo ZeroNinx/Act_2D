@@ -118,26 +118,7 @@ void ASlime::Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackPrope
 	//死亡判断
 	if (HealthPoint <= 0)
 	{
-		SetActorTickEnabled(false);
-		GetCapsuleComponent()->SetEnableGravity(false);
-		GetSprite()->Stop();
-
-		AMonsterController* MonsterController = Cast<AMonsterController>(GetController());
-		MonsterController->StopBehaviorTree();
-
-		DeathFlashCounter  = 0;
-		auto PlayDeathEffect = [&]()
-		{
-			bool bVisable = (DeathFlashCounter % 2 == 1);
-			this->GetSprite()->SetVisibility(bVisable);
-			DeathFlashCounter++;
-			if (DeathFlashCounter >= 5)
-			{
-				GetWorldTimerManager().ClearTimer(DeathEffectTimerHandle);
-				this->Destroy();
-			}
-		};
-		GetWorldTimerManager().SetTimer(DeathEffectTimerHandle, PlayDeathEffect, 0.3, true);
+		PlayDeathEffect();
 	}
 }
 

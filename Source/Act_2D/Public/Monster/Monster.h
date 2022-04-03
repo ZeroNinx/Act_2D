@@ -88,6 +88,8 @@ protected:
 	//单帧动画播放完成时
 	virtual void OnFlipookFinishedPlaying() {};
 
+	//播放死亡动画
+	virtual void PlayDeathEffect();
 
 	/**
 	* 动画资源区
