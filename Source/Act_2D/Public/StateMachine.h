@@ -15,12 +15,18 @@ UENUM(BlueprintType, meta = (Bitflags))
 enum class EState : uint8
 {
 	None		= 0 UMETA(Hidden),
+	
+	// Lv. 1
 	Idle		= 1 << 0,
 	Running		= 1 << 1,
 	Jumping		= 1 << 2,
 	Falling		= 1 << 3,
 	Falled		= 1 << 4,
+
+	// Lv. 2
 	Attacking	= 1 << 5,
+
+	// Lv.3
 	Hit			= 1 << 6,
 	Sleeping	= 1 << 7
 };
