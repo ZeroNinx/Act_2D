@@ -19,8 +19,16 @@ EBTNodeResult::Type UBTTaskNode_ScanDistanceToPlayer::ExecuteTask(UBehaviorTreeC
 		return EBTNodeResult::Failed;
 	}
 
+	// 获取玩家
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
+	if (!PlayerPawn)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UBTTaskNode_ScanDistanceToPlayer::ExecuteTask PlayerPawn Invalid"));
+		return EBTNodeResult::Failed;
+	}
+
 	//计算玩家和怪物的距离
-	FVector PlayerLocation = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetActorLocation();
+	FVector PlayerLocation = PlayerPawn->GetActorLocation();
 	FVector MonsterLocation = Controller->GetPawn()->GetActorLocation();
 	float DurationToPlayer = UKismetMathLibrary::Vector_Distance(PlayerLocation, MonsterLocation);
 

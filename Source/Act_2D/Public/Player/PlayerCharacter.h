@@ -71,9 +71,11 @@ protected:
 protected:
 
 	//弹簧臂组件
+	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArmComponent;
 
 	//相机组件
+	UPROPERTY(EditAnywhere)
 	UCameraComponent* CameraComponent;
 	
 	//状态机

@@ -49,7 +49,14 @@ void AMonster::Tick(float DeltaTime)
 //更新朝向
 void AMonster::UpdateFacingDirection()
 {
-	float PlayerLocationX = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetActorLocation().X;
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
+	if (!PlayerPawn)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AMonster::UpdateFacingDirection PlayerPawn Invalid"));
+		return;
+	}
+
+	float PlayerLocationX = PlayerPawn->GetActorLocation().X;
 	if (PlayerLocationX < GetActorLocation().X)
 	{
 		bFacingRight = false;

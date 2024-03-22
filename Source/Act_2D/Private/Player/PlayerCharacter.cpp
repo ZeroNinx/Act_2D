@@ -37,8 +37,6 @@ APlayerCharacter::APlayerCharacter()
 	//弹簧臂组件
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
 	SpringArmComponent->SetupAttachment(RootComponent);
-	SpringArmComponent->SetRelativeRotation(FRotator(0, -90.0f,0));//初始化旋转
-	SpringArmComponent->TargetArmLength = 900.0f;//初始化长度
 
 	//相机组件
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
@@ -57,30 +55,14 @@ APlayerCharacter::APlayerCharacter()
 
 	//绑定动画
 	GetSprite()->OnFinishedPlaying.AddDynamic(this, &APlayerCharacter::OnFlipookFinishedPlaying);
-
-
-	UClass* MainUIClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/Blueprints/UMG/MainUI.MainUI_C'"));
-	if (MainUIClass)
-	{
-		UUserWidget* MainUI = CreateWidget(GetWorld(), MainUIClass);
-		if (MainUI)
-		{
-			UGlobalBlueprintFunctionLibrary::UpdateMainUI(GetWorld(), MainUI);
-		}
-	}
 }
 
 //开始游戏
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UGlobalBlueprintFunctionLibrary::UpdatePlayerCharacter(GetWorld(),this);
-	UUserWidget* MainUI = UGlobalBlueprintFunctionLibrary::GetMainUI(GetWorld());
-	if (MainUI)
-	{
-		MainUI->AddToViewport();
-	}
+	UGlobalBlueprintFunctionLibrary::UpdatePlayerCharacter(GetWorld(), this);
+	CameraComponent->Activate();
 }
 
 

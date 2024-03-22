@@ -3,6 +3,10 @@
 //重复包含
 #include "PlayerCharacter.h"
 #include "PlayerAttackComponent.h"
+#include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerStart.h"
+#include "GlobalBlueprintFunctionLibrary.h"
 
 //构造函数
 APlayerCharacterController::APlayerCharacterController()
@@ -14,6 +18,8 @@ APlayerCharacterController::APlayerCharacterController()
 void APlayerCharacterController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
+	UE_LOG(LogTemp, Warning, TEXT("APlayerCharacterController::OnPossess"));
 
 	//获取玩家指针和攻击组件
 	PlayerCharacter = Cast<APlayerCharacter>(InPawn);
@@ -188,10 +194,32 @@ void APlayerCharacterController::JumpReleased()
 	PlayerCharacter->StopJumping();
 }
 
+void APlayerCharacterController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	InitializeMainUI();
+
+}
+
+void APlayerCharacterController::InitializeMainUI()
+{
+	UClass* MainUIClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/Blueprints/UMG/MainUI.MainUI_C'"));
+	if (MainUIClass)
+	{
+		UUserWidget* MainUI = CreateWidget(GetWorld(), MainUIClass);
+		if (MainUI)
+		{
+			UGlobalBlueprintFunctionLibrary::UpdateMainUI(GetWorld(), MainUI);
+			MainUI->AddToViewport();
+		}
+	}
+}
+
 //是否允许移动
 bool APlayerCharacterController::IsAllowMove()
 {
-	return !PlayerCharacter->IsInState(EState::Attacking | EState::Hit);
+	return PlayerCharacter && !PlayerCharacter->IsInState(EState::Attacking | EState::Hit);
 }
 
 
@@ -199,8 +227,6 @@ bool APlayerCharacterController::IsAllowMove()
 void APlayerCharacterController::RecordKeyCombination()
 {
 	NextkKeyCombation = FKeyCombination(bAttackPressed, bSpecialPressed, bTriggerPressed, bJumpPressed, bUpPressed, bDownPressed, bLeftPressed, bRightPressed);
-	
-	
 }
 
 //添加攻击输入
@@ -210,7 +236,7 @@ void APlayerCharacterController::AddAttackInput()
 	//设置延迟接受输入
 	auto DelayAttackInput = [&]() -> void
 	{
-		if (PlayerCharacter->GetState() != EState::Hit)
+		if (PlayerCharacter && PlayerCharacter->GetState() != EState::Hit)
 			AttackComponent->SetKeyCombination(NextkKeyCombation);
 	};
 	auto dlg = FTimerDelegate::CreateLambda(DelayAttackInput);

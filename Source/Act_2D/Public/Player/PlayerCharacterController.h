@@ -114,6 +114,11 @@ protected:
 
 protected:
 
+	virtual void BeginPlay() override;
+
+	//初始化主UI
+	void InitializeMainUI();
+
 	//当开始控制时
 	void OnPossess(APawn* InPawn) override;
 
