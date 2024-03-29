@@ -179,15 +179,15 @@ void ASlime::UpdateState()
 	//判断速度
 	if (Velocity.Z > 0)
 	{
-		StateMachine->SetState(EState::Jumping);
+		StateMachine->SetState(EState::Jump);
 	}
 	else if (Velocity.Z < 0)
 	{
-		StateMachine->SetState(EState::Falling);
+		StateMachine->SetState(EState::Fall);
 	}
 	else
 	{
-		if (StateMachine->GetState() == EState::Falling)
+		if (StateMachine->GetState() == EState::Fall)
 		{
 			StateMachine->SetState(EState::Falled);
 			bFalled = true;
@@ -206,7 +206,7 @@ void ASlime::UpdateAnimation()
 
 	//根据不同状态调整动画
 	EState CurrentState = StateMachine->GetState();
-	if (CurrentState == EState::Falling)
+	if (CurrentState == EState::Fall)
 	{
 		return;
 	}
@@ -218,7 +218,7 @@ void ASlime::UpdateAnimation()
 	case EState::Idle:
 		AnimationFlipbook = IdleFlipbook;
 		break;
-	case EState::Jumping:
+	case EState::Jump:
 		AnimationFlipbook = JumpingFlipbook;
 		break;
 	case EState::Falled:
@@ -233,7 +233,7 @@ void ASlime::UpdateAnimation()
 	}
 
 	//设定动画
-	bool bShouldLoop = (CurrentState != EState::Jumping && !bFalled);
+	bool bShouldLoop = (CurrentState != EState::Jump && !bFalled);
 	GetSprite()->SetLooping(bShouldLoop);
 	GetSprite()->SetFlipbook(AnimationFlipbook);
 	GetSprite()->Play();
@@ -243,7 +243,7 @@ void ASlime::UpdateAnimation()
 void ASlime::OnAttackComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//攻击判定
-	bool bShouldJudge = (HealthPoint > 0 && !bAttacked && (StateMachine->GetState() == EState::Jumping || StateMachine->GetState() == EState::Falling));
+	bool bShouldJudge = (HealthPoint > 0 && !bAttacked && (StateMachine->GetState() == EState::Jump || StateMachine->GetState() == EState::Fall));
 	if (bShouldJudge)
 	{
 		APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor);

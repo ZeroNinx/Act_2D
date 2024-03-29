@@ -44,17 +44,6 @@ APlayerCharacter::APlayerCharacter()
 
 	//状态机
 	StateMachine = CreateDefaultSubobject<UStateMachine>(TEXT("StateMachine"));
-
-	//攻击组件
-	AttackComponent = CreateDefaultSubobject<UPlayerAttackComponent>(TEXT("AttackComponent"));
-	AttackComponent->SetupAttachment(GetSprite());
-	AttackComponent->Setup(this);
-
-	//初始化动画
-	InitAnimation();
-
-	//绑定动画
-	GetSprite()->OnFinishedPlaying.AddDynamic(this, &APlayerCharacter::OnFlipookFinishedPlaying);
 }
 
 //开始游戏
@@ -71,18 +60,24 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// 获取攻击组件
+	UPlayerAttackComponent* AttackComponent = GetAttackComponent();
+	if (!AttackComponent)
+	{
+		return;
+	}
+
 	//当非战斗时自动调整动画
-	if (AttackComponent->AttackID == 0&& GetState() != EState::Hit)
+	if (!AttackComponent->IsAttacking() && GetState() != EState::Hit)
 	{
 		UpdateDirection();
 		UpdateState();
-		UpdateAnimation();
 	}
 	else if (AttackComponent->AttackID == 4)
 	{
 		//攻击落地强制恢复
 		UpdateState();
-		if (GetState() == EState::Idle || GetState() == EState::Running)
+		if (GetState() == EState::Idle || GetState() == EState::Run)
 		{
 			AttackComponent->ResetAttack();
 			GetSprite()->SetLooping(true);
@@ -105,6 +100,18 @@ void APlayerCharacter::UpdateDirection()
 	}
 }
 
+void APlayerCharacter::RestoreFromAttack()
+{
+	UPlayerAttackComponent* AttackComponent = GetAttackComponent();
+	if (!AttackComponent)
+	{
+		UGlobalBlueprintFunctionLibrary::LogWarning("APlayerCharacter::RestoreFromAttack AttackComponent Invalid");
+		return;
+	}
+
+	AttackComponent->ResetAttack();
+}
+
 //调整状态
 void APlayerCharacter::UpdateState()
 {
@@ -114,76 +121,24 @@ void APlayerCharacter::UpdateState()
 	//根据Z轴速度判断起跳/下落
 	if (Velocy.Z> 0)
 	{
-		StateMachine->SetState(EState::Jumping);
+		StateMachine->SetState(EState::Jump);
 	}
 	else if(Velocy.Z <0)
 	{
-		StateMachine->SetState(EState::Falling);
+		StateMachine->SetState(EState::Fall);
 	}
 	else
 	{
 		//否则根据X轴速度判断奔跑/静止
 		if (UKismetMathLibrary::Abs(Velocy.X) != 0)
 		{
-			StateMachine->SetState(EState::Running);	
+			StateMachine->SetState(EState::Run);	
 		}
 		else
 		{
 			StateMachine->SetState(EState::Idle);
 		}	
 	}
-}
-
-//初始化动画
-void APlayerCharacter::InitAnimation()
-{
-	IdleFlipbook	= LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Character/PlayerCharacter.PlayerCharacter'"));
-	RunningFlipbook = LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Character/Character_Run.Character_Run'"));
-	JumpingFlipbook = LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Character/Character_Jump_Start.Character_Jump_Start'"));
-	FallingFlipbook = LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Character/Character_Jump_Fall.Character_Jump_Fall'"));
-	HitFlipbook		= LoadObject<UPaperFlipbook>(GetWorld(), TEXT("PaperFlipbook'/Game/Paper2D/Character/Hit.Hit'"));
-	UpdateAnimation();
-}
-
-//调整动画
-void APlayerCharacter::UpdateAnimation()
-{
-	//动画路径
-	UPaperFlipbook* AnimationFlipbook=nullptr;
-	
-	//根据不同状态调整动画
-	switch (StateMachine->GetState())
-	{
-	case EState::Idle:
-		AnimationFlipbook = IdleFlipbook;
-		break;
-	case EState::Running:
-		AnimationFlipbook = RunningFlipbook;
-		break;
-	case EState::Jumping:
-		AnimationFlipbook = JumpingFlipbook;
-		break;;
-	case EState::Falling:
-		AnimationFlipbook = FallingFlipbook;
-		break;
-	}
-
-	//设定动画
-	if (!AnimationFlipbook)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Animation Flipbook Failed"));
-		return;
-	}
-
-	GetSprite()->SetFlipbook(AnimationFlipbook);
-}
-
-//单帧动画完成时
-void APlayerCharacter::OnFlipookFinishedPlaying()
-{
-	UpdateState();
-	GetSprite()->SetLooping(true);
-	GetSprite()->Play();
 }
 
 //设置状态
@@ -206,7 +161,7 @@ bool APlayerCharacter::IsInState(EState InState)
 //获得攻击组件
 UPlayerAttackComponent* APlayerCharacter::GetAttackComponent()
 {
-	return AttackComponent;
+	return GetComponentByClass<UPlayerAttackComponent>();
 }
 
 //受击函数
@@ -215,6 +170,12 @@ void APlayerCharacter::Hit_Implementation(AActor* Attacker, FAttackProperty Atta
 	if (GetState() != EState::Hit)
 	{
 		GetCharacterMovement()->StopMovementImmediately();
+		UPlayerAttackComponent* AttackComponent = GetAttackComponent();
+		if (!AttackComponent)
+		{
+			UGlobalBlueprintFunctionLibrary::LogWarning("APlayerCharacter::Hit_Implementation AttackComponent Invalid");
+			return;
+		}
 		AttackComponent->ResetAttack();
 
 		//添加瞬时速度
@@ -224,11 +185,9 @@ void APlayerCharacter::Hit_Implementation(AActor* Attacker, FAttackProperty Atta
 		float VelocyX = 900.0f * DirectMark;
 		GetCharacterMovement()->Velocity = FVector(VelocyX, 0, 0);
 
-		//设定动画
+		//TODO：设定动画
 		SetState(EState::Hit);
-		GetSprite()->SetLooping(false);
-		GetSprite()->SetFlipbook(HitFlipbook);
-		GetSprite()->PlayFromStart();
+		PlayHitAnimation();
 
 		HealthPoint -= 1;
 		

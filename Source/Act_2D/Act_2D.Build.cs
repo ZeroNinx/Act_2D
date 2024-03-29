@@ -22,8 +22,9 @@ public class Act_2D : ModuleRules
 				"Paper2D",
 				"SQLite",
 				"GameplayTasks",
-				"UMG"
-			}
+				"UMG",
+                "PaperZD"
+            }
 		);
 
 		//添加自定义头文件目录

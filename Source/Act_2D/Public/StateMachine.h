@@ -17,18 +17,18 @@ enum class EState : uint8
 	None		= 0 UMETA(Hidden),
 	
 	// Lv. 1
-	Idle		= 1 << 0,
-	Running		= 1 << 1,
-	Jumping		= 1 << 2,
-	Falling		= 1 << 3,
-	Falled		= 1 << 4,
+	Idle		= 1 << 0	UMETA(DisplayName = "Idle"),
+	Run			= 1 << 1	UMETA(DisplayName = "Run"),
+	Jump		= 1 << 2	UMETA(DisplayName = "Jump"),
+	Fall		= 1 << 3	UMETA(DisplayName = "Fall"),
+	Falled		= 1 << 4	UMETA(DisplayName = "Falled"),
 
 	// Lv. 2
-	Attacking	= 1 << 5,
+	Attack		= 1 << 5	UMETA(DisplayName = "Attack"),
 
 	// Lv.3
-	Hit			= 1 << 6,
-	Sleeping	= 1 << 7
+	Hit			= 1 << 6	UMETA(DisplayName = "Hit"),
+	Sleep		= 1 << 7	UMETA(DisplayName = "Sleep"),
 };
 ENUM_CLASS_FLAGS(EState);
 

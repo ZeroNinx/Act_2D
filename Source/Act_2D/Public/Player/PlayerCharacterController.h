@@ -30,12 +30,6 @@ public:
 
 protected:
 
-	//从攻击中恢复
-	UFUNCTION()
-	void RestoreFromAttack();
-
-protected:
-
 	//玩家指针
 	APlayerCharacter* PlayerCharacter;
 

@@ -104,7 +104,7 @@ void ARedGrass::UpdateAnimation()
 {
 	//根据不同状态调整动画
 	EState CurrentState = StateMachine->GetState();
-	if (CurrentState == EState::Falling)
+	if (CurrentState == EState::Fall)
 	{
 		return;
 	}

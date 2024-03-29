@@ -6,6 +6,20 @@
 #include "Act_2DGameInstance.h"
 #include "Blueprint/UserWidget.h"
 
+void UGlobalBlueprintFunctionLibrary::LogWarning(FString LogText)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *LogText);
+}
+
+UObject* UGlobalBlueprintFunctionLibrary::LoadAssetByClassPath(UObject* WorldContext, FSoftObjectPath ObjectPath)
+{
+	if (!WorldContext)
+	{
+		return nullptr;
+	}
+	return LoadObject<UObject>(WorldContext, *ObjectPath.ToString());
+}
+
 APlayerCharacter* UGlobalBlueprintFunctionLibrary::GetPlayerCharacter(UWorld* World)
 {
 	UGameInstance* GotGameInstance = World->GetGameInstance();

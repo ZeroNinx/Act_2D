@@ -78,11 +78,11 @@ void AMonster::UpdateState()
 	//判断速度
 	if (Velocy.Z > 0)
 	{
-		StateMachine->SetState(EState::Jumping);
+		StateMachine->SetState(EState::Jump);
 	}
 	else if (Velocy.Z < 0)
 	{
-		StateMachine->SetState(EState::Falling);
+		StateMachine->SetState(EState::Fall);
 	}
 	else
 	{

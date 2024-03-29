@@ -15,6 +15,13 @@ class ACT_2D_API UGlobalBlueprintFunctionLibrary : public UBlueprintFunctionLibr
 	GENERATED_BODY()
 
 public:
+
+	UFUNCTION(BlueprintCallable)
+	static void LogWarning(FString LogText);
+
+	UFUNCTION(BlueprintCallable)
+	static UObject* LoadAssetByClassPath(UObject* WorldContext, FSoftObjectPath ObjectPath);
+
 	UFUNCTION(BlueprintCallable)
 	static APlayerCharacter* GetPlayerCharacter(UWorld* World);
 

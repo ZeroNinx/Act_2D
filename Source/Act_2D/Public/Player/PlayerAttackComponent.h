@@ -1,8 +1,5 @@
 #pragma once
 
-//第三方
-#include "sqlite3.h"
-
 //自定义
 #include "PlayerSkill.h"
 #include "Act_2DTypes.h"
@@ -27,7 +24,7 @@ class APlayerCharacter;
 /**
  * 攻击组件类
  */
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable )
 class ACT_2D_API UPlayerAttackComponent : public UPaperSpriteComponent
 {
 	GENERATED_BODY()
@@ -38,10 +35,15 @@ public:
 	UPlayerAttackComponent();
 
 	//当前攻击ID
+	UPROPERTY(BlueprintReadWrite)
 	int AttackID = 0;
 
 	//初始化参数
+	UFUNCTION(BlueprintCallable)
 	void Setup(APlayerCharacter* NewCharacter);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsAttacking();
 
 	//是否可以移动
 	bool IsMovable();
@@ -80,10 +82,8 @@ protected:
 	FKeyCombination NextKeyCombation;
 
 	//连续技列表
+	UPROPERTY(BlueprintReadWrite)
 	TMap<int, int> ComboMap;
-
-	//载入数据库
-	sqlite3* LoadDB();
 
 	//攻击
 	void Attack(int ID);
@@ -94,7 +94,14 @@ protected:
 	//初始化攻击
 	void SetupAttack();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	class UPaperZDAnimSequence* GetAttackSequence();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	class UPaperSprite* GetAttackSprite();
+
 	//初始化连续技
+	UFUNCTION(BlueprintImplementableEvent)
 	void SetupCombo();
 
 	//获得当前攻击动画播放位置

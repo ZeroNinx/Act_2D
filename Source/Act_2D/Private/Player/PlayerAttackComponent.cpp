@@ -5,6 +5,8 @@
 #include "PlayerSkill.h"
 #include "StateMachine.h"
 #include "PlayerCharacterController.h"
+#include "GlobalBlueprintFunctionLibrary.h"
+#include "AnimSequences/PaperZDAnimSequence.h"
 
 //构造函数
 UPlayerAttackComponent::UPlayerAttackComponent()
@@ -19,6 +21,16 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 	//隐藏攻击模块
 	SetVisibility(false);
 
+	//初始化Character
+	APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner());
+	if (Character)
+	{
+		Setup(Character);
+	}
+	else
+	{
+		UGlobalBlueprintFunctionLibrary::LogWarning("UPlayerAttackComponent PlayerCharacter Setup Failed");
+	}
 }
 
 //Tick函数
@@ -28,7 +40,7 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	if (AttackID == 0 && !NextKeyCombation.IsAttackEmpty())
 	{
 		//跳跃攻击
-		bool bPlayerJumping = PlayerCharacter->IsInState(EState::Jumping|EState::Falling);
+		bool bPlayerJumping = PlayerCharacter->IsInState(EState::Jump|EState::Fall);
 		if (bPlayerJumping)
 		{
 			Attack(4);
@@ -109,6 +121,11 @@ void UPlayerAttackComponent::Setup(APlayerCharacter* NewCharacter)
 	PlayerCharacter = NewCharacter;
 }
 
+bool UPlayerAttackComponent::IsAttacking()
+{
+	return AttackID != 0;
+}
+
 //返回是否可以移动
 bool UPlayerAttackComponent::IsMovable()
 {
@@ -135,7 +152,7 @@ int UPlayerAttackComponent::GetAnimationPosition()
 void UPlayerAttackComponent::Attack(int ID)
 {
 	//改变状态为攻击
-	PlayerCharacter->SetState(EState::Attacking);
+	PlayerCharacter->SetState(EState::Attack);
 
 	//使动画结束播放的代理得以触发
 	PlayerCharacter->GetSprite()->SetLooping(false);
@@ -177,177 +194,30 @@ void UPlayerAttackComponent::SwitchAttack()
 	}
 }
 
-//载入数据库
-sqlite3* UPlayerAttackComponent::LoadDB()
-{
-	//读取数据库
-	FString DBPath = FPaths::Combine(FPaths::ProjectContentDir(), TEXT("Database"), TEXT("Attack.db"));
-	if (!FPaths::FileExists(DBPath))
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Missing Skill Database") + FString(DBPath));
-		return nullptr;
-	}
-
-	//载入数据库
-	sqlite3* db;
-	sqlite3_open_v2(TCHAR_TO_UTF8(*DBPath), &db, SQLITE_OPEN_READONLY, nullptr);
-	if (!db)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString("Load Failed"));
-		return nullptr;
-	}
-	return db;
-}
-
 //初始化攻击
 void UPlayerAttackComponent::SetupAttack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Load Attack"));
-
-	//打开数据库
-	sqlite3* db = LoadDB();
-	if (!db)
+	UPaperZDAnimSequence* AttackAnimSeq = GetAttackSequence();
+	if (!AttackAnimSeq)
 	{
+		UGlobalBlueprintFunctionLibrary::LogWarning("UPlayerAttackComponent Load AttackAnimSeq Failed");
 		return;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-	//初始化技能资源
-
-		//数据读取
-#pragma region Load Database
-
-	//查询数据
-	sqlite3_stmt* row;
-	FString CheckSQL = FString("select * from skill where id = ") + FString::FromInt(AttackID);
-	int result = sqlite3_prepare_v2(db, TCHAR_TO_UTF8(*CheckSQL), -1, &row, nullptr);
-	if (result != SQLITE_OK)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Check Failed"));
-		sqlite3_close_v2(db);
-		return;
-	}
-	if (sqlite3_step(row) != SQLITE_ROW)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Data Found"));
-		return;
-	}
-
-#pragma endregion 
-
-		//取出数据
-#pragma region Get Data
-
-	//数据库对应列
-	int column_id = 0;
-	int column_name = 1;
-	int column_flipbook = 2;
-	int column_sprite = 3;
-	int column_attack_start_frame = 4;
-	int column_attack_finish_frame = 5;
-
-	//取出数据
-	int attack_start_frame = sqlite3_column_int(row, column_attack_start_frame);
-	int attack_finish_frame = sqlite3_column_int(row, column_attack_finish_frame);
-	FString flipbook_reference = (const char*)sqlite3_column_text(row, column_flipbook);
-	FString sprite_reference = (const char*)sqlite3_column_text(row, column_sprite);
-
-#pragma endregion 
-
-		//载入资源
-#pragma region Load Resource
-
-	UPaperFlipbook* AttackFlipbook = LoadObject<UPaperFlipbook>(GetWorld(), *flipbook_reference);
-	if (!AttackFlipbook)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Flipbook Failed"));
-		sqlite3_close_v2(db);
-		return;
-	}
-
-	UPaperSprite* AttackSprite = LoadObject<UPaperSprite>(GetWorld(), *sprite_reference);
+	UPaperSprite* AttackSprite = GetAttackSprite();
 	if (!AttackSprite)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Load Sprite Failed"));
-		sqlite3_close_v2(db);
+		UGlobalBlueprintFunctionLibrary::LogWarning("UPlayerAttackComponent Load AttackSprite Failed");
 		return;
 	}
 
 	//设定攻击动画
-	PlayerCharacter->GetSprite()->SetFlipbook(AttackFlipbook);
+	PlayerCharacter->PlayOverrideAnim(AttackAnimSeq);
 
 	//设置当前的判定范围和帧
 	SetSprite(AttackSprite);
-	AttackStartFrame = attack_start_frame;
-	AttackFinishFrame = attack_finish_frame;
-
-#pragma endregion
-
-	//关闭查询
-	sqlite3_finalize(row);
-
-	//关闭数据库
-	sqlite3_close_v2(db);
-
-}
-
-//初始化连续技
-void UPlayerAttackComponent::SetupCombo()
-{
-	UE_LOG(LogTemp,Warning,  TEXT("Load Combo"));
-	//清空连招表
-	ComboMap.Empty();
-	
-	//打开数据库
-	sqlite3* db = LoadDB();
-	if (!db)
-	{
-		return;
-	}
-
-	//////////////////////////////////////////////////////////////////////////
-	//初始化连续技资源
-
-	//数据读取
-#pragma region Load Database
-
-	//查询数据
-	sqlite3_stmt* row;
-	FString CheckSQL = FString("select * from combo where id = ") + FString::FromInt(AttackID);
-	int result = sqlite3_prepare_v2(db, TCHAR_TO_UTF8(*CheckSQL), -1, &row, nullptr);
-	if (result != SQLITE_OK)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Check Failed"));
-		sqlite3_close_v2(db);
-		return;
-	}
-
-#pragma endregion 
-
-	//取出数据
-#pragma region Get Data
-
-	while (sqlite3_step(row) == SQLITE_ROW)
-	{
-		//数据库对应列
-		int column_id = 0;
-		int column_command = 1;
-		int column_target = 2;
-
-		//取出数据
-		int command = sqlite3_column_int(row, column_command);
-		int target = sqlite3_column_int(row, column_target);
-
-		ComboMap.Add(command, target);
-	}
-
-#pragma endregion 
-
-	//关闭查询
-	sqlite3_finalize(row);
-
-	//关闭数据库
-	sqlite3_close_v2(db);
+	/*AttackStartFrame = attack_start_frame;
+	AttackFinishFrame = attack_finish_frame;*/
 
 }
 

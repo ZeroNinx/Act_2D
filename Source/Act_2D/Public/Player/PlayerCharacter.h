@@ -21,6 +21,7 @@
 #include "PlayerCharacter.generated.h"
 
 class UPlayerAttackComponent;
+class UPaperZDAnimSequence;
 
 /**
  * 玩家类
@@ -42,16 +43,20 @@ public:
 	int HealthPoint = 5;
 
 	//设置状态
+	UFUNCTION(BlueprintCallable)
 	void SetState(EState NewState);
 
 	//取得状态
+	UFUNCTION(BlueprintCallable)
 	EState GetState();
 
 	//是否在状态中
+	UFUNCTION(BlueprintCallable)
 	bool IsInState(EState InState);
 
-	//调整状态
-	void UpdateState();
+	//覆盖播放动画
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void PlayOverrideAnim(UPaperZDAnimSequence* InAnimSquence);
 
 	//获得攻击组件
 	UPlayerAttackComponent* GetAttackComponent();
@@ -59,14 +64,12 @@ public:
 	//受击函数
 	void Hit_Implementation(AActor* Attacker, FAttackProperty AttackProperty) override;
 
+	// 从攻击中恢复
+	UFUNCTION(BlueprintCallable)
+	void RestoreFromAttack();
+
 	//全局时间函数
 	void SetGlobalDelay(float Delation, float DelayDuration);
-
-protected:
-
-	//单帧动画完成时
-	UFUNCTION()
-	void OnFlipookFinishedPlaying();
 
 protected:
 
@@ -81,26 +84,8 @@ protected:
 	//状态机
 	UStateMachine* StateMachine;
 
-	//攻击组件
-	UPlayerAttackComponent* AttackComponent;
-
 	//打击感延时定时器句柄
 	FTimerHandle HitDelayTimerHandle;
-	
-	//默认动画
-	UPaperFlipbook* IdleFlipbook;
-
-	//奔跑动画
-	UPaperFlipbook* RunningFlipbook;
-
-	//跳跃动画
-	UPaperFlipbook* JumpingFlipbook;
-
-	//下落动画
-	UPaperFlipbook* FallingFlipbook;
-
-	//受击动画
-	UPaperFlipbook* HitFlipbook;
 
 protected:
 
@@ -110,15 +95,14 @@ protected:
 	//Tick函数
 	virtual void Tick(float DeltaTime) override;
 
-	//调整方向
+	//更新状态
+	void UpdateState();
+
+	//更新朝向
 	void UpdateDirection();
 
-	//初始化动画资源
-	void InitAnimation();
-
-	//调整动画
-	void UpdateAnimation();
-
-
+	// 播放受击动画
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayHitAnimation();
 
 };
