@@ -18,7 +18,7 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 	SetCollisionResponseToAllChannels(ECR_Ignore);
 	SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 
-	//隐藏攻击模块
+	//设置Sprite不可见
 	SetVisibility(false);
 
 	//初始化Character
@@ -37,7 +37,7 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	//当攻击外进入攻击
-	if (AttackID == 0 && !NextKeyCombation.IsAttackEmpty())
+	if (!IsAttacking() && !NextKeyCombation.IsAttackEmpty())
 	{
 		//跳跃攻击
 		bool bPlayerJumping = PlayerCharacter->IsInState(EState::Jump|EState::Fall);
@@ -63,32 +63,17 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	}
 
 	//当处于攻击时
-	if (AttackID != 0)
+	if (IsAttacking())
 	{	
-		//根据动画播放位置（攻击进行的阶段）触发不同逻辑
-		int AnimationPosition = GetAnimationPosition();
-
-		if (AnimationPosition < AttackStartFrame)
+		if (!bPlayerAttackJudgeBegin && !bPlayerAttackJudgeEnd) // 攻击判定未开始
 		{
-			//攻击前摇帧
-			if (bBeforeAttackShouldJudge)
-			{
-				bBeforeAttackShouldJudge = false;
-				Skill->JudgeAtBeginAttack(PlayerCharacter);
-			}
-			Skill->JudgeDuringBeforeAttack(PlayerCharacter);
+			Skill->TickBeforeAttackJudge();
 		}
-		else if (AnimationPosition >= AttackStartFrame && AnimationPosition < AttackFinishFrame)
+		else if (bPlayerAttackJudgeBegin && !bPlayerAttackJudgeEnd) // 攻击判定进行中
 		{
-			//攻击进行帧
-			if (bInAttackShouldJudge)
-			{
-				bInAttackShouldJudge = false;
-				Skill->JudgeAtStartAttack(PlayerCharacter);
-			}
-			Skill->JudgeDuringAttack(PlayerCharacter);
+			Skill->TickOnAttackJudge();
 		}
-		else if (AnimationPosition > AttackFinishFrame)
+		else if (bPlayerAttackJudgeBegin && bPlayerAttackJudgeEnd) // 攻击判定已结束
 		{
 			//若有指令，进行指令判定
 			if (!NextKeyCombation.IsAttackEmpty())
@@ -103,15 +88,8 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 				}
 			}
 
-			//攻击后摇帧
-			if (bAfterAttackShouldJudge)
-			{
-				bAfterAttackShouldJudge = false;
-				Skill->JudgeAtFinishAttack(PlayerCharacter);
-			}
-			Skill->JudgeDuringFinishAttack(PlayerCharacter);
+			Skill->TickAfterAttackJudge();
 		}
-		
 	}
 }
 
@@ -129,7 +107,7 @@ bool UPlayerAttackComponent::IsAttacking()
 //返回是否可以移动
 bool UPlayerAttackComponent::IsMovable()
 {
-	return AttackID == 0 || GetAnimationPosition() >= AttackFinishFrame;
+	return !IsAttacking()  || (bPlayerAttackJudgeBegin && bPlayerAttackJudgeEnd);
 }
 
 //接收下一次攻击组合
@@ -141,21 +119,34 @@ void UPlayerAttackComponent::SetKeyCombination(FKeyCombination KeyCombation)
 	}
 }
 
-//获得当前攻击动画播放位置
-int UPlayerAttackComponent::GetAnimationPosition()
+void UPlayerAttackComponent::PlayerAttackBegin()
 {
-	return PlayerCharacter->GetSprite()->GetPlaybackPositionInFrames();
+	Skill->OnAttackBegin();
+	OnPlayerAttackBegin.Broadcast();
 }
 
+void UPlayerAttackComponent::PlayerAttackJudgeBegin()
+{
+	Skill->OnAttackJudgeBegin();
+	OnPlayerAttackJudgeBegin.Broadcast();
+}
+
+void UPlayerAttackComponent::PlayerAttacJudgeEnd()
+{
+	Skill->OnAttackJudgeEnd();
+	OnPlayerAttackJudgeEnd.Broadcast();
+}
+
+void UPlayerAttackComponent::PlayerAttackEnd()
+{
+	OnPlayerAttackEnd.Broadcast();
+}
 
 //攻击
 void UPlayerAttackComponent::Attack(int ID)
 {
 	//改变状态为攻击
 	PlayerCharacter->SetState(EState::Attack);
-
-	//使动画结束播放的代理得以触发
-	PlayerCharacter->GetSprite()->SetLooping(false);
 
 	//设定攻击ID和类型
 	AttackID = ID;
@@ -167,6 +158,8 @@ void UPlayerAttackComponent::Attack(int ID)
 	//初始化连续技资源
 	SetupCombo();
 
+	//开始攻击
+	PlayerAttackBegin();
 }
 
 //选择攻击
@@ -214,10 +207,8 @@ void UPlayerAttackComponent::SetupAttack()
 	//设定攻击动画
 	PlayerCharacter->PlayOverrideAnim(AttackAnimSeq);
 
-	//设置当前的判定范围和帧
+	//设置当前的判定范围
 	SetSprite(AttackSprite);
-	/*AttackStartFrame = attack_start_frame;
-	AttackFinishFrame = attack_finish_frame;*/
 
 }
 
@@ -225,12 +216,21 @@ void UPlayerAttackComponent::SetupAttack()
 void UPlayerAttackComponent::ResetAttack()
 {
 	AttackID = 0;
-	AttackStartFrame = 0;
-	AttackFinishFrame = 0;
-	bAfterAttackShouldJudge = true;
-	bInAttackShouldJudge = true;
-	bAfterAttackShouldJudge = true;
+	bPlayerAttackJudgeBegin = false;
+	bPlayerAttackJudgeEnd = false;
 	NextKeyCombation.Clear();
-	Skill = NewObject<USkill>();
+	Skill = NewObject<UPlayerSkill>();
+}
+
+void UPlayerAttackComponent::SetPlayerAttackJudgeBegin()
+{
+	bPlayerAttackJudgeBegin = true;
+	PlayerAttackJudgeBegin();
+}
+
+void UPlayerAttackComponent::SetPlayerAttackJudgeEnd()
+{
+	bPlayerAttackJudgeEnd = true;
+	PlayerAttacJudgeEnd();
 }
 

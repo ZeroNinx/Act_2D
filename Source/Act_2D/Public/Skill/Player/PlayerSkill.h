@@ -13,25 +13,17 @@ class APlayerCharacter;
 class AMonster;
 
 /**
- * 技能类
+ * 玩家技能类
  */
-UCLASS()
-class ACT_2D_API USkill :public UObject
+UCLASS(BlueprintType, Blueprintable)
+class ACT_2D_API UPlayerSkill :public UObject
 {
 	GENERATED_BODY()
 
 public:
 
 	//构造函数
-	USkill() {};
-
-	//Player
-	UPROPERTY(BlueprintReadOnly)
-	APlayerCharacter* PlayerCharacter;
-
-	//击中的Actor
-	UPROPERTY(BlueprintReadOnly)
-	TSet<AActor*> HitActors;
+	UPlayerSkill() {};
 
 	//击中的Actor
 	UPROPERTY(BlueprintReadOnly)
@@ -41,41 +33,40 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FAttackProperty AttackProperty;
 
-	//检测击中的Actor
-	virtual void ScanHitActors();
+	UFUNCTION(BlueprintCallable)
+	APlayerCharacter* GetPlayerCharacter();
+
+	//获取击中的Actor
+	virtual TArray<AActor*> GetHitActors();
 
 	//攻击判定
 	virtual void ExecuteAttackJudge(APlayerCharacter* Player, AActor* AMonster);
 
 	//前摇执行一次
-	virtual void JudgeAtBeginAttack(APlayerCharacter* Player) {};
-
-	//攻击开始执行一次
-	virtual void JudgeAtStartAttack(APlayerCharacter* Player);
-
-	//攻击结束时执行一次
-	virtual void JudgeAtFinishAttack(APlayerCharacter* Player) {};
+	virtual void OnAttackBegin() {};
 
 	//前摇每帧执行
-	virtual void JudgeDuringBeforeAttack(APlayerCharacter* Player) {};
+	virtual void TickBeforeAttackJudge() {};
+
+	//攻击开始执行一次
+	virtual void OnAttackJudgeBegin();
 
 	//攻击时每帧执行
-	virtual void JudgeDuringAttack(APlayerCharacter* Player) {};
+	virtual void TickOnAttackJudge() {};
+
+	//攻击结束时执行一次
+	virtual void OnAttackJudgeEnd() {};
 
 	//后摇每帧执行
-	virtual void JudgeDuringFinishAttack(APlayerCharacter* Player) {};
+	virtual void TickAfterAttackJudge() {};
 
-
-protected:
-
-	bool bShouldJudge = true;
 };
 
 /**
  * AttackI
  */
 UCLASS()
-class ACT_2D_API US_AttackI :public USkill
+class ACT_2D_API US_AttackI :public UPlayerSkill
 {
 	GENERATED_BODY()
 
@@ -89,7 +80,7 @@ public:
  * AttackII
  */
 UCLASS()
-class ACT_2D_API US_AttackII :public USkill
+class ACT_2D_API US_AttackII :public UPlayerSkill
 {
 	GENERATED_BODY()
 
@@ -104,7 +95,7 @@ public:
  * AttackIII
  */
 UCLASS()
-class ACT_2D_API US_AttackIII:public USkill
+class ACT_2D_API US_AttackIII:public UPlayerSkill
 {
 	GENERATED_BODY()
 
@@ -112,9 +103,9 @@ public:
 
 	US_AttackIII();
 	
-	void JudgeAtStartAttack(APlayerCharacter* Player) override;
+	void OnAttackJudgeBegin() override;
 
-	void JudgeDuringAttack(APlayerCharacter* Player) override;
+	void TickOnAttackJudge() override;
 	
 };
 
@@ -123,7 +114,7 @@ public:
  * JumpAttack
  */
 UCLASS()
-class ACT_2D_API US_AttackJump :public USkill
+class ACT_2D_API US_AttackJump :public UPlayerSkill
 {
 	GENERATED_BODY()
 
@@ -138,7 +129,7 @@ public:
  * DashJump
  */
 UCLASS()
-class ACT_2D_API US_AttackDash :public USkill
+class ACT_2D_API US_AttackDash :public UPlayerSkill
 {
 	GENERATED_BODY()
 
@@ -146,7 +137,7 @@ public:
 
 	US_AttackDash();
 
-	void JudgeAtStartAttack(APlayerCharacter* Player) override;
+	void OnAttackJudgeBegin() override;
 
-	void JudgeDuringAttack(APlayerCharacter* Player) override;
+	void TickOnAttackJudge() override;
 };

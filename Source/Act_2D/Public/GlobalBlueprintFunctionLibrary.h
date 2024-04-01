@@ -17,20 +17,34 @@ class ACT_2D_API UGlobalBlueprintFunctionLibrary : public UBlueprintFunctionLibr
 public:
 
 	UFUNCTION(BlueprintCallable)
+	static void SetGetGameInstance(UGameInstance* GameInstance);
+
+	UFUNCTION(BlueprintCallable)
+	static UGameInstance* GetGameInstance();
+
+	UFUNCTION(BlueprintCallable)
 	static void LogWarning(FString LogText);
 
 	UFUNCTION(BlueprintCallable)
 	static UObject* LoadAssetByClassPath(UObject* WorldContext, FSoftObjectPath ObjectPath);
 
 	UFUNCTION(BlueprintCallable)
-	static APlayerCharacter* GetPlayerCharacter(UWorld* World);
+	static void SetGlobalDelay(float TimeFlowRate, float Duration);
 
 	UFUNCTION(BlueprintCallable)
-	static void UpdatePlayerCharacter(UWorld* World, APlayerCharacter* NewPlayerCharacter);
+	static APlayerCharacter* GetPlayerCharacter(UObject* WorldContext);
 
 	UFUNCTION(BlueprintCallable)
-	static UUserWidget* GetMainUI(UWorld* World);
+	static void SetPlayerCharacter(UObject* WorldContext, APlayerCharacter* NewPlayerCharacter);
 
 	UFUNCTION(BlueprintCallable)
-	static void UpdateMainUI(UWorld* World, UUserWidget* NewUI);
+	static UUserWidget* GetMainUI(UObject* WorldContext);
+
+	UFUNCTION(BlueprintCallable)
+	static void SetMainUI(UObject* WorldContext, UUserWidget* NewUI);
+
+private:
+
+	static UGameInstance* TempGameInstance;
+
 };

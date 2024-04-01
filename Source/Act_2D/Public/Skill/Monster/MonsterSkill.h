@@ -38,10 +38,6 @@ public:
 	//攻击命中时自身效果
 	virtual void InJudge(AMonster* Monster, APlayerCharacter* Player);
 
-
-protected:
-
-	bool bShouldJudge = true;
 };
 
 /**

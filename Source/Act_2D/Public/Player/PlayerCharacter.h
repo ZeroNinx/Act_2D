@@ -9,7 +9,6 @@
 
 //UE4
 #include "CoreMinimal.h"
-#include "TimerManager.h"
 #include "PaperCharacter.h"
 #include "PaperFlipbookComponent.h"
 #include "Camera/CameraComponent.h"
@@ -59,6 +58,7 @@ public:
 	void PlayOverrideAnim(UPaperZDAnimSequence* InAnimSquence);
 
 	//获得攻击组件
+	UFUNCTION(BlueprintCallable)
 	UPlayerAttackComponent* GetAttackComponent();
 
 	//受击函数
@@ -67,9 +67,6 @@ public:
 	// 从攻击中恢复
 	UFUNCTION(BlueprintCallable)
 	void RestoreFromAttack();
-
-	//全局时间函数
-	void SetGlobalDelay(float Delation, float DelayDuration);
 
 protected:
 
@@ -87,6 +84,9 @@ protected:
 	//打击感延时定时器句柄
 	FTimerHandle HitDelayTimerHandle;
 
+	// 缓存的旧状态
+	EState PreviouisState = EState::None;
+
 protected:
 
 	// 游戏开始执行
@@ -100,6 +100,9 @@ protected:
 
 	//更新朝向
 	void UpdateDirection();
+
+	// 当玩家改变状态时
+	void OnPlayerChangeState();
 
 	// 播放受击动画
 	UFUNCTION(BlueprintImplementableEvent)

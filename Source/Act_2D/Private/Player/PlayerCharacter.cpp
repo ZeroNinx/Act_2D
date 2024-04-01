@@ -50,7 +50,7 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	UGlobalBlueprintFunctionLibrary::UpdatePlayerCharacter(GetWorld(), this);
+	UGlobalBlueprintFunctionLibrary::SetPlayerCharacter(GetWorld(), this);
 	CameraComponent->Activate();
 }
 
@@ -100,6 +100,17 @@ void APlayerCharacter::UpdateDirection()
 	}
 }
 
+void APlayerCharacter::OnPlayerChangeState()
+{
+	if (GetState() == EState::Idle || GetState() == EState::Run)
+	{
+		if (PreviouisState == EState::Fall)
+		{
+			UGlobalBlueprintFunctionLibrary::LogWarning("Fall");
+		}
+	}
+}
+
 void APlayerCharacter::RestoreFromAttack()
 {
 	UPlayerAttackComponent* AttackComponent = GetAttackComponent();
@@ -121,30 +132,36 @@ void APlayerCharacter::UpdateState()
 	//根据Z轴速度判断起跳/下落
 	if (Velocy.Z> 0)
 	{
-		StateMachine->SetState(EState::Jump);
+		SetState(EState::Jump);
 	}
 	else if(Velocy.Z <0)
 	{
-		StateMachine->SetState(EState::Fall);
+		SetState(EState::Fall);
 	}
 	else
 	{
 		//否则根据X轴速度判断奔跑/静止
 		if (UKismetMathLibrary::Abs(Velocy.X) != 0)
 		{
-			StateMachine->SetState(EState::Run);	
+			SetState(EState::Run);	
 		}
 		else
 		{
-			StateMachine->SetState(EState::Idle);
+			SetState(EState::Idle);
 		}	
 	}
+
 }
 
 //设置状态
 void APlayerCharacter::SetState(EState NewState)
 {
-	StateMachine->SetState(NewState);
+	if (PreviouisState != NewState)
+	{
+		PreviouisState = StateMachine->GetState();
+		StateMachine->SetState(NewState);
+		OnPlayerChangeState();
+	}
 }
 
 //获得状态
@@ -198,17 +215,5 @@ void APlayerCharacter::Hit_Implementation(AActor* Attacker, FAttackProperty Atta
 		}
 		
 	}
-}
-
-void APlayerCharacter::SetGlobalDelay(float Delation, float DelayDuration)
-{
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), Delation);
-
-	auto RestoreFunction = [&]()->void
-	{
-		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
-	};
-	auto dlg = FTimerDelegate::CreateLambda(RestoreFunction);
-	GetWorldTimerManager().SetTimer(HitDelayTimerHandle, dlg, DelayDuration * Delation, false);
 }
 

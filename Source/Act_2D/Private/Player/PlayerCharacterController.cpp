@@ -207,7 +207,7 @@ void APlayerCharacterController::InitializeMainUI()
 		UUserWidget* MainUI = CreateWidget(GetWorld(), MainUIClass);
 		if (MainUI)
 		{
-			UGlobalBlueprintFunctionLibrary::UpdateMainUI(GetWorld(), MainUI);
+			UGlobalBlueprintFunctionLibrary::SetMainUI(GetWorld(), MainUI);
 			MainUI->AddToViewport();
 		}
 	}

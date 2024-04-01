@@ -1,45 +1,52 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 #include "PlayerSkill.h"
-#include "Kismet/GameplayStatics.h"
 #include "Monster.h"
+#include "GlobalBlueprintFunctionLibrary.h"
 
 //循环包含
 #include "PlayerAttackComponent.h"
 #include "PlayerCharacter.h"
 
 //执行攻击
-void USkill::ExecuteAttackJudge(APlayerCharacter* Player, AActor* HitActor)
+void UPlayerSkill::ExecuteAttackJudge(APlayerCharacter* PlayerCharacter, AActor* HitActor)
 {
-
-	IActorInterface::Execute_Hit(HitActor, Player, AttackProperty);
+	IActorInterface::Execute_Hit(HitActor, PlayerCharacter, AttackProperty);
 
 	//打击感延迟
 	AMonster* HitMonster = Cast<AMonster>(HitActor);
 	if (HitMonster && HitMonster->GetHealthPoint() > 0)
 	{
-		Player->SetGlobalDelay(0.05, 0.07);
+		UGlobalBlueprintFunctionLibrary::SetGlobalDelay(0.05f, 0.07f);
 	}
 }
 
-void USkill::JudgeAtStartAttack(APlayerCharacter* Player)
+void UPlayerSkill::OnAttackJudgeBegin()
 {
-	ScanHitActors();
-	for (AActor* HitActor : HitActors)
+	APlayerCharacter* PlayerCharacter = GetPlayerCharacter();
+	if (PlayerCharacter)
 	{
-		ExecuteAttackJudge(Player, HitActor);
+		for (AActor* HitActor : GetHitActors())
+		{
+			ExecuteAttackJudge(PlayerCharacter, HitActor);
+		}
 	}
 }
 
-void USkill::ScanHitActors()
+APlayerCharacter* UPlayerSkill::GetPlayerCharacter()
 {
-	PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	return UGlobalBlueprintFunctionLibrary::GetPlayerCharacter(this);
+}
+
+TArray<AActor*> UPlayerSkill::GetHitActors()
+{
+	TArray<AActor*> HitActors;
+	APlayerCharacter* PlayerCharacter = GetPlayerCharacter();
 	if (PlayerCharacter)
 	{
 		PlayerCharacter->GetAttackComponent()->UpdateOverlaps();
 		PlayerCharacter->GetAttackComponent()->GetOverlappingActors(HitActors);
 	}
+	return MoveTemp(HitActors);
 }
-
 
 /**
  * AttackI
@@ -68,24 +75,31 @@ US_AttackIII::US_AttackIII()
 	AttackProperty = FAttackProperty(EAttackHarmfulType::HeavyAttack, 2);
 }
 
-void US_AttackIII::JudgeAtStartAttack(APlayerCharacter* Player)
+void US_AttackIII::OnAttackJudgeBegin()
 {
-	//添加瞬时速度
-	float DirectMark = Player->bFacingRight ? 1.0f : -1.0f;
-	float VelocyX = 4000.0f * DirectMark;
-	Player->GetCharacterMovement()->Velocity = FVector(VelocyX, 0, 0);
+	APlayerCharacter* PlayerCharacter = GetPlayerCharacter();
+	if (PlayerCharacter)
+	{
+		//添加瞬时速度
+		float DirectMark = PlayerCharacter->bFacingRight ? 1.0f : -1.0f;
+		float VelocyX = 4000.0f * DirectMark;
+		PlayerCharacter->GetCharacterMovement()->Velocity = FVector(VelocyX, 0, 0);
+	}
 };
 
 
-void US_AttackIII::JudgeDuringAttack(APlayerCharacter* Player)
+void US_AttackIII::TickOnAttackJudge()
 {
-	ScanHitActors();
-	for (AActor* HitActor : HitActors)
+	APlayerCharacter* PlayerCharacter = GetPlayerCharacter();
+	if (PlayerCharacter)
 	{
-		if (HitActor && !ActorsAppliedHit.Contains(HitActor))
+		for (AActor* HitActor : GetHitActors())
 		{
-			ExecuteAttackJudge(Player, HitActor);
-			ActorsAppliedHit.Add(HitActor);
+			if (HitActor && !ActorsAppliedHit.Contains(HitActor))
+			{
+				ExecuteAttackJudge(PlayerCharacter, HitActor);
+				ActorsAppliedHit.Add(HitActor);
+			}
 		}
 	}
 }
@@ -108,23 +122,30 @@ US_AttackDash::US_AttackDash()
 	
 }
 
-void US_AttackDash::JudgeAtStartAttack(APlayerCharacter* Player)
+void US_AttackDash::OnAttackJudgeBegin()
 {
-	//添加瞬时速度
-	float DirectMark = Player->bFacingRight ? 1.0f : -1.0f;
-	float VelocyX = 10000.0f * DirectMark;
-	Player->GetCharacterMovement()->Velocity = FVector(VelocyX, 0, 0);
+	APlayerCharacter* PlayerCharacter = GetPlayerCharacter();
+	if (PlayerCharacter)
+	{
+		//添加瞬时速度
+		float DirectMark = PlayerCharacter->bFacingRight ? 1.0f : -1.0f;
+		float VelocyX = 10000.0f * DirectMark;
+		PlayerCharacter->GetCharacterMovement()->Velocity = FVector(VelocyX, 0, 0);
+	}
 }
 
-void US_AttackDash::JudgeDuringAttack(APlayerCharacter* Player)
+void US_AttackDash::TickOnAttackJudge()
 {
-	ScanHitActors();
-	for (AActor* HitActor : HitActors)
+	APlayerCharacter* PlayerCharacter = GetPlayerCharacter();
+	if (PlayerCharacter)
 	{
-		if (HitActor && !ActorsAppliedHit.Contains(HitActor))
+		for (AActor* HitActor : GetHitActors())
 		{
-			ExecuteAttackJudge(Player, HitActor);
-			ActorsAppliedHit.Add(HitActor);
+			if (HitActor && !ActorsAppliedHit.Contains(HitActor))
+			{
+				ExecuteAttackJudge(PlayerCharacter, HitActor);
+				ActorsAppliedHit.Add(HitActor);
+			}
 		}
 	}
 }

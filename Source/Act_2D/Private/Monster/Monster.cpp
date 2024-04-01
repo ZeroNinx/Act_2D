@@ -26,8 +26,13 @@ AMonster::AMonster()
 
 }
 
+bool AMonster::IsAlive()
+{
+	return GetHealthPoint() > 0;
+}
+
 //获取HP
-int& AMonster::GetHealthPoint()
+int AMonster::GetHealthPoint()
 {
 	return HealthPoint;
 }
