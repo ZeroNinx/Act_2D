@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "PlayerCharacter.h"
+#include "Player/PlayerCharacter.h"
 #include "Blueprint/UserWidget.h"
 
 #include "CoreMinimal.h"

@@ -36,14 +36,4 @@ protected:
 	//每帧执行
 	void Tick(float DeltaTime) override;
 
-	//初始化动画
-	void InitAnimation();
-
-	//更新动画
-	void UpdateAnimation();
-
-	//单帧动画播放完成时
-	UFUNCTION()
-	void OnFlipookFinishedPlaying();
-
 };

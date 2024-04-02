@@ -1,8 +1,8 @@
 #pragma once
 
 //自定义
-#include "PlayerSkill.h"
-#include "Act_2DTypes.h"
+#include "Skill/Player/PlayerSkill.h"
+#include "Utils/Types.h"
 
 //UE4
 #include "Misc/Paths.h"

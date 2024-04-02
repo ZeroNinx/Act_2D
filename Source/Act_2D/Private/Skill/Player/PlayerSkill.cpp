@@ -1,10 +1,10 @@
-#include "PlayerSkill.h"
-#include "Monster.h"
-#include "GlobalBlueprintFunctionLibrary.h"
+#include "Skill/Player/PlayerSkill.h"
+#include "Monster/Monster.h"
+#include "Utils/GlobalBlueprintFunctionLibrary.h"
 
 //循环包含
-#include "PlayerAttackComponent.h"
-#include "PlayerCharacter.h"
+#include "Player/PlayerAttackComponent.h"
+#include "Player/PlayerCharacter.h"
 
 //执行攻击
 void UPlayerSkill::ExecuteAttackJudge(APlayerCharacter* PlayerCharacter, AActor* HitActor)
@@ -33,7 +33,7 @@ void UPlayerSkill::OnAttackJudgeBegin()
 
 APlayerCharacter* UPlayerSkill::GetPlayerCharacter()
 {
-	return UGlobalBlueprintFunctionLibrary::GetPlayerCharacter(this);
+	return UGlobalBlueprintFunctionLibrary::GetPlayerCharacter();
 }
 
 TArray<AActor*> UPlayerSkill::GetHitActors()

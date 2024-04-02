@@ -1,11 +1,11 @@
-#include "PlayerAttackComponent.h"
+#include "Player/PlayerAttackComponent.h"
 
 //互相包含
-#include "Monster.h"
-#include "PlayerSkill.h"
-#include "StateMachine.h"
-#include "PlayerCharacterController.h"
-#include "GlobalBlueprintFunctionLibrary.h"
+#include "Monster/Monster.h"
+#include "Skill/Player/PlayerSkill.h"
+#include "Player/PlayerCharacterController.h"
+#include "Utils/StateMachine.h"
+#include "Utils/GlobalBlueprintFunctionLibrary.h"
 #include "AnimSequences/PaperZDAnimSequence.h"
 
 //构造函数
@@ -40,7 +40,7 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	if (!IsAttacking() && !NextKeyCombation.IsAttackEmpty())
 	{
 		//跳跃攻击
-		bool bPlayerJumping = PlayerCharacter->IsInState(EState::Jump|EState::Fall);
+		bool bPlayerJumping = PlayerCharacter->GetState() == EState::Jump || PlayerCharacter->GetState() == EState::Fall;
 		if (bPlayerJumping)
 		{
 			Attack(4);

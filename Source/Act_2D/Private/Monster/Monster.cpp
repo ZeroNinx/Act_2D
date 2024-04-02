@@ -1,8 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Monster.h"
+#include "Monster/Monster.h"
 #include "Monster/MonsterController.h"
+#include "Utils/GlobalBlueprintFunctionLibrary.h"
 
 //构造函数
 AMonster::AMonster()
@@ -54,7 +55,7 @@ void AMonster::Tick(float DeltaTime)
 //更新朝向
 void AMonster::UpdateFacingDirection()
 {
-	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
+	APawn* PlayerPawn = UGlobalBlueprintFunctionLibrary::GetPlayerCharacter();
 	if (!PlayerPawn)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AMonster::UpdateFacingDirection PlayerPawn Invalid"));

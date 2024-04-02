@@ -1,10 +1,9 @@
-#include "PlayerCharacter.h"
-
-//重复包含
+#include "Player/PlayerCharacter.h"
+#include "Player/PlayerAttackComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "PlayerAttackComponent.h"
-#include "GlobalBlueprintFunctionLibrary.h"
-#include "UIInterface.h"
+#include "Utils/GlobalBlueprintFunctionLibrary.h"
+#include "Utils/UIInterface.h"
 
 //构造函数
 APlayerCharacter::APlayerCharacter()
@@ -50,7 +49,7 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	UGlobalBlueprintFunctionLibrary::SetPlayerCharacter(GetWorld(), this);
+	UGlobalBlueprintFunctionLibrary::SetPlayerCharacter(this);
 	CameraComponent->Activate();
 }
 
@@ -148,9 +147,9 @@ void APlayerCharacter::UpdateState()
 		else
 		{
 			SetState(EState::Idle);
-		}	
+		}
 	}
-
+	UGlobalBlueprintFunctionLibrary::LogWarning(FString::Printf(TEXT("APlayerCharacter::UpdateState IsMovingOnGround = %d"), GetCharacterMovement()->IsMovingOnGround()));
 }
 
 //设置状态
@@ -168,11 +167,6 @@ void APlayerCharacter::SetState(EState NewState)
 EState APlayerCharacter::GetState()
 {
 	return StateMachine->GetState();
-}
-
-bool APlayerCharacter::IsInState(EState InState)
-{
-	return StateMachine->IsInState(InState);
 }
 
 //获得攻击组件
@@ -208,7 +202,7 @@ void APlayerCharacter::Hit_Implementation(AActor* Attacker, FAttackProperty Atta
 
 		HealthPoint -= 1;
 		
-		UUserWidget* MainUI = UGlobalBlueprintFunctionLibrary::GetMainUI(GetWorld());
+		UUserWidget* MainUI = UGlobalBlueprintFunctionLibrary::GetMainUI();
 		if (MainUI)
 		{
 			IUIInterface::Execute_UpdatePlayerHP(MainUI, HealthPoint);

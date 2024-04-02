@@ -33,15 +33,6 @@ public class Act_2D : ModuleRules
 			new string[]
 			{
 				"Act_2D/Public",
-				"Act_2D/Public/Player",
-				"Act_2D/Public/Monster",
-				"Act_2D/Public/Monster/BehaviorTree",
-				"Act_2D/Public/Monster/Slime",
-				"Act_2D/Public/Monster/RedGrass",
-				"Act_2D/Public/Skill",
-				"Act_2D/Public/Skill/Player",
-				"Act_2D/Public/Skill/Monster",
-				"Act_2D/Public/Scene"
 			}
         );
 

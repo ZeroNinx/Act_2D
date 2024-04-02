@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Bullet.h"
+#include "Skill/Bullet.h"
 
 // Sets default values
 ABullet::ABullet()

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MonsterController.h"
+#include "Monster/MonsterController.h"
 
 //构造函数
 AMonsterController::AMonsterController()
@@ -10,7 +10,6 @@ AMonsterController::AMonsterController()
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BehaviorTreeResource(TEXT("BehaviorTree'/Game/Blueprints/BehaviorTree/Slime/BT_Slime.BT_Slime'"));
 	if (!BehaviorTreeResource.Succeeded())
 	{
-		UKismetSystemLibrary::PrintString(nullptr, FString("Behavior Tree load Failed"));
 		return;
 	}
 	BehaviorTree = BehaviorTreeResource.Object;

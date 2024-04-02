@@ -2,7 +2,7 @@
 
 
 #include "Act_2DGameInstance.h"
-#include "GlobalBlueprintFunctionLibrary.h"
+#include "Utils/GlobalBlueprintFunctionLibrary.h"
 
 UAct_2DGameInstance::UAct_2DGameInstance()
 {

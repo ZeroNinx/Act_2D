@@ -3,7 +3,7 @@
 #pragma once
 
 //自定义
-#include "Monster.h"
+#include "Monster/Monster.h"
 
 //UE4
 #include "CoreMinimal.h"
@@ -39,11 +39,6 @@ protected:
 	UFUNCTION()
 	void OnAttackComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-
-	//单帧动画完成时
-	UFUNCTION()
-	void OnFlipookFinishedPlaying() override;
-
 protected:
 
 	//攻击组件
@@ -61,20 +56,8 @@ protected:
 	//标记是否刚着地
 	bool bFalled = false;
 
-	//初始化动画资源
-	void InitAnimation() override;
-
 	//tick函数
 	void Tick(float DeltaTime) override;
-
-	//更新方向
-	void UpdateFacingDirection() override;
-
-	//更新状态
-	void UpdateState() override;
-
-	//更新动画
-	void UpdateAnimation() override;
 
 	//攻击判定
 	void AttackJudge(AActor* HitActor);

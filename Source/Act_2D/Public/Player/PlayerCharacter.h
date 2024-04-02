@@ -2,19 +2,16 @@
 #pragma once
 
 //自定义
-#include "StateMachine.h"
-#include "ActorInterface.h"
+#include "Utils/StateMachine.h"
+#include "Utils/ActorInterface.h"
 
 #define eps 1e-7//浮点数误差
 
 //UE4
 #include "CoreMinimal.h"
-#include "PaperCharacter.h"
+#include "PaperZD/Public/PaperZDCharacter.h"
 #include "PaperFlipbookComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PlayerCharacter.generated.h"
@@ -27,7 +24,7 @@ class UPaperZDAnimSequence;
  */
 
 UCLASS()
-class ACT_2D_API APlayerCharacter : public APaperCharacter, public IActorInterface
+class ACT_2D_API APlayerCharacter : public APaperZDCharacter, public IActorInterface
 {
 	GENERATED_BODY()
 
@@ -48,10 +45,6 @@ public:
 	//取得状态
 	UFUNCTION(BlueprintCallable)
 	EState GetState();
-
-	//是否在状态中
-	UFUNCTION(BlueprintCallable)
-	bool IsInState(EState InState);
 
 	//覆盖播放动画
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
@@ -84,7 +77,7 @@ protected:
 	//打击感延时定时器句柄
 	FTimerHandle HitDelayTimerHandle;
 
-	// 缓存的旧状态
+	//缓存的旧状态
 	EState PreviouisState = EState::None;
 
 protected:

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RedGrassController.h"
+#include "Monster/RedGrass/RedGrassController.h"
 
 //构造函数
 ARedGrassController::ARedGrassController()

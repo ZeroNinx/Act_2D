@@ -3,19 +3,17 @@
 #pragma once
 
 //自定义
-#include "ActorInterface.h"
-#include "StateMachine.h"
-#include "MonsterSkill.h"
+#include "Utils/ActorInterface.h"
+#include "Utils/StateMachine.h"
+#include "Skill/Monster/MonsterSkill.h"
 
 //UE4
 #include "CoreMinimal.h"
 #include "PaperFlipbook.h"
-#include "PaperCharacter.h"
+#include "PaperZD/Public/PaperZDCharacter.h"
 #include "PaperFlipbookComponent.h"
 #include "HAL/PlatformProcess.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Monster.generated.h"
@@ -25,7 +23,7 @@
  *	怪物类
  */
 UCLASS()
-class ACT_2D_API AMonster : public APaperCharacter ,public IActorInterface
+class ACT_2D_API AMonster : public APaperZDCharacter,public IActorInterface
 {
 	GENERATED_BODY()
 
@@ -71,6 +69,8 @@ protected:
 	//死亡效果定时器句柄
 	FTimerHandle DeathEffectTimerHandle;
 
+protected:
+
 	//游戏开始执行
 	virtual void BeginPlay() override;
 
@@ -83,43 +83,11 @@ protected:
 	//更新状态
 	virtual void UpdateState();
 
-	//更新动画
-	virtual void UpdateAnimation() {};
-
-	//标记一次攻击是否命中了玩家
-	bool bAttacked = false;
-
-	//单帧动画播放完成时
-	virtual void OnFlipookFinishedPlaying() {};
-
 	//播放死亡动画
 	virtual void PlayDeathEffect();
-
-	/**
-	* 动画资源区
-	*/
-
-	//空闲动画
-	UPROPERTY();
-	UPaperFlipbook* IdleFlipbook;
-
-	//跳跃动画
-	UPROPERTY()
-	UPaperFlipbook* JumpingFlipbook;
-
-	//着地动画
-	UPROPERTY()
-	UPaperFlipbook* FalledFlipbook;
-
-	//受击动画
-	UPROPERTY()
-	UPaperFlipbook* HitFlipbook;
 
 	//受击特效
 	UPROPERTY()
 	UPaperFlipbook* HitEffectFlipbook;
-
-	//初始化动画资源
-	virtual void InitAnimation() {};
 
 };

@@ -1,12 +1,12 @@
-#include "PlayerCharacterController.h"
+#include "Player/PlayerCharacterController.h"
 
 //重复包含
-#include "PlayerCharacter.h"
-#include "PlayerAttackComponent.h"
+#include "Player/PlayerCharacter.h"
+#include "Player/PlayerAttackComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
-#include "GlobalBlueprintFunctionLibrary.h"
+#include "Utils/GlobalBlueprintFunctionLibrary.h"
 
 //构造函数
 APlayerCharacterController::APlayerCharacterController()
@@ -171,7 +171,7 @@ void APlayerCharacterController::JumpPressed()
 	RecordKeyCombination();
 
 	//可移动帧取消攻击
-	if (PlayerCharacter->IsInState(EState::Attack) && AttackComponent->IsMovable())
+	if (AttackComponent->IsAttacking() && AttackComponent->IsMovable())
 	{
 		PlayerCharacter->RestoreFromAttack();
 	}
@@ -207,7 +207,7 @@ void APlayerCharacterController::InitializeMainUI()
 		UUserWidget* MainUI = CreateWidget(GetWorld(), MainUIClass);
 		if (MainUI)
 		{
-			UGlobalBlueprintFunctionLibrary::SetMainUI(GetWorld(), MainUI);
+			UGlobalBlueprintFunctionLibrary::SetMainUI(MainUI);
 			MainUI->AddToViewport();
 		}
 	}
@@ -217,8 +217,8 @@ void APlayerCharacterController::InitializeMainUI()
 bool APlayerCharacterController::IsAllowMove()
 {
 	return PlayerCharacter && 
-	!PlayerCharacter->IsInState(EState::Attack) &&
-	!PlayerCharacter->IsInState(EState::Hit);
+	!(PlayerCharacter->GetState() == EState::Attack) &&
+	!(PlayerCharacter->GetState() == EState::Hit);
 }
 
 
