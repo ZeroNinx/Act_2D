@@ -51,7 +51,7 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		bool bPlayerJumping = !PlayerCharacter->IsMovingOnGround && !(PlayerCharacter->GetState() == EState::Hit);
 		if (bPlayerJumping)
 		{
-			Attack(4);
+			//TODO:跳跃攻击
 		}
 		else //一般攻击
 		{
@@ -66,20 +66,11 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 					break;
 				}
 			}
-
-			Attack(1);
-			////获得命令
-			//int NextCommand = NextKeyCombation.GetCommand();
-			//NextKeyCombation.Clear();
-
-			////进行对应攻击
-			//SetupCombo();
-			//if (ComboMap.Contains(NextCommand))
-			//{
-			//	//立即停止移动，开始攻击
-			//	PlayerCharacter->GetCharacterMovement()->StopMovementImmediately();
-			//	Attack(ComboMap[NextCommand]);
-			//}
+			if (Skill)
+			{
+				PlayerCharacter->GetCharacterMovement()->StopMovementImmediately();
+				Attack(1);
+			}
 		}
 	}
 
@@ -96,20 +87,37 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		}
 		else if (bPlayerAttackJudgeBegin && bPlayerAttackJudgeEnd) // 攻击判定已结束
 		{
-			//若有指令，进行指令判定
-			if (!NextKeyCombation.IsAttackEmpty())
-			{
-				int NextCommand = NextKeyCombation.GetCommand();
 
-				if (ComboMap.Contains(NextCommand))
+			// 获取下一个组合输入
+			FKeyCombination NextCombation = GetNextKeyCombination();
+			if (NextCombation.IsEmpty())
+			{
+				return;
+			}
+
+			UPlayerSkill* NextSkill = nullptr;
+			for (auto It : Skill->ComboConfig)
+			{
+				if (It.Key.ContainsCombination(NextCombation))
 				{
-					ResetAttack();
-					Attack(ComboMap[NextCommand]);
-					return;
+					// TODO:优化载入
+					TSubclassOf<UPlayerSkill> SkillClass = It.Value;
+					NextSkill = NewObject<UPlayerSkill>(this, SkillClass);
+					break;
 				}
 			}
 
-			Skill->TickAfterAttackJudge();
+			if(NextSkill)
+			{
+				ResetAttack();
+				Skill = NextSkill;
+				Attack(2);
+			}
+			else
+			{
+				// 没有下一个连续技
+				Skill->TickAfterAttackJudge();
+			}
 		}
 	}
 }
@@ -188,9 +196,6 @@ void UPlayerAttackComponent::Attack(int ID)
 	//初始化攻击资源
 	SetupAttack();
 
-	//初始化连续技资源
-	SetupCombo();
-
 	//开始攻击
 	PlayerAttackBegin();
 }
@@ -231,8 +236,7 @@ void UPlayerAttackComponent::ResetAttack()
 	AttackID = 0;
 	bPlayerAttackJudgeBegin = false;
 	bPlayerAttackJudgeEnd = false;
-	NextKeyCombation.Clear();
-	Skill = NewObject<UPlayerSkill>();
+	Skill = nullptr;
 }
 
 void UPlayerAttackComponent::SetPlayerAttackJudgeBegin()

@@ -120,10 +120,6 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	class UPaperSprite* GetAttackSprite();
 
-	//初始化连续技
-	UFUNCTION(BlueprintImplementableEvent)
-	void SetupCombo();
-
 	//攻击开始时
 	void PlayerAttackBegin();
 
