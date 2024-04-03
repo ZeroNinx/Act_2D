@@ -35,6 +35,9 @@ public:
 	//角色方向是否朝右
 	bool bFacingRight;
 
+	// 是否落地
+	bool IsMovingOnGround;
+
 	//HP
 	int HealthPoint = 5;
 
@@ -47,7 +50,7 @@ public:
 	EState GetState();
 
 	//覆盖播放动画
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	UFUNCTION(BlueprintCallable)
 	void PlayOverrideAnim(UPaperZDAnimSequence* InAnimSquence);
 
 	//获得攻击组件
@@ -74,12 +77,6 @@ protected:
 	//状态机
 	UStateMachine* StateMachine;
 
-	//打击感延时定时器句柄
-	FTimerHandle HitDelayTimerHandle;
-
-	//缓存的旧状态
-	EState PreviouisState = EState::None;
-
 protected:
 
 	// 游戏开始执行
@@ -94,8 +91,11 @@ protected:
 	//更新朝向
 	void UpdateDirection();
 
-	// 当玩家改变状态时
-	void OnPlayerChangeState();
+	// 更新跳跃状态
+	void UpdateJumpState();
+
+	// 当跳跃改变状态时
+	void OnJumpStateChanged();
 
 	// 播放受击动画
 	UFUNCTION(BlueprintImplementableEvent)

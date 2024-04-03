@@ -8,9 +8,7 @@
 #include "Misc/Paths.h"
 #include "CoreMinimal.h"
 #include "PaperSprite.h"
-#include "PaPerFlipbook.h"
 #include "PaperSpriteComponent.h"
-#include "PaperFlipbookComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/ActorComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -96,6 +94,9 @@ protected:
 	//攻击判断是否已结束
 	bool bPlayerAttackJudgeEnd = false;
 
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "基础技能配置"))
+	TMap<FKeyCombination, TSubclassOf<UPlayerSkill>> BasicSkillConfig;
+
 	//当前技能
 	UPROPERTY()
 	UPlayerSkill* Skill;
@@ -109,9 +110,6 @@ protected:
 
 	//攻击
 	void Attack(int ID);
-
-	//选择攻击
-	void SwitchAttack();
 
 	//初始化攻击
 	void SetupAttack();
@@ -140,5 +138,8 @@ protected:
 
 	//Tick函数
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	// 获取下一个组合键
+	FKeyCombination GetNextKeyCombination();
 
 };

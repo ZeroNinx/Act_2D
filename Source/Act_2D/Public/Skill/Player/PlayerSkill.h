@@ -5,8 +5,11 @@
 
 //UE4
 #include "CoreMinimal.h"
+#include "Utils/Types.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "PaperSprite.h"
+#include "AnimSequences/PaperZDAnimSequence.h"
 #include "PlayerSkill.generated.h"
 
 class APlayerCharacter;
@@ -24,6 +27,15 @@ public:
 
 	//构造函数
 	UPlayerSkill() {};
+	
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "技能覆盖动画"))
+	UPaperZDAnimSequence* AttackOverrideSequence;
+	
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "技能判定Sprite"))
+	UPaperSprite* AttackJudgeSprite;
+
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "技能衔接配置"))
+	TMap<FKeyCombination, TSubclassOf<UPlayerSkill>> ComboConfig;
 
 	//击中的Actor
 	UPROPERTY(BlueprintReadOnly)

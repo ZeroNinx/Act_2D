@@ -1,6 +1,7 @@
 #include "Monster/MonsterAnimInstance.h"
-#include "PaperZD/Public/AnimSequences/Players/PaperZDAnimPlayer.h"
+#include "Monster/Monster.h"
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
+#include "PaperZD/Public/AnimSequences/Players/PaperZDAnimPlayer.h"
 
 AMonster* UMonsterAnimInstance::GetOwnerMonster()
 {

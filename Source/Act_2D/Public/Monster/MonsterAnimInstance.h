@@ -1,8 +1,9 @@
-#include "Utils/StateMachine.h"
-#include "Monster/Monster.h"
+#pragma once
 #include "PaperZD/Public/PaperZDAnimInstance.h"
+#include "Utils/StateMachine.h"
 #include "MonsterAnimInstance.generated.h"
 
+class AMonster;
 
 UCLASS(Blueprintable)
 class UMonsterAnimInstance : public UPaperZDAnimInstance

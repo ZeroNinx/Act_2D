@@ -4,6 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
 #include "Utils/UIInterface.h"
+#include "PaperZD/Public/PaperZDAnimInstance.h"
 
 //构造函数
 APlayerCharacter::APlayerCharacter()
@@ -72,18 +73,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 		UpdateDirection();
 		UpdateState();
 	}
-	else if (AttackComponent->AttackID == 4)
-	{
-		//攻击落地强制恢复
-		UpdateState();
-		if (GetState() == EState::Idle || GetState() == EState::Run)
-		{
-			AttackComponent->ResetAttack();
-			GetSprite()->SetLooping(true);
-			GetSprite()->Play();
-		}
-	}
 
+	// 跳跃状态独立于普通状态之外
+	// TODO：UpdateState也许可以改个名和UpdateJumpState做显式区分
+	UpdateJumpState();
 }
 
 //调整方向
@@ -99,13 +92,20 @@ void APlayerCharacter::UpdateDirection()
 	}
 }
 
-void APlayerCharacter::OnPlayerChangeState()
+void APlayerCharacter::OnJumpStateChanged()
 {
-	if (GetState() == EState::Idle || GetState() == EState::Run)
+	if (!IsMovingOnGround)
 	{
-		if (PreviouisState == EState::Fall)
+		// 起跳
+		UGlobalBlueprintFunctionLibrary::LogWarning("Player Jump");
+	}
+	else
+	{
+		// 落地
+		UPlayerAttackComponent* AttackComponent = GetAttackComponent();
+		if (AttackComponent->IsAttacking())
 		{
-			UGlobalBlueprintFunctionLibrary::LogWarning("Fall");
+			RestoreFromAttack();
 		}
 	}
 }
@@ -117,6 +117,13 @@ void APlayerCharacter::RestoreFromAttack()
 	{
 		UGlobalBlueprintFunctionLibrary::LogWarning("APlayerCharacter::RestoreFromAttack AttackComponent Invalid");
 		return;
+	}
+
+	// 停止叠加动画
+	UPaperZDAnimInstance* AnimationInstance = GetAnimInstance();
+	if (AnimationInstance)
+	{
+		AnimationInstance->StopAllAnimationOverrides();
 	}
 
 	AttackComponent->ResetAttack();
@@ -149,23 +156,38 @@ void APlayerCharacter::UpdateState()
 			SetState(EState::Idle);
 		}
 	}
+
+}
+
+void APlayerCharacter::UpdateJumpState()
+{
+	bool NewIsMovingOnGround = GetCharacterMovement()->IsMovingOnGround();
+	if (!NewIsMovingOnGround == IsMovingOnGround)
+	{
+		IsMovingOnGround = NewIsMovingOnGround;
+		OnJumpStateChanged();
+	}
 }
 
 //设置状态
 void APlayerCharacter::SetState(EState NewState)
 {
-	if (PreviouisState != NewState)
-	{
-		PreviouisState = StateMachine->GetState();
-		StateMachine->SetState(NewState);
-		OnPlayerChangeState();
-	}
+	StateMachine->SetState(NewState);
 }
 
 //获得状态
 EState APlayerCharacter::GetState()
 {
 	return StateMachine->GetState();
+}
+
+void APlayerCharacter::PlayOverrideAnim(UPaperZDAnimSequence* InAnimSquence)
+{
+	UPaperZDAnimInstance* AnimationInstance = GetAnimInstance();
+	if (AnimationInstance)
+	{
+		AnimationInstance->PlayAnimationOverride(InAnimSquence);
+	}
 }
 
 //获得攻击组件

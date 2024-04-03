@@ -28,49 +28,23 @@ public:
 	//构造函数
 	APlayerCharacterController();
 
+	// 获取当前按键组合
+	UFUNCTION(BlueprintCallable)
+	FKeyCombination GetNextKeyCombation();
+
 protected:
+
+	// 按键按下映射
+	TMap<EGameKeyType, bool> KeyPressMap;
+
+	// 输入队列
+	TQueue<FKeyCombination> InputCombinationQueue;
 
 	//玩家指针
 	APlayerCharacter* PlayerCharacter;
 
 	//攻击组件指针
 	UPlayerAttackComponent* AttackComponent;
-
-	//攻击延迟定时器句柄
-	FTimerHandle AttackDelayHandle;
-
-	//延迟输入间隔（秒）
-	float AttackInputDuration = 0.03f;
-
-	//是否等待延迟输入
-	bool bWaitingInput;
-
-	//攻击键是否按下
-	bool bAttackPressed = false;
-
-	//特殊键是否按下
-	bool bSpecialPressed = false;
-
-	//扳机键是否按下
-	bool bTriggerPressed = false;
-
-	//跳跃键是否按下
-	bool bJumpPressed = false;
-
-	//上方向键是否按下
-	bool bUpPressed = false;
-
-	//下方向键是否按下
-	bool bDownPressed = false;
-
-	//左方向键是否按下
-	bool bLeftPressed = false;
-
-	//右方向键是否按下
-	bool bRightPressed = false;
-
-	//输入组合
-	FKeyCombination NextkKeyCombation;
 
 protected:
 
@@ -125,13 +99,7 @@ protected:
 	//是否允许移动
 	bool IsAllowMove();
 
-	//记录输入组合
-	void RecordKeyCombination();
-
-	//准备攻击
-	void PrepareAttack();
-
-	//添加攻击输入
-	void AddAttackInput();
+	//添加输入组合
+	void AddKeyCombination();
 
 };

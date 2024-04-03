@@ -37,28 +37,49 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	//当攻击外进入攻击
-	if (!IsAttacking() && !NextKeyCombation.IsAttackEmpty())
+	if (!IsAttacking())
 	{
+		// 获取下一个组合输入
+		FKeyCombination NextCombation = GetNextKeyCombination();
+		if(NextCombation.IsEmpty())
+		{
+			return;
+		}
+
 		//跳跃攻击
-		bool bPlayerJumping = PlayerCharacter->GetState() == EState::Jump || PlayerCharacter->GetState() == EState::Fall;
+		//TODO:移植到新方式
+		bool bPlayerJumping = !PlayerCharacter->IsMovingOnGround && !(PlayerCharacter->GetState() == EState::Hit);
 		if (bPlayerJumping)
 		{
 			Attack(4);
 		}
 		else //一般攻击
 		{
-			//获得命令
-			int NextCommand = NextKeyCombation.GetCommand();
-			NextKeyCombation.Clear();
-
-			//进行对应攻击
-			SetupCombo();
-			if (ComboMap.Contains(NextCommand))
+			Skill = nullptr;
+			for (auto It : BasicSkillConfig)
 			{
-				//立即停止移动，开始攻击
-				PlayerCharacter->GetCharacterMovement()->StopMovementImmediately();
-				Attack(ComboMap[NextCommand]);
+				if (It.Key.ContainsCombination(NextCombation))
+				{
+					// TODO:优化载入
+					TSubclassOf<UPlayerSkill> SkillClass = It.Value;
+					Skill = NewObject<UPlayerSkill>(this, SkillClass);
+					break;
+				}
 			}
+
+			Attack(1);
+			////获得命令
+			//int NextCommand = NextKeyCombation.GetCommand();
+			//NextKeyCombation.Clear();
+
+			////进行对应攻击
+			//SetupCombo();
+			//if (ComboMap.Contains(NextCommand))
+			//{
+			//	//立即停止移动，开始攻击
+			//	PlayerCharacter->GetCharacterMovement()->StopMovementImmediately();
+			//	Attack(ComboMap[NextCommand]);
+			//}
 		}
 	}
 
@@ -91,6 +112,19 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 			Skill->TickAfterAttackJudge();
 		}
 	}
+}
+
+FKeyCombination UPlayerAttackComponent::GetNextKeyCombination()
+{
+	if (PlayerCharacter)
+	{
+		APlayerCharacterController* PlayerController = Cast<APlayerCharacterController>(PlayerCharacter->GetController());
+		if (PlayerController)
+		{
+			return PlayerController->GetNextKeyCombation();
+		}
+	}
+	return FKeyCombination();
 }
 
 //初始化
@@ -150,7 +184,6 @@ void UPlayerAttackComponent::Attack(int ID)
 
 	//设定攻击ID和类型
 	AttackID = ID;
-	SwitchAttack();
 
 	//初始化攻击资源
 	SetupAttack();
@@ -162,42 +195,22 @@ void UPlayerAttackComponent::Attack(int ID)
 	PlayerAttackBegin();
 }
 
-//选择攻击
-void UPlayerAttackComponent::SwitchAttack()
-{
-	switch (AttackID)
-	{
-	case 1:
-		Skill = NewObject<US_AttackI>(PlayerCharacter);
-		break;
-	case 2:
-		Skill = NewObject<US_AttackII>(PlayerCharacter);
-		break;
-	case 3:
-		Skill = NewObject<US_AttackIII>(PlayerCharacter);
-		break;
-	case 4:
-		Skill = NewObject<US_AttackJump>(PlayerCharacter);
-		break;
-	case 5:
-		Skill = NewObject<US_AttackDash>(PlayerCharacter);
-		break;
-	default:
-		break;
-	}
-}
-
 //初始化攻击
 void UPlayerAttackComponent::SetupAttack()
 {
-	UPaperZDAnimSequence* AttackAnimSeq = GetAttackSequence();
+	if (!Skill)
+	{
+		return;
+	}
+
+	UPaperZDAnimSequence* AttackAnimSeq = Skill->AttackOverrideSequence;
 	if (!AttackAnimSeq)
 	{
 		UGlobalBlueprintFunctionLibrary::LogWarning("UPlayerAttackComponent Load AttackAnimSeq Failed");
 		return;
 	}
 
-	UPaperSprite* AttackSprite = GetAttackSprite();
+	UPaperSprite* AttackSprite = Skill->AttackJudgeSprite;
 	if (!AttackSprite)
 	{
 		UGlobalBlueprintFunctionLibrary::LogWarning("UPlayerAttackComponent Load AttackSprite Failed");

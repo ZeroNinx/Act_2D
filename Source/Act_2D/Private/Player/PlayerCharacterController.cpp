@@ -13,7 +13,6 @@ APlayerCharacterController::APlayerCharacterController()
 {
 	
 }
-
 //初始化控制器
 void APlayerCharacterController::OnPossess(APawn* InPawn)
 {
@@ -30,7 +29,10 @@ void APlayerCharacterController::OnPossess(APawn* InPawn)
 void APlayerCharacterController::Tick(float DeltaSeconds)
 {
 	//当可移动时
-	if (IsAllowMove() && (bLeftPressed||bRightPressed))
+	bool bLeftPressed = KeyPressMap.Find(EGameKeyType::Left)? KeyPressMap[EGameKeyType::Left]:false;
+	bool bRightPressed = KeyPressMap.Find(EGameKeyType::Right) ? KeyPressMap[EGameKeyType::Right] : false;
+
+	if (IsAllowMove() && (bLeftPressed || bRightPressed))
 	{
 		//添加移动
 		PlayerCharacter->AddMovementInput(FVector(1, 0, 0), bRightPressed ? 1.0f : -1.0f);
@@ -38,6 +40,13 @@ void APlayerCharacterController::Tick(float DeltaSeconds)
 		//根据角色方向调整动画
 		PlayerCharacter->bFacingRight = bRightPressed;
 	}
+}
+
+FKeyCombination APlayerCharacterController::GetNextKeyCombation()
+{
+	FKeyCombination NextKeyCombation;
+	InputCombinationQueue.Dequeue(NextKeyCombation);
+	return MoveTemp(NextKeyCombation);
 }
 
 //初始化输入
@@ -79,96 +88,80 @@ void APlayerCharacterController::SetupInputComponent()
 //上
 void APlayerCharacterController::UpPressed()
 {
-	bUpPressed = true;
-
-	//避免冲突
-	bDownPressed = false;
+	KeyPressMap.Add(EGameKeyType::Up, true);
 }
 void APlayerCharacterController::UpReleased()
 {
-	bUpPressed = false;
+	KeyPressMap.Add(EGameKeyType::Up, false);
 }
 
 //下
 void APlayerCharacterController::DownPressed()
 {
-	bDownPressed = true;
-
-	//避免冲突
-	bUpPressed = false;
+	KeyPressMap.Add(EGameKeyType::Down, true);
 }
 void APlayerCharacterController::DownReleased()
 {
-	bDownPressed = false;
+	KeyPressMap.Add(EGameKeyType::Down, false);
 }
 
 //左
 void APlayerCharacterController::LeftPressed()
 {
-	bLeftPressed = true;
-
-	//避免冲突
-	bRightPressed = false;
+	KeyPressMap.Add(EGameKeyType::Left, true);
 }
 void APlayerCharacterController::LeftReleased()
 {
-	bLeftPressed = false;
+	KeyPressMap.Add(EGameKeyType::Left, false);
 }
 
 //右
 void APlayerCharacterController::RightPressed()
 {
-	bRightPressed = true;
-
-	//避免冲突
-	bLeftPressed = false;
+	KeyPressMap.Add(EGameKeyType::Right, true);
 }
 void APlayerCharacterController::RightReleased()
 {
-	bRightPressed = false;
+	KeyPressMap.Add(EGameKeyType::Right, false);
 }
 
 //攻击键
 void APlayerCharacterController::AttackPressed()
 {
-	bAttackPressed = true;
-	AddAttackInput();
+	KeyPressMap.Add(EGameKeyType::Attack, true);
+	AddKeyCombination();
 }
 void APlayerCharacterController::AttackReleased()
 {
-	bAttackPressed = false;
-	AddAttackInput();
+	KeyPressMap.Add(EGameKeyType::Attack, false);
 }
 
 //特殊键
 void APlayerCharacterController::SpecialPressed()
 {
-	bSpecialPressed = true;
-	AddAttackInput();
+	KeyPressMap.Add(EGameKeyType::Special, true);
+	AddKeyCombination();
 }
 void APlayerCharacterController::SpecialReleased()
 {
-	bSpecialPressed = false;
-	AddAttackInput();
+	KeyPressMap.Add(EGameKeyType::Special, false);
 }
 
 //扳机键
 void APlayerCharacterController::TriggerPressed()
 {
-	bTriggerPressed = true;
-	AddAttackInput();
+	KeyPressMap.Add(EGameKeyType::Trigger, true);
+	AddKeyCombination();
 }
 void APlayerCharacterController::TriggerReleased()
 {
-	bTriggerPressed = false;
-	AddAttackInput();
+	KeyPressMap.Add(EGameKeyType::Trigger, false);
 }
 
 //跳跃键
 void APlayerCharacterController::JumpPressed()
 {
-	bJumpPressed = true;
-	RecordKeyCombination();
+	KeyPressMap.Add(EGameKeyType::Jump, true);
 
 	//可移动帧取消攻击
 	if (AttackComponent->IsAttacking() && AttackComponent->IsMovable())
@@ -185,8 +178,7 @@ void APlayerCharacterController::JumpPressed()
 }
 void APlayerCharacterController::JumpReleased()
 {
-	bJumpPressed = false;
-	RecordKeyCombination();
+	KeyPressMap.Add(EGameKeyType::Jump, false);
 
 	PlayerCharacter->StopJumping();
 }
@@ -221,31 +213,19 @@ bool APlayerCharacterController::IsAllowMove()
 	!(PlayerCharacter->GetState() == EState::Hit);
 }
 
-
-//记录输入组合
-void APlayerCharacterController::RecordKeyCombination()
+void APlayerCharacterController::AddKeyCombination()
 {
-	NextkKeyCombation = FKeyCombination(bAttackPressed, bSpecialPressed, bTriggerPressed, bJumpPressed, bUpPressed, bDownPressed, bLeftPressed, bRightPressed);
-}
+	FKeyCombination KeyCombation;
 
-//添加攻击输入
-void APlayerCharacterController::AddAttackInput()
-{
-	NextkKeyCombation = FKeyCombination(bAttackPressed, bSpecialPressed, bTriggerPressed, bJumpPressed, bUpPressed, bDownPressed, bLeftPressed, bRightPressed);
-	//设置延迟接受输入
-	auto DelayAttackInput = [&]() -> void
+	// 将按下的按键以Set形式转换为按键组合
+	for (auto It : KeyPressMap)
 	{
-		if (PlayerCharacter && PlayerCharacter->GetState() != EState::Hit)
-			AttackComponent->SetKeyCombination(NextkKeyCombation);
-	};
-	auto dlg = FTimerDelegate::CreateLambda(DelayAttackInput);
-	GetWorldTimerManager().SetTimer(AttackDelayHandle, dlg, (const float)AttackInputDuration, false);
+		if (It.Value == true)
+		{
+			KeyCombation.Keys.Add(It.Key);
+		}
+	}
+
+	// 记录输入
+	InputCombinationQueue.Enqueue(MoveTemp(KeyCombation));
 }
-
-//立刻停止移动
-void APlayerCharacterController::PrepareAttack()
-{
-	PlayerCharacter->GetCharacterMovement()->StopMovementImmediately();
-
-}
-

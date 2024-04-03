@@ -1,11 +1,61 @@
 #pragma once
 #include "Types.generated.h"
 
-//组合键结构体
+// 游戏按键类型
+UENUM(BlueprintType)
+enum class EGameKeyType: uint8
+{
+	None	= 0		UMETA(Hidden),
+	Up		= 1		UMETA(DisplayName = "上"),
+	Down	= 2		UMETA(DisplayName = "下"),
+	Left	= 3		UMETA(DisplayName = "左"),
+	Right	= 4		UMETA(DisplayName = "右"),
+	Jump	= 5		UMETA(DisplayName = "跳跃"),
+	Attack	= 6		UMETA(DisplayName = "攻击"),
+	Special	= 7		UMETA(DisplayName = "特殊技"),
+	Trigger = 8		UMETA(DisplayName = "扳机"),
+};
+
+// 组合键结构体
 USTRUCT(BlueprintType)
 struct FKeyCombination
 {
 	GENERATED_BODY()
+
+	// Key列表
+	UPROPERTY(EditAnywhere)
+	TSet<EGameKeyType> Keys;
+
+	// 是否为空
+	bool IsEmpty()
+	{
+		return Keys.IsEmpty();
+	}
+
+	// 是否包含按键类型
+	bool ContainsKey(EGameKeyType KeyType)
+	{
+		return Keys.Contains(KeyType);
+	}
+
+	// 是否包含按键组合
+	bool ContainsCombination(FKeyCombination& Combination)
+	{
+		for (auto KeyType : Combination.Keys)
+		{
+			if (!this->Keys.Contains(KeyType))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// 可以哈希作为Map的Key
+	friend uint32 GetTypeHash(const FKeyCombination& KeyCombination)
+	{
+		return GetTypeHash(KeyCombination.Keys.Array());
+	}
 
 	bool AttackKey = false;
 	bool SpecialKey = false;
