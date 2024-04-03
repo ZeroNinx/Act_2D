@@ -35,21 +35,42 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive();
 
+	//获取当前状态
+	UFUNCTION(BlueprintCallable)
+	EState GetState();
+
+	//设置当前状态
+	UFUNCTION(BlueprintCallable)
+	void SetState(EState State);
+
 	//获取HP
 	UFUNCTION(BlueprintCallable)
 	int GetHealthPoint();
+
+	//受击动画播放完成时
+	UFUNCTION(BlueprintCallable)
+	virtual void OnHitAnimationPlayComplete();
 
 	//是否朝右
 	bool bFacingRight;
 
 protected:
 
+	// 受击时
+	UFUNCTION(BlueprintCallable)
+	virtual void OnHit(AActor* Attacker, FAttackProperty HitAttackProperty);
+
+	// 死亡时
+	UFUNCTION(BlueprintCallable)
+	virtual void OnDead();
+
+protected:
+
 	//碰撞胶囊
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
 	UCapsuleComponent* RealCapsule;
 
 	//状态机
-	UPROPERTY(BlueprintReadOnly)
 	UStateMachine* StateMachine;
 
 	//攻击特性
@@ -61,6 +82,7 @@ protected:
 	UPaperFlipbookComponent* HitEffectComponent;
 
 	//HP
+	UPROPERTY(EditAnywhere)
 	int HealthPoint = 5;
 
 	//死亡闪烁计数器
@@ -83,11 +105,13 @@ protected:
 	//更新状态
 	virtual void UpdateState();
 
+	//受击函数
+	virtual void Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackProperty) override;
+	
 	//播放死亡动画
 	virtual void PlayDeathEffect();
 
 	//受击特效
-	UPROPERTY()
 	UPaperFlipbook* HitEffectFlipbook;
 
 };

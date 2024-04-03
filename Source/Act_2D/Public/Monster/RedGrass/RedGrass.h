@@ -24,16 +24,4 @@ public:
 	//构造函数
 	ARedGrass();
 
-	//攻击
-	UFUNCTION()
-	void Attack();
-
-	//受击函数
-	void Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackProperty) override;
-
-protected:
-
-	//每帧执行
-	void Tick(float DeltaTime) override;
-
 };

@@ -22,6 +22,7 @@ enum class EState : uint8
 	Attack		= 5 UMETA(DisplayName = "Attack"),
 	Hit			= 6 UMETA(DisplayName = "Hit"),
 	Sleep		= 7 UMETA(DisplayName = "Sleep"),
+	Dead		= 8 UMETA(DisplayName = "Dead"),
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnterState, EState, CurrentState);

@@ -74,21 +74,10 @@ void ASlime::JumpAttack()
 }
 
 //被击中
-void ASlime::Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackProperty)
+void ASlime::OnHit(AActor* Attacker, FAttackProperty HitAttackProperty)
 {
-	if (HealthPoint <= 0)
-		return;
+	Super::OnHit(Attacker, HitAttackProperty);
 
-	//改变状态
-	StateMachine->SetState(EState::Hit);
-
-	//TODO:播放受击动画
-
-	//重新播放效果
-	HitEffectComponent->PlayFromStart();
-
-	//添加瞬时速度
-	UpdateFacingDirection();
 	float DirectMark = bFacingRight ? -1.0f : 1.0f;
 	float LightVelocyX = 200.0f * DirectMark;
 	float HeavyVelocyX = 600.0f * DirectMark;
@@ -96,30 +85,12 @@ void ASlime::Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackPrope
 	if (HitAttackProperty.HarmfulType == EAttackHarmfulType::HeavyAttack)
 	{
 		GetCharacterMovement()->Velocity = FVector(HeavyVelocyX, 0, 0);
-		HealthPoint -= 2;
 	}
 	else
 	{
 		GetCharacterMovement()->Velocity = FVector(LightVelocyX, 0, 0);
-		HealthPoint -= 1;
 	}
 
-	//死亡判断
-	if (HealthPoint <= 0)
-	{
-		PlayDeathEffect();
-	}
-}
-
-//tick函数
-void ASlime::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	if (StateMachine->GetState() != EState::Hit)
-	{
-		UpdateFacingDirection();
-		UpdateState();
-	}
 }
 
 //攻击组件重叠时

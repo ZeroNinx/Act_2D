@@ -149,7 +149,6 @@ void APlayerCharacter::UpdateState()
 			SetState(EState::Idle);
 		}
 	}
-	UGlobalBlueprintFunctionLibrary::LogWarning(FString::Printf(TEXT("APlayerCharacter::UpdateState IsMovingOnGround = %d"), GetCharacterMovement()->IsMovingOnGround()));
 }
 
 //设置状态

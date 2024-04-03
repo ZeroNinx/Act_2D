@@ -31,7 +31,7 @@ public:
 	void JumpAttack();
 
 	//被击中
-	void Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackProperty) override;
+	virtual void OnHit(AActor* Attacker, FAttackProperty HitAttackProperty) override;
 
 protected:
 
@@ -55,9 +55,6 @@ protected:
 
 	//标记是否刚着地
 	bool bFalled = false;
-
-	//tick函数
-	void Tick(float DeltaTime) override;
 
 	//攻击判定
 	void AttackJudge(AActor* HitActor);

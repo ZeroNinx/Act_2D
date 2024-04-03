@@ -4,6 +4,7 @@
 #include "Monster/Monster.h"
 #include "Monster/MonsterController.h"
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
+#include "PaperZD/Public/PaperZDAnimInstance.h"
 
 //构造函数
 AMonster::AMonster()
@@ -32,6 +33,16 @@ bool AMonster::IsAlive()
 	return GetHealthPoint() > 0;
 }
 
+EState AMonster::GetState()
+{
+	return StateMachine->GetState();
+}
+
+void AMonster::SetState(EState State)
+{
+	StateMachine->SetState(State);
+}
+
 //获取HP
 int AMonster::GetHealthPoint()
 {
@@ -49,7 +60,11 @@ void AMonster::BeginPlay()
 void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (StateMachine->GetState() != EState::Hit)
+	{
+		UpdateFacingDirection();
+		UpdateState();
+	}
 }
 
 //更新朝向
@@ -118,5 +133,54 @@ void AMonster::PlayDeathEffect()
 		}
 	};
 	GetWorldTimerManager().SetTimer(DeathEffectTimerHandle, PlayDeathEffect, 0.3, true);
+}
+
+void AMonster::Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackProperty)
+{
+	OnHit(Attacker, HitAttackProperty);
+}
+
+void AMonster::OnHit(AActor* Attacker, FAttackProperty HitAttackProperty)
+{
+	//改变状态
+	StateMachine->SetState(EState::Hit);
+
+	//播放受击动画
+	GetAnimInstance()->JumpToNode(FName(TEXT("Hit")));
+
+	//重新播放效果
+	HitEffectComponent->PlayFromStart();
+
+	if (HitAttackProperty.HarmfulType == EAttackHarmfulType::HeavyAttack)
+	{
+		HealthPoint -= 2;
+	}
+	else
+	{
+		HealthPoint -= 1;
+	}
+
+	//死亡判断
+	if (!IsAlive())
+	{
+		StateMachine->SetState(EState::Dead);
+		OnDead();
+	}
+}
+
+void AMonster::OnDead()
+{
+	PlayDeathEffect();
+}
+
+void AMonster::OnHitAnimationPlayComplete()
+{
+	// 死亡不处理
+	if (!IsAlive())
+	{
+		return;
+	}
+
+	SetState(EState::Idle);
 }
 
