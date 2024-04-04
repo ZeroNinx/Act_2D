@@ -15,7 +15,7 @@ void UMonsterSkill::InJudge(AMonster* Monster, APlayerCharacter* Player)
  */
 UMS_SlimeAttack::UMS_SlimeAttack()
 {
-	AttackProperty = FAttackProperty(EAttackHarmfulType::LightAttack, 1);
+	AttackProperty = FSkillProperty(EAttackHarmfulType::LightAttack, 1);
 }
 
 

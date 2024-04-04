@@ -5,6 +5,7 @@
 UENUM(BlueprintType)
 enum class EGameKeyType: uint8
 {
+	// 注意，不要超过31位
 	None	= 0		UMETA(Hidden),
 	Up		= 1		UMETA(DisplayName = "上"),
 	Down	= 2		UMETA(DisplayName = "下"),
@@ -22,9 +23,34 @@ struct FKeyCombination
 {
 	GENERATED_BODY()
 
+	//构造函数
+	FKeyCombination() {};
+	FKeyCombination(const TArray<EGameKeyType>& NewKeys)
+	{
+		for (auto Key : NewKeys)
+		{
+			AddKey(Key);
+		}
+	};
+
 	// Key列表
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	TSet<EGameKeyType> Keys;
+
+	UMETA(Hidden)
+	uint32 KeyHash = 0; // 为了作为Map的Key快速GetHash, 同时无视Key的顺序，存一个按键组合
+
+	// 添加按键
+	void AddKey(EGameKeyType NewKey)
+	{
+		uint8 KeyNumber = uint8(NewKey);
+		if (KeyNumber >= 32)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Key is Larger than 32!!!"));
+		}
+		Keys.Add(NewKey);
+		KeyHash |= (1 << KeyNumber);
+	}
 
 	// 是否为空
 	bool IsEmpty()
@@ -52,85 +78,50 @@ struct FKeyCombination
 	}
 
 	// 可以哈希作为Map的Key
+	friend bool operator==(const FKeyCombination& KeyA, const FKeyCombination& KeyB)
+	{
+		return GetTypeHash(KeyA) == GetTypeHash(KeyB);
+	}
+
 	friend uint32 GetTypeHash(const FKeyCombination& KeyCombination)
 	{
-		return GetTypeHash(KeyCombination.Keys.Array());
-	}
+		if (KeyCombination.KeyHash != 0)
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("Get Hash"));
+			return KeyCombination.KeyHash;
+		}
 
-	bool AttackKey = false;
-	bool SpecialKey = false;
-	bool TriggerKey = false;
-	bool JumpKey = false;
-	bool UpKey = false;
-	bool DownKey = false;
-	bool LeftKey = false;
-	bool RighKey = false;
-
-	//构造函数
-	FKeyCombination() {};
-	FKeyCombination
-	(
-		bool isAttackPressed,
-		bool isSpecialPressed,
-		bool isTriggerPressed,
-		bool isJumpPressed,
-		bool isUpPressed,
-		bool isDownPressed,
-		bool isLeftPressed,
-		bool isRightPressed
-	)
-	{
-		AttackKey = isAttackPressed;
-		SpecialKey = isSpecialPressed;
-		TriggerKey = isTriggerPressed;
-		JumpKey = isJumpPressed;
-		UpKey = isUpPressed;
-		DownKey = isDownPressed;
-		LeftKey = isLeftPressed;
-		RighKey = isRightPressed;
-	}
-
-	//清空
-	void Clear()
-	{
-		AttackKey = false;
-		SpecialKey = false;
-		TriggerKey = false;
-		JumpKey = false;
-		UpKey = false;
-		DownKey = false;
-		LeftKey = false;
-		RighKey = false;
-	}
-
-	//判断是否为空
-	bool IsAttackEmpty()
-	{
-		return !(AttackKey | SpecialKey | TriggerKey);
-	}
-
-	//获取哈希
-	int GetCommand()
-	{
-		return AttackKey + (SpecialKey << 1) + (TriggerKey << 2);
+		// 计算Hash
+		uint32 Hash = 0;
+		for (auto& Key : KeyCombination.Keys)
+		{
+			uint8 KeyNumber = uint8(Key);
+			if (KeyNumber >= 32)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Key is Larger than 32!!!"));
+			}
+			Hash |= (1 << KeyNumber);
+		}
+		//UE_LOG(LogTemp, Warning, TEXT("Compute Hash"), Hash);
+		return Hash;
 	}
 };
 
 
-//攻击类型
+//技能类型
 UENUM(BlueprintType)
-enum class EAttackType : uint8
+enum class ESkillType : uint8
 {
-	HarmfulAttack,//伤害型攻击
-	StateAttack//状态型攻击
+	HarmfulAttack	UMETA(DisplayName = "伤害类"),
+	StateAttack		UMETA(DisplayName = "状态类"),
 };
 
 //伤害类型
 UENUM(BlueprintType)
 enum class EAttackHarmfulType : uint8
 {
-	LightAttack,//轻攻击
-	HeavyAttack//重攻击
+	LightAttack		UMETA(DisplayName = "轻攻击"),
+	HeavyAttack		UMETA(DisplayName = "重攻击"),
 };
 
 //状态类型
@@ -140,30 +131,36 @@ enum class EAttackStateType : uint8
 	Default
 };
 
-//攻击属性结构体
+//技能属性结构体
 USTRUCT(BlueprintType)
-struct FAttackProperty
+struct FSkillProperty
 {
 	GENERATED_BODY()
 
-	EAttackType AttackType;
-	EAttackHarmfulType HarmfulType;
-	int Damage;
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "技能类型"))
+	ESkillType SkillType;
 
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "伤害类型"))
+	EAttackHarmfulType HarmfulType;
+
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "伤害数值"))
+	int32 Damage = 0;
+
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "状态类型"))
 	EAttackStateType StateType;
 
-	FAttackProperty() {};
+	FSkillProperty() {};
 
-	FAttackProperty(EAttackHarmfulType AttackHarmfulType, int AttackDamage)
+	FSkillProperty(EAttackHarmfulType AttackHarmfulType, int AttackDamage)
 	{
-		AttackType = EAttackType::HarmfulAttack;
+		SkillType = ESkillType::HarmfulAttack;
 		HarmfulType = AttackHarmfulType;
 		Damage = AttackDamage;
 	}
 
-	FAttackProperty(EAttackStateType AttackStateType)
+	FSkillProperty(EAttackStateType AttackStateType)
 	{
-		AttackType = EAttackType::StateAttack;
+		SkillType = ESkillType::StateAttack;
 		StateType = AttackStateType;
 	}
 

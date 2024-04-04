@@ -20,7 +20,7 @@ public:
 	ABullet();
 
 	//受击函数
-	virtual void Hit_Implementation(AActor* HitActor, FAttackProperty HitAttackProperty) override;
+	virtual void Hit_Implementation(AActor* HitActor, FSkillProperty HitAttackProperty) override;
 
 protected:
 	// Called when the game starts or when spawned

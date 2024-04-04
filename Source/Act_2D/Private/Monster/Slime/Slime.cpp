@@ -74,7 +74,7 @@ void ASlime::JumpAttack()
 }
 
 //被击中
-void ASlime::OnHit(AActor* Attacker, FAttackProperty HitAttackProperty)
+void ASlime::OnHit(AActor* Attacker, FSkillProperty HitAttackProperty)
 {
 	Super::OnHit(Attacker, HitAttackProperty);
 

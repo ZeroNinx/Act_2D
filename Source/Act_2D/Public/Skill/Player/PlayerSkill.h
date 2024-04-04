@@ -28,6 +28,10 @@ public:
 	//构造函数
 	UPlayerSkill() {};
 	
+	//攻击属性
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "技能属性"))
+	FSkillProperty SkillProperty;
+
 	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "技能覆盖动画"))
 	UPaperZDAnimSequence* AttackOverrideSequence;
 	
@@ -40,10 +44,6 @@ public:
 	//击中的Actor
 	UPROPERTY(BlueprintReadOnly)
 	TSet<AActor*> ActorsAppliedHit;
-
-	//攻击属性
-	UPROPERTY(BlueprintReadOnly)
-	FAttackProperty AttackProperty;
 
 	UFUNCTION(BlueprintCallable)
 	APlayerCharacter* GetPlayerCharacter();
@@ -75,35 +75,6 @@ public:
 };
 
 /**
- * AttackI
- */
-UCLASS()
-class ACT_2D_API US_AttackI :public UPlayerSkill
-{
-	GENERATED_BODY()
-
-public:
-
-	US_AttackI();
-
-};
-
-/**
- * AttackII
- */
-UCLASS()
-class ACT_2D_API US_AttackII :public UPlayerSkill
-{
-	GENERATED_BODY()
-
-public:
-
-	US_AttackII();
-
-};
-
-
-/**
  * AttackIII
  */
 UCLASS()
@@ -120,22 +91,6 @@ public:
 	void TickOnAttackJudge() override;
 	
 };
-
-
-/**
- * JumpAttack
- */
-UCLASS()
-class ACT_2D_API US_AttackJump :public UPlayerSkill
-{
-	GENERATED_BODY()
-
-public:
-
-	US_AttackJump();
-
-};
-
 
 /**
  * DashJump

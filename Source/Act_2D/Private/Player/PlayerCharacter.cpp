@@ -52,6 +52,13 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	UGlobalBlueprintFunctionLibrary::SetPlayerCharacter(this);
 	CameraComponent->Activate();
+
+	// 绑定攻击结束事件
+	UPlayerAttackComponent* AttackComponent = GetAttackComponent();
+	if (AttackComponent)
+	{
+		AttackComponent->OnPlayerAttackEnd.AddDynamic(this, &APlayerCharacter::RestoreFromAttack);
+	}
 }
 
 
@@ -68,7 +75,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	}
 
 	//当非战斗时自动调整动画
-	if (!AttackComponent->IsAttacking() && GetState() != EState::Hit)
+	if (GetState() != EState::Attack && GetState() != EState::Hit)
 	{
 		UpdateDirection();
 		UpdateState();
@@ -103,7 +110,7 @@ void APlayerCharacter::OnJumpStateChanged()
 	{
 		// 落地
 		UPlayerAttackComponent* AttackComponent = GetAttackComponent();
-		if (AttackComponent->IsAttacking())
+		if (GetState() == EState::Attack)
 		{
 			RestoreFromAttack();
 		}
@@ -112,21 +119,15 @@ void APlayerCharacter::OnJumpStateChanged()
 
 void APlayerCharacter::RestoreFromAttack()
 {
-	UPlayerAttackComponent* AttackComponent = GetAttackComponent();
-	if (!AttackComponent)
-	{
-		UGlobalBlueprintFunctionLibrary::LogWarning("APlayerCharacter::RestoreFromAttack AttackComponent Invalid");
-		return;
-	}
-
-	// 停止叠加动画
+	//停止叠加动画
 	UPaperZDAnimInstance* AnimationInstance = GetAnimInstance();
 	if (AnimationInstance)
 	{
 		AnimationInstance->StopAllAnimationOverrides();
 	}
 
-	AttackComponent->ResetAttack();
+	//更新状态
+	UpdateState();
 }
 
 //调整状态
@@ -197,7 +198,7 @@ UPlayerAttackComponent* APlayerCharacter::GetAttackComponent()
 }
 
 //受击函数
-void APlayerCharacter::Hit_Implementation(AActor* Attacker, FAttackProperty AttackProperty)
+void APlayerCharacter::Hit_Implementation(AActor* Attacker, FSkillProperty AttackProperty)
 {
 	if (GetState() != EState::Hit)
 	{

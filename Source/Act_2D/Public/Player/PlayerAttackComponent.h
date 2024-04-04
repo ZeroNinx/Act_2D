@@ -37,22 +37,12 @@ public:
 	//构造函数
 	UPlayerAttackComponent();
 
-	//当前攻击ID
-	UPROPERTY(BlueprintReadWrite)
-	int AttackID = 0;
-
-	//初始化参数
-	UFUNCTION(BlueprintCallable)
-	void Setup(APlayerCharacter* NewCharacter);
-
+	//是否正在攻击
 	UFUNCTION(BlueprintCallable)
 	bool IsAttacking();
 
 	//是否可以移动
 	bool IsMovable();
-
-	//接收攻击键组合
-	void SetKeyCombination(FKeyCombination KeyCombation);
 
 	//重置攻击
 	void ResetAttack();
@@ -64,6 +54,10 @@ public:
 	//设置玩家攻击判断结束
 	UFUNCTION(BlueprintCallable)
 	void SetPlayerAttackJudgeEnd();
+
+	//设置玩家攻击结束
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerAttackEnd();
 
 public:
 
@@ -85,6 +79,20 @@ public:
 
 protected:
 
+	//攻击开始时
+	void PlayerAttackBegin();
+
+	//攻击判定开始时
+	void PlayerAttackJudgeBegin();
+
+	//攻击判定结束时
+	void PlayerAttacJudgeEnd();
+
+	//攻击结束时
+	void PlayerAttackEnd();
+
+protected:
+
 	//玩家指针
 	APlayerCharacter* PlayerCharacter;
 
@@ -99,38 +107,16 @@ protected:
 
 	//当前技能
 	UPROPERTY()
-	UPlayerSkill* Skill;
+	UPlayerSkill* CurrentSkill;
 
-	//下一次按键组合
-	FKeyCombination NextKeyCombation;
-
-	//连续技列表
-	UPROPERTY(BlueprintReadWrite)
-	TMap<int, int> ComboMap;
+	//获取下一个技能
+	UPlayerSkill* GetNextSkill(FKeyCombination KeyCombination);
 
 	//攻击
-	void Attack(int ID);
+	void Attack();
 
 	//初始化攻击
 	void SetupAttack();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	class UPaperZDAnimSequence* GetAttackSequence();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	class UPaperSprite* GetAttackSprite();
-
-	//攻击开始时
-	void PlayerAttackBegin();
-
-	//攻击判定开始时
-	void PlayerAttackJudgeBegin();
-
-	//攻击判定结束时
-	void PlayerAttacJudgeEnd();
-
-	//攻击结束时
-	void PlayerAttackEnd();
 
 	//Tick函数
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

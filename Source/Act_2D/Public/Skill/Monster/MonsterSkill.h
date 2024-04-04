@@ -27,7 +27,7 @@ public:
 
 	//攻击属性
 	UPROPERTY(BlueprintReadOnly)
-	FAttackProperty AttackProperty;
+	FSkillProperty AttackProperty;
 
 	//攻击全程执行
 	virtual void InAttack(AMonster* Monster) {};

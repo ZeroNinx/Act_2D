@@ -58,7 +58,7 @@ public:
 	UPlayerAttackComponent* GetAttackComponent();
 
 	//受击函数
-	void Hit_Implementation(AActor* Attacker, FAttackProperty AttackProperty) override;
+	void Hit_Implementation(AActor* Attacker, FSkillProperty AttackProperty) override;
 
 	// 从攻击中恢复
 	UFUNCTION(BlueprintCallable)
@@ -86,6 +86,7 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 	//更新状态
+	UFUNCTION(BlueprintCallable)
 	void UpdateState();
 
 	//更新朝向

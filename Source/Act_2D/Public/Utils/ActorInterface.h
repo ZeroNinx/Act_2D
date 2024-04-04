@@ -16,6 +16,6 @@ class IActorInterface
 public:
 
 	UFUNCTION(BlueprintNativeEvent)
-	void Hit(AActor* Attacker, FAttackProperty AttackProperty);
+	void Hit(AActor* Attacker, FSkillProperty AttackProperty);
 
 };

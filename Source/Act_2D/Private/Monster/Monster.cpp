@@ -135,12 +135,15 @@ void AMonster::PlayDeathEffect()
 	GetWorldTimerManager().SetTimer(DeathEffectTimerHandle, PlayDeathEffect, 0.3, true);
 }
 
-void AMonster::Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackProperty)
+void AMonster::Hit_Implementation(AActor* Attacker, FSkillProperty HitAttackProperty)
 {
-	OnHit(Attacker, HitAttackProperty);
+	if (IsAlive())
+	{
+		OnHit(Attacker, HitAttackProperty);
+	}
 }
 
-void AMonster::OnHit(AActor* Attacker, FAttackProperty HitAttackProperty)
+void AMonster::OnHit(AActor* Attacker, FSkillProperty HitAttackProperty)
 {
 	//改变状态
 	StateMachine->SetState(EState::Hit);
@@ -150,14 +153,9 @@ void AMonster::OnHit(AActor* Attacker, FAttackProperty HitAttackProperty)
 
 	//重新播放效果
 	HitEffectComponent->PlayFromStart();
-
-	if (HitAttackProperty.HarmfulType == EAttackHarmfulType::HeavyAttack)
+	if (HitAttackProperty.SkillType == ESkillType::HarmfulAttack) //对于伤害形技能
 	{
-		HealthPoint -= 2;
-	}
-	else
-	{
-		HealthPoint -= 1;
+		HealthPoint -= HitAttackProperty.Damage;
 	}
 
 	//死亡判断

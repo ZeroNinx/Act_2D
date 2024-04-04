@@ -215,17 +215,17 @@ bool APlayerCharacterController::IsAllowMove()
 
 void APlayerCharacterController::AddKeyCombination()
 {
-	FKeyCombination KeyCombation;
-
-	// 将按下的按键以Set形式转换为按键组合
+	// 将按下的按键组合记录
+	TArray<EGameKeyType> PressedKeys;
 	for (auto It : KeyPressMap)
 	{
 		if (It.Value == true)
 		{
-			KeyCombation.Keys.Add(It.Key);
+			PressedKeys.Add(It.Key);
 		}
 	}
 
 	// 记录输入
+	FKeyCombination KeyCombation(PressedKeys);
 	InputCombinationQueue.Enqueue(MoveTemp(KeyCombation));
 }

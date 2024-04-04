@@ -9,7 +9,7 @@
 //执行攻击
 void UPlayerSkill::ExecuteAttackJudge(APlayerCharacter* PlayerCharacter, AActor* HitActor)
 {
-	IActorInterface::Execute_Hit(HitActor, PlayerCharacter, AttackProperty);
+	IActorInterface::Execute_Hit(HitActor, PlayerCharacter, SkillProperty);
 
 	//打击感延迟
 	AMonster* HitMonster = Cast<AMonster>(HitActor);
@@ -49,30 +49,12 @@ TArray<AActor*> UPlayerSkill::GetHitActors()
 }
 
 /**
- * AttackI
- */
-US_AttackI::US_AttackI()
-{
-	AttackProperty = FAttackProperty(EAttackHarmfulType::LightAttack, 1);
-}
-
-/**
- * AttackII
- */
-US_AttackII::US_AttackII()
-{
-	AttackProperty = FAttackProperty(EAttackHarmfulType::LightAttack, 1);
-}
-
-
-
-/**
  * AttackIII
  */
 
 US_AttackIII::US_AttackIII()
 {
-	AttackProperty = FAttackProperty(EAttackHarmfulType::HeavyAttack, 2);
+	SkillProperty = FSkillProperty(EAttackHarmfulType::HeavyAttack, 2);
 }
 
 void US_AttackIII::OnAttackJudgeBegin()
@@ -105,20 +87,11 @@ void US_AttackIII::TickOnAttackJudge()
 }
 
 /**
- * JumpAttack
- */
-US_AttackJump::US_AttackJump()
-{
-	AttackProperty = FAttackProperty(EAttackHarmfulType::HeavyAttack, 1);
-}
-
-
-/**
  * DashAttack
  */
 US_AttackDash::US_AttackDash()
 {
-	AttackProperty = FAttackProperty(EAttackHarmfulType::LightAttack, 1);
+	SkillProperty = FSkillProperty(EAttackHarmfulType::LightAttack, 1);
 	
 }
 

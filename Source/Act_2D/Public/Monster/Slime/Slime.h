@@ -31,7 +31,7 @@ public:
 	void JumpAttack();
 
 	//被击中
-	virtual void OnHit(AActor* Attacker, FAttackProperty HitAttackProperty) override;
+	virtual void OnHit(AActor* Attacker, FSkillProperty HitAttackProperty) override;
 
 protected:
 

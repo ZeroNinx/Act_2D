@@ -12,7 +12,7 @@ ABullet::ABullet()
 }
 
 //受击函数
-void ABullet::Hit_Implementation(AActor* HitActor, FAttackProperty HitAttackProperty)
+void ABullet::Hit_Implementation(AActor* HitActor, FSkillProperty HitAttackProperty)
 {
 
 }

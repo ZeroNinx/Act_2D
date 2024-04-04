@@ -58,7 +58,7 @@ protected:
 
 	// 受击时
 	UFUNCTION(BlueprintCallable)
-	virtual void OnHit(AActor* Attacker, FAttackProperty HitAttackProperty);
+	virtual void OnHit(AActor* Attacker, FSkillProperty HitAttackProperty);
 
 	// 死亡时
 	UFUNCTION(BlueprintCallable)
@@ -75,7 +75,7 @@ protected:
 
 	//攻击特性
 	UPROPERTY(BlueprintReadOnly)
-	FAttackProperty AttackProperty;
+	FSkillProperty AttackProperty;
 
 	//受击效果组件
 	UPROPERTY(BlueprintReadOnly)
@@ -106,7 +106,7 @@ protected:
 	virtual void UpdateState();
 
 	//受击函数
-	virtual void Hit_Implementation(AActor* Attacker, FAttackProperty HitAttackProperty) override;
+	virtual void Hit_Implementation(AActor* Attacker, FSkillProperty HitAttackProperty) override;
 	
 	//播放死亡动画
 	virtual void PlayDeathEffect();
