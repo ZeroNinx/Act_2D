@@ -46,34 +46,23 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 			return;
 		}
 
-		//跳跃攻击
-		//TODO:移植到新方式
-		bool bPlayerJumping = !PlayerCharacter->IsMovingOnGround && !(PlayerCharacter->GetState() == EState::Hit);
-		if (bPlayerJumping)
+		// 获取下一个技能
+		CurrentSkill = GetNextSkill(NextCombation);
+		if (CurrentSkill)
 		{
-			//TODO:跳跃攻击
-		}
-		else //一般攻击
-		{
-			CurrentSkill = GetNextSkill(NextCombation);
-			if (CurrentSkill)
-			{
-				PlayerCharacter->GetCharacterMovement()->StopMovementImmediately();
-				Attack();
-			}
+			Attack();
 		}
 	}
-
-	//当处于攻击时
-	if (IsAttacking() && CurrentSkill)
+	else if (IsAttacking() && CurrentSkill)
 	{
+		//当处于攻击时
 		if (!bPlayerAttackJudgeBegin && !bPlayerAttackJudgeEnd) // 攻击判定未开始
 		{
-			CurrentSkill->TickBeforeAttackJudge();
+			CurrentSkill->TickBeforeSkillJudge();
 		}
 		else if (bPlayerAttackJudgeBegin && !bPlayerAttackJudgeEnd) // 攻击判定进行中
 		{
-			CurrentSkill->TickOnAttackJudge();
+			CurrentSkill->TickOnSkillJudge();
 		}
 		else if (bPlayerAttackJudgeBegin && bPlayerAttackJudgeEnd) // 攻击判定已结束
 		{
@@ -85,6 +74,7 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 				return;
 			}
 
+			// 获取下一个技能
 			UPlayerSkill* NextSkill = GetNextSkill(NextCombation);
 			if(NextSkill)
 			{
@@ -95,7 +85,7 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 			else
 			{
 				// 没有下一个连续技
-				CurrentSkill->TickAfterAttackJudge();
+				CurrentSkill->TickAfterSkillJudge();
 			}
 		}
 	}
@@ -127,80 +117,76 @@ bool UPlayerAttackComponent::IsMovable()
 
 void UPlayerAttackComponent::PlayerAttackBegin()
 {
-	CurrentSkill->OnAttackBegin();
+	CurrentSkill->OnSkillBegin();
 	OnPlayerAttackBegin.Broadcast();
 }
 
 void UPlayerAttackComponent::PlayerAttackJudgeBegin()
 {
-	CurrentSkill->OnAttackJudgeBegin();
+	CurrentSkill->OnSkillJudgeBegin();
 	OnPlayerAttackJudgeBegin.Broadcast();
 }
 
 void UPlayerAttackComponent::PlayerAttacJudgeEnd()
 {
-	CurrentSkill->OnAttackJudgeEnd();
+	CurrentSkill->OnSkillJudgeEnd();
 	OnPlayerAttackJudgeEnd.Broadcast();
 }
 
 void UPlayerAttackComponent::PlayerAttackEnd()
 {
+	CurrentSkill->OnSkillEnd();
 	ResetAttack();
 	OnPlayerAttackEnd.Broadcast();
 }
 
 UPlayerSkill* UPlayerAttackComponent::GetNextSkill(FKeyCombination KeyCombination)
 {
+	TSubclassOf<UPlayerSkill> SkillClass = nullptr;
+	const TMap<FKeyCombination, TSubclassOf<UPlayerSkill>>* ConfigToFind = &BasicSkillConfig;
+
 	// 不在攻击，从基础配置里读取
 	if (!IsAttacking())
 	{
-		TSubclassOf<UPlayerSkill> SkillClass = nullptr;
-		
-		// 先找完全匹配的
-		if (BasicSkillConfig.Contains(KeyCombination))
+		if (PlayerCharacter->IsMovingOnGround)
 		{
-			SkillClass = BasicSkillConfig[KeyCombination];
+			// 普通技能
+			ConfigToFind = &BasicSkillConfig;
 		}
-		// 再找包含的
-		for (auto It : BasicSkillConfig)
+		else
+		{
+			// 跳跃技能
+			ConfigToFind = &JumpSkillConfig;
+		}
+	}
+	else if (IsAttacking() && CurrentSkill)
+	{
+		// 当前已有技能，读取下一个组合
+		ConfigToFind = &(CurrentSkill->ComboConfig);
+	}
+
+	// 先找完全匹配的
+	if (ConfigToFind->Contains(KeyCombination))
+	{
+		SkillClass = (*ConfigToFind)[KeyCombination];
+	}
+	else
+	{
+		// 没有完全匹配的，找包含的
+		for (auto It : *ConfigToFind)
 		{
 			if (KeyCombination.ContainsCombination(It.Key))
 			{
 				SkillClass = It.Value;
 			}
-		}
-
-		if (SkillClass)
-		{
-			// TODO:优化载入
-			return NewObject<UPlayerSkill>(this, SkillClass);
 		}
 	}
 
-	// 当前已有技能，读取下一个组合
-	if (IsAttacking() && CurrentSkill)
+	// 载入找到的技能
+	if (SkillClass)
 	{
-		TSubclassOf<UPlayerSkill> SkillClass = nullptr;
-
-		// 先找完全匹配的
-		if (CurrentSkill->ComboConfig.Contains(KeyCombination))
-		{
-			SkillClass = CurrentSkill->ComboConfig[KeyCombination];
-		}
-		// 再找包含的
-		for (auto It : CurrentSkill->ComboConfig)
-		{
-			if (KeyCombination.ContainsCombination(It.Key))
-			{
-				SkillClass = It.Value;
-			}
-		}
-
-		if (SkillClass)
-		{
-			// TODO:优化载入
-			return NewObject<UPlayerSkill>(this, SkillClass);
-		}
+		// TODO:优化载入
+		return NewObject<UPlayerSkill>(this, SkillClass);
 	}
 
 	return nullptr;

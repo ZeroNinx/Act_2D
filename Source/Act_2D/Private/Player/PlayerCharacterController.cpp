@@ -4,7 +4,7 @@
 #include "Player/PlayerCharacter.h"
 #include "Player/PlayerAttackComponent.h"
 #include "Blueprint/UserWidget.h"
-#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/PlayerStart.h"
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
 
@@ -208,13 +208,47 @@ void APlayerCharacterController::InitializeMainUI()
 //是否允许移动
 bool APlayerCharacterController::IsAllowMove()
 {
-	return PlayerCharacter && 
-	!(PlayerCharacter->GetState() == EState::Attack) &&
-	!(PlayerCharacter->GetState() == EState::Hit);
+	if (!PlayerCharacter)
+	{
+		return false;
+	}
+
+	if (PlayerCharacter->GetState() == EState::Hit)
+	{
+		return false;
+	}
+
+	if (PlayerCharacter->GetState() == EState::Attack)
+	{
+		if (PlayerCharacter->IsMovingOnGround)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void APlayerCharacterController::AddKeyCombination()
 {
+	if (AddKeyCombinationDelayTime == 0.0f)
+	{
+		AddKeyCombination_AfterDealy();
+	}
+	else
+	{
+		if (!DelayInputHandle.IsValid())
+		{
+			DelayInputHandle = UKismetSystemLibrary::K2_SetTimer(this, "AddKeyCombination_AfterDealy", AddKeyCombinationDelayTime, false, AddKeyCombinationDelayTime);
+		}
+	}
+
+}
+
+void APlayerCharacterController::AddKeyCombination_AfterDealy()
+{
+	UKismetSystemLibrary::K2_ClearAndInvalidateTimerHandle(this, DelayInputHandle);
+
 	// 将按下的按键组合记录
 	TArray<EGameKeyType> PressedKeys;
 	for (auto It : KeyPressMap)

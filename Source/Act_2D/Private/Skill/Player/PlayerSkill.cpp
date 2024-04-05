@@ -7,39 +7,23 @@
 #include "Player/PlayerCharacter.h"
 
 //执行攻击
-void UPlayerSkill::ExecuteAttackJudge(APlayerCharacter* PlayerCharacter, AActor* HitActor)
+void UPlayerSkill::ExecuteHit_Implementation(AActor* HitActor)
 {
+	APlayerCharacter* PlayerCharacter = UGlobalBlueprintFunctionLibrary::GetPlayerCharacter();
 	IActorInterface::Execute_Hit(HitActor, PlayerCharacter, SkillProperty);
 
 	//打击感延迟
 	AMonster* HitMonster = Cast<AMonster>(HitActor);
-	if (HitMonster && HitMonster->GetHealthPoint() > 0)
+	if (HitMonster && HitMonster->IsAlive())
 	{
 		UGlobalBlueprintFunctionLibrary::SetGlobalDelay(0.05f, 0.07f);
 	}
 }
 
-void UPlayerSkill::OnAttackJudgeBegin()
-{
-	APlayerCharacter* PlayerCharacter = GetPlayerCharacter();
-	if (PlayerCharacter)
-	{
-		for (AActor* HitActor : GetHitActors())
-		{
-			ExecuteAttackJudge(PlayerCharacter, HitActor);
-		}
-	}
-}
-
-APlayerCharacter* UPlayerSkill::GetPlayerCharacter()
-{
-	return UGlobalBlueprintFunctionLibrary::GetPlayerCharacter();
-}
-
 TArray<AActor*> UPlayerSkill::GetHitActors()
 {
 	TArray<AActor*> HitActors;
-	APlayerCharacter* PlayerCharacter = GetPlayerCharacter();
+	APlayerCharacter* PlayerCharacter = UGlobalBlueprintFunctionLibrary::GetPlayerCharacter();
 	if (PlayerCharacter)
 	{
 		PlayerCharacter->GetAttackComponent()->UpdateOverlaps();
@@ -48,77 +32,41 @@ TArray<AActor*> UPlayerSkill::GetHitActors()
 	return MoveTemp(HitActors);
 }
 
-/**
- * AttackIII
- */
-
-US_AttackIII::US_AttackIII()
+void UPlayerSkill::OnSkillBegin_Implementation()
 {
-	SkillProperty = FSkillProperty(EAttackHarmfulType::HeavyAttack, 2);
+
 }
 
-void US_AttackIII::OnAttackJudgeBegin()
+void UPlayerSkill::TickBeforeSkillJudge_Implementation()
 {
-	APlayerCharacter* PlayerCharacter = GetPlayerCharacter();
-	if (PlayerCharacter)
-	{
-		//添加瞬时速度
-		float DirectMark = PlayerCharacter->bFacingRight ? 1.0f : -1.0f;
-		float VelocyX = 4000.0f * DirectMark;
-		PlayerCharacter->GetCharacterMovement()->Velocity = FVector(VelocyX, 0, 0);
-	}
-};
 
+}
 
-void US_AttackIII::TickOnAttackJudge()
+void UPlayerSkill::OnSkillJudgeBegin_Implementation()
 {
-	APlayerCharacter* PlayerCharacter = GetPlayerCharacter();
-	if (PlayerCharacter)
+	for (AActor* HitActor : GetHitActors())
 	{
-		for (AActor* HitActor : GetHitActors())
-		{
-			if (HitActor && !ActorsAppliedHit.Contains(HitActor))
-			{
-				ExecuteAttackJudge(PlayerCharacter, HitActor);
-				ActorsAppliedHit.Add(HitActor);
-			}
-		}
+		ExecuteHit(HitActor);
 	}
 }
 
-/**
- * DashAttack
- */
-US_AttackDash::US_AttackDash()
+void UPlayerSkill::TickOnSkillJudge_Implementation()
 {
-	SkillProperty = FSkillProperty(EAttackHarmfulType::LightAttack, 1);
-	
+
 }
 
-void US_AttackDash::OnAttackJudgeBegin()
+void UPlayerSkill::OnSkillJudgeEnd_Implementation()
 {
-	APlayerCharacter* PlayerCharacter = GetPlayerCharacter();
-	if (PlayerCharacter)
-	{
-		//添加瞬时速度
-		float DirectMark = PlayerCharacter->bFacingRight ? 1.0f : -1.0f;
-		float VelocyX = 10000.0f * DirectMark;
-		PlayerCharacter->GetCharacterMovement()->Velocity = FVector(VelocyX, 0, 0);
-	}
+
 }
 
-void US_AttackDash::TickOnAttackJudge()
+void UPlayerSkill::TickAfterSkillJudge_Implementation()
 {
-	APlayerCharacter* PlayerCharacter = GetPlayerCharacter();
-	if (PlayerCharacter)
-	{
-		for (AActor* HitActor : GetHitActors())
-		{
-			if (HitActor && !ActorsAppliedHit.Contains(HitActor))
-			{
-				ExecuteAttackJudge(PlayerCharacter, HitActor);
-				ActorsAppliedHit.Add(HitActor);
-			}
-		}
-	}
+
 }
+
+void UPlayerSkill::OnSkillEnd_Implementation()
+{
+
+}
+

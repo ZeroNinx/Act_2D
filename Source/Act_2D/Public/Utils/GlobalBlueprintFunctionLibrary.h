@@ -31,13 +31,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void SetGlobalDelay(float TimeFlowRate, float Duration);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static APlayerCharacter* GetPlayerCharacter();
 
 	UFUNCTION(BlueprintCallable)
 	static void SetPlayerCharacter(APlayerCharacter* NewPlayerCharacter);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static UUserWidget* GetMainUI();
 
 	UFUNCTION(BlueprintCallable)

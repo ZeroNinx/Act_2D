@@ -33,9 +33,11 @@ public:
 	APlayerCharacter();
 
 	//角色方向是否朝右
+	UPROPERTY(BlueprintReadOnly)
 	bool bFacingRight;
 
 	// 是否落地
+	UPROPERTY(BlueprintReadOnly)
 	bool IsMovingOnGround;
 
 	//HP

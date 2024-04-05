@@ -41,70 +41,40 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "技能衔接配置"))
 	TMap<FKeyCombination, TSubclassOf<UPlayerSkill>> ComboConfig;
 
-	//击中的Actor
-	UPROPERTY(BlueprintReadOnly)
-	TSet<AActor*> ActorsAppliedHit;
-
-	UFUNCTION(BlueprintCallable)
-	APlayerCharacter* GetPlayerCharacter();
+	//执行命中判定
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void ExecuteHit(AActor* HitActor);
 
 	//获取击中的Actor
-	virtual TArray<AActor*> GetHitActors();
+	UFUNCTION(BlueprintCallable)
+	TArray<AActor*> GetHitActors();
 
-	//攻击判定
-	virtual void ExecuteAttackJudge(APlayerCharacter* Player, AActor* AMonster);
-
-	//前摇执行一次
-	virtual void OnAttackBegin() {};
+	//技能开始时
+	UFUNCTION(BlueprintNativeEvent)
+	void OnSkillBegin();
 
 	//前摇每帧执行
-	virtual void TickBeforeAttackJudge() {};
+	UFUNCTION(BlueprintNativeEvent)
+	void TickBeforeSkillJudge();
 
-	//攻击开始执行一次
-	virtual void OnAttackJudgeBegin();
+	//技能判定开始时
+	UFUNCTION(BlueprintNativeEvent)
+	void OnSkillJudgeBegin();
 
-	//攻击时每帧执行
-	virtual void TickOnAttackJudge() {};
+	//技能判定时每帧执行
+	UFUNCTION(BlueprintNativeEvent)
+	void TickOnSkillJudge();
 
-	//攻击结束时执行一次
-	virtual void OnAttackJudgeEnd() {};
+	//技能判定结束时
+	UFUNCTION(BlueprintNativeEvent)
+	void OnSkillJudgeEnd();
 
 	//后摇每帧执行
-	virtual void TickAfterAttackJudge() {};
+	UFUNCTION(BlueprintNativeEvent)
+	void TickAfterSkillJudge();
 
+	//技能结束时
+	UFUNCTION(BlueprintNativeEvent)
+	void OnSkillEnd();
 };
 
-/**
- * AttackIII
- */
-UCLASS()
-class ACT_2D_API US_AttackIII:public UPlayerSkill
-{
-	GENERATED_BODY()
-
-public:
-
-	US_AttackIII();
-	
-	void OnAttackJudgeBegin() override;
-
-	void TickOnAttackJudge() override;
-	
-};
-
-/**
- * DashJump
- */
-UCLASS()
-class ACT_2D_API US_AttackDash :public UPlayerSkill
-{
-	GENERATED_BODY()
-
-public:
-
-	US_AttackDash();
-
-	void OnAttackJudgeBegin() override;
-
-	void TickOnAttackJudge() override;
-};

@@ -103,17 +103,18 @@ void APlayerCharacter::OnJumpStateChanged()
 {
 	if (!IsMovingOnGround)
 	{
-		// 起跳
-		UGlobalBlueprintFunctionLibrary::LogWarning("Player Jump");
+		// 开始腾空
 	}
 	else
 	{
 		// 落地
-		UPlayerAttackComponent* AttackComponent = GetAttackComponent();
-		if (GetState() == EState::Attack)
-		{
-			RestoreFromAttack();
-		}
+	}
+
+	// 打断攻击
+	UPlayerAttackComponent* AttackComponent = GetAttackComponent();
+	if (GetState() == EState::Attack)
+	{
+		RestoreFromAttack();
 	}
 }
 

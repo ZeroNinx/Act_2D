@@ -105,6 +105,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "基础技能配置"))
 	TMap<FKeyCombination, TSubclassOf<UPlayerSkill>> BasicSkillConfig;
 
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "跳跃技能配置"))
+	TMap<FKeyCombination, TSubclassOf<UPlayerSkill>> JumpSkillConfig;
+
 	//当前技能
 	UPROPERTY()
 	UPlayerSkill* CurrentSkill;

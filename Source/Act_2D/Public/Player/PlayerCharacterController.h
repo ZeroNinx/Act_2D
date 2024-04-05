@@ -7,6 +7,7 @@
 
 //UE4
 #include "CoreMinimal.h"
+#include "Engine/TimerHandle.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/PlayerController.h"
 #include "PlayerCharacterController.generated.h"
@@ -99,7 +100,16 @@ protected:
 	//是否允许移动
 	bool IsAllowMove();
 
+	// 组合输入添加延迟
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "攻击输入延迟"))
+	float AddKeyCombinationDelayTime = 0.0f;
+	FTimerHandle DelayInputHandle;
+
 	//添加输入组合
 	void AddKeyCombination();
+
+	//添加输入组合
+	UFUNCTION()
+	void AddKeyCombination_AfterDealy();
 
 };
