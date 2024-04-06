@@ -78,7 +78,7 @@ protected:
 	FSkillProperty AttackProperty;
 
 	//受击效果组件
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UPaperFlipbookComponent* HitEffectComponent;
 
 	//HP

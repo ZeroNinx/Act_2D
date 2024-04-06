@@ -5,7 +5,7 @@
 #include "Monster/RedGrass/RedGrassController.h"
 
 //构造函数
-ARedGrass::ARedGrass()
+ARedGrass::ARedGrass():Super()
 {
 	bFacingRight = false;
 	AIControllerClass = ARedGrassController::StaticClass();
@@ -15,14 +15,6 @@ ARedGrass::ARedGrass()
 	RealCapsule->SetRelativeRotation(FRotator(90.0f, 0, 0));
 	RealCapsule->SetCapsuleHalfHeight(44.0f);
 	RealCapsule->SetCapsuleRadius(33.0f);
-	GetSprite()->SetRelativeLocation(FVector(0, 0, 28.0f));
 	GetSprite()->SetRelativeScale3D(FVector(4.0f, 4.0f, 4.0f));
-
-	//设定受击特效
-	HitEffectComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("HitEffectComponent"));
-	HitEffectComponent->SetupAttachment(RootComponent);
-	HitEffectComponent->SetWorldScale3D(FVector(5.0f, 5.0f, 5.0f));
-	HitEffectComponent->SetFlipbook(HitEffectFlipbook);
-	HitEffectComponent->SetLooping(false);
 
 }

@@ -163,14 +163,8 @@ void APlayerCharacterController::JumpPressed()
 {
 	KeyPressMap.Add(EGameKeyType::Jump, true);
 
-	//可移动帧取消攻击
-	if (AttackComponent->IsAttacking() && AttackComponent->IsMovable())
-	{
-		PlayerCharacter->RestoreFromAttack();
-	}
-
 	//当可移动时
-	if (IsAllowMove())
+	if (IsAllowMove() && PlayerCharacter->IsMovingOnGround)
 	{
 		PlayerCharacter->Jump();
 	}

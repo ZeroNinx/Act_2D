@@ -2,7 +2,7 @@
 #include "Monster/Slime/SlimeController.h"
 
 //构造函数
-ASlime::ASlime()
+ASlime::ASlime():Super()
 {
 	bFacingRight = false;
 	AIControllerClass = ASlimeController::StaticClass();
@@ -21,12 +21,6 @@ ASlime::ASlime()
 	GetCharacterMovement()->GravityScale = 0.8f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 200.0f;
 	GetCharacterMovement()->GroundFriction = 2.0f;
-
-	//设定受击特效
-	HitEffectComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("HitEffectComponent"));
-	HitEffectComponent->SetupAttachment(RootComponent);
-	HitEffectComponent->SetFlipbook(HitEffectFlipbook);
-	HitEffectComponent->SetLooping(false);
 
 	//设定攻击组件
 	AttackCompnent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("AttackComponent"));

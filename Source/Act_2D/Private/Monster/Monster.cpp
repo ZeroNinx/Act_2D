@@ -26,6 +26,11 @@ AMonster::AMonster()
 	RealCapsule->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	RealCapsule->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 
+	//受击动画组件
+	HitEffectComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("HitEffectComponent"));
+	HitEffectComponent->SetupAttachment(GetSprite());
+	HitEffectComponent->SetLooping(false);
+
 }
 
 bool AMonster::IsAlive()
@@ -153,7 +158,9 @@ void AMonster::OnHit(AActor* Attacker, FSkillProperty HitAttackProperty)
 
 	//重新播放效果
 	HitEffectComponent->PlayFromStart();
-	if (HitAttackProperty.SkillType == ESkillType::HarmfulAttack) //对于伤害形技能
+
+	//对于伤害形技能，扣血
+	if (HitAttackProperty.SkillType == ESkillType::HarmfulAttack)
 	{
 		HealthPoint -= HitAttackProperty.Damage;
 	}

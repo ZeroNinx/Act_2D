@@ -200,7 +200,7 @@ void UPlayerAttackComponent::Attack()
 		return;
 	}
 
-	UGlobalBlueprintFunctionLibrary::LogWarning("Attack!!!!!!!!");
+	//UGlobalBlueprintFunctionLibrary::LogWarning("Attack!!!!!!!!");
 
 	//改变状态为攻击
 	PlayerCharacter->SetState(EState::Attack);
