@@ -4,7 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
 #include "Utils/UIInterface.h"
-#include "PaperZD/Public/PaperZDAnimInstance.h"
+#include "PaperZDAnimInstance.h"
 
 //构造函数
 APlayerCharacter::APlayerCharacter()

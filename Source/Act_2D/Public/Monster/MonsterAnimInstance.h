@@ -1,5 +1,5 @@
 #pragma once
-#include "PaperZD/Public/PaperZDAnimInstance.h"
+#include "PaperZDAnimInstance.h"
 #include "Utils/StateMachine.h"
 #include "MonsterAnimInstance.generated.h"
 

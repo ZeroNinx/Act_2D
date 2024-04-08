@@ -10,7 +10,7 @@
 //UE4
 #include "CoreMinimal.h"
 #include "PaperFlipbook.h"
-#include "PaperZD/Public/PaperZDCharacter.h"
+#include "PaperZDCharacter.h"
 #include "PaperFlipbookComponent.h"
 #include "HAL/PlatformProcess.h"
 #include "Kismet/GameplayStatics.h"
