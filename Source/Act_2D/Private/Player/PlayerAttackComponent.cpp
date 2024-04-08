@@ -260,5 +260,6 @@ void UPlayerAttackComponent::SetPlayerAttackJudgeEnd()
 void UPlayerAttackComponent::SetPlayerAttackEnd()
 {
 	PlayerAttackEnd();
+	ResetAttack();
 }
 
