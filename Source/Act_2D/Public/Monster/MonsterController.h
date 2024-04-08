@@ -30,29 +30,21 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FName DistanceToPlayerID = TEXT("DistanceToPlayer");
 
-	//停止行为树
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void StopBehaviorTree();
 
 protected:
 
 	//行为树组件
-	UPROPERTY();
-	UBehaviorTree* BehaviorTree;
-
-	//行为树组件
-	UPROPERTY();
+	UPROPERTY(EditDefaultsOnly);
 	UBehaviorTreeComponent* BehaviorTreeComponent;
 
 	//黑板组件
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	UBlackboardComponent* BlackboardComponent;
 
+	virtual void BeginPlay() override;
 
-	//怪物指针
-	UPROPERTY(BlueprintReadOnly)
-	AMonster* Monster;
-
-	//开始控制时
+	//控制时
 	virtual void OnPossess(APawn* InPawn) override;
 };

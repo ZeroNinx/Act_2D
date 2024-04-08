@@ -5,11 +5,12 @@
 #include "Monster/MonsterController.h"
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
 #include "PaperZDAnimInstance.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 //构造函数
 AMonster::AMonster()
 {
-
 	//启用tick
 	PrimaryActorTick.bCanEverTick = true;
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -30,6 +31,13 @@ AMonster::AMonster()
 	HitEffectComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("HitEffectComponent"));
 	HitEffectComponent->SetupAttachment(GetSprite());
 	HitEffectComponent->SetLooping(false);
+
+	// 设置默认的AIController
+	UClass* MonsterControllerClass = StaticLoadClass(AMonsterController::StaticClass(), nullptr, TEXT("/Game/Blueprints/Monster/BP_MonsterController.BP_MonsterController_C"));
+	if (MonsterControllerClass)
+	{
+		AIControllerClass = MonsterControllerClass;
+	}
 
 }
 
@@ -58,7 +66,7 @@ int AMonster::GetHealthPoint()
 void AMonster::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 //每帧执行
@@ -123,7 +131,10 @@ void AMonster::PlayDeathEffect()
 	GetSprite()->Stop();
 
 	AMonsterController* MonsterController = Cast<AMonsterController>(GetController());
-	MonsterController->StopBehaviorTree();
+	if (MonsterController)
+	{
+		MonsterController->StopBehaviorTree();
+	}
 
 	DeathFlashCounter = 0;
 	auto PlayDeathEffect = [&]()

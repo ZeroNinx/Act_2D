@@ -66,27 +66,23 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		}
 		else if (bPlayerAttackJudgeBegin && bPlayerAttackJudgeEnd) // 攻击判定已结束
 		{
+			CurrentSkill->TickAfterSkillJudge();
 
 			// 获取下一个组合输入
 			FKeyCombination NextCombation = GetNextKeyCombination();
-			if (NextCombation.IsEmpty())
+			if (!NextCombation.IsEmpty())
 			{
-				return;
+				// 获取下一个技能
+				UPlayerSkill* NextSkill = GetNextSkill(NextCombation);
+				if (NextSkill)
+				{
+					CurrentSkill->OnSkillEnd(); //触发技能结束
+					ResetAttack();
+					CurrentSkill = NextSkill;
+					Attack();
+				}
 			}
 
-			// 获取下一个技能
-			UPlayerSkill* NextSkill = GetNextSkill(NextCombation);
-			if(NextSkill)
-			{
-				ResetAttack();
-				CurrentSkill = NextSkill;
-				Attack();
-			}
-			else
-			{
-				// 没有下一个连续技
-				CurrentSkill->TickAfterSkillJudge();
-			}
 		}
 	}
 }
@@ -136,7 +132,6 @@ void UPlayerAttackComponent::PlayerAttacJudgeEnd()
 void UPlayerAttackComponent::PlayerAttackEnd()
 {
 	CurrentSkill->OnSkillEnd();
-	ResetAttack();
 	OnPlayerAttackEnd.Broadcast();
 }
 

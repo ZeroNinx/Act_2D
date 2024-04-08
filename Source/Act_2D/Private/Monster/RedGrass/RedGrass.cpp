@@ -2,13 +2,12 @@
 
 
 #include "Monster/RedGrass/RedGrass.h"
-#include "Monster/RedGrass/RedGrassController.h"
+#include "Components/CapsuleComponent.h"
 
 //构造函数
 ARedGrass::ARedGrass():Super()
 {
 	bFacingRight = false;
-	AIControllerClass = ARedGrassController::StaticClass();
 
 	//设置变换
 	GetCapsuleComponent()->SetCapsuleHalfHeight(34.0f);

@@ -12,10 +12,6 @@
 #include "PaperFlipbook.h"
 #include "PaperZDCharacter.h"
 #include "PaperFlipbookComponent.h"
-#include "HAL/PlatformProcess.h"
-#include "Kismet/GameplayStatics.h"
-#include "Components/CapsuleComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Monster.generated.h"
 
 

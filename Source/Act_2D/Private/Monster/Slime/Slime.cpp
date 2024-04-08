@@ -1,13 +1,10 @@
 #include "Monster/Slime/Slime.h"
-#include "Monster/Slime/SlimeController.h"
+#include "Components/CapsuleComponent.h"
 
 //构造函数
 ASlime::ASlime():Super()
 {
 	bFacingRight = false;
-	AIControllerClass = ASlimeController::StaticClass();
-
-	HealthPoint = 5;
 
 	//设置变换
 	GetCapsuleComponent()->SetCapsuleHalfHeight(34.0f);
@@ -38,15 +35,6 @@ void ASlime::JumpAttack()
 		//延迟跳跃
 		auto DelayJumpAttack = [&]()->void
 		{
-			//设定攻击组件
-			UPaperSprite* AttackSprite = LoadObject<UPaperSprite>(this,TEXT("PaperSprite'/Game/Paper2D/Monster/Slime/Jump/Slime_Jump10_Sprite.Slime_Jump10_Sprite'"));
-			if (!AttackSprite)
-			{
-				UKismetSystemLibrary::PrintString(nullptr, FString("Slime Attack Sprite Load Failed"));
-				return;
-			}
-			AttackCompnent->SetSprite(AttackSprite);
-
 			//设定起跳速度
 			float DirectMark = bFacingRight ? 1.0f : -1.0f;
 			float JumpSpeed = 300.0f * DirectMark;

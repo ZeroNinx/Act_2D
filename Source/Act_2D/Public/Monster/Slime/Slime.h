@@ -42,6 +42,7 @@ protected:
 protected:
 
 	//攻击组件
+	UPROPERTY(EditDefaultsOnly)
 	UPaperSpriteComponent* AttackCompnent;
 
 	//攻击技能
