@@ -8,9 +8,9 @@ public class Act_2DTarget : TargetRules
 	public Act_2DTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
-
-		ExtraModuleNames.AddRange( new string[] { "Act_2D" } );
+		DefaultBuildSettings = BuildSettingsVersion.V4;
+        IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
+        ExtraModuleNames.AddRange( new string[] { "Act_2D" } );
 
 	}
 }

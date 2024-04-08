@@ -4,7 +4,7 @@
 #include "Monster/Monster.h"
 #include "Monster/MonsterController.h"
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
-#include "PaperZD/Public/PaperZDAnimInstance.h"
+#include "PaperZDAnimInstance.h"
 
 //构造函数
 AMonster::AMonster()

@@ -9,7 +9,7 @@
 
 //UE4
 #include "CoreMinimal.h"
-#include "PaperZD/Public/PaperZDCharacter.h"
+#include "PaperZDCharacter.h"
 #include "PaperFlipbookComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
