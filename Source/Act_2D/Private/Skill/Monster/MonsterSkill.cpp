@@ -1,14 +1,57 @@
 #include "Skill/Monster/MonsterSkill.h"
-
-//循环包含
+#include "Player/PlayerCharacter.h"
 #include "Monster/Monster.h"
+#include "Utils/GlobalBlueprintFunctionLibrary.h"
+#include "Utils/ActorInterface.h"
 
-
-void UMonsterSkill::InJudge(AMonster* Monster, APlayerCharacter* Player)
+void UMonsterSkill::ExecuteHit_Implementation(AActor* HitActor)
 {
-	Player->Hit(Monster,AttackProperty);
+
 }
 
+TArray<AActor*> UMonsterSkill::GetHitActors()
+{
+	return TArray<AActor*>();
+}
+
+void UMonsterSkill::OnSkillBegin_Implementation()
+{
+
+}
+
+void UMonsterSkill::TickBeforeSkillJudge_Implementation()
+{
+
+}
+
+void UMonsterSkill::OnSkillJudgeBegin_Implementation()
+{
+	APlayerCharacter* Character = UGlobalBlueprintFunctionLibrary::GetPlayerCharacter();
+	if (Character)
+	{
+		IActorInterface::Execute_Hit(Character, OwingMonster, AttackProperty);
+	}
+}
+
+void UMonsterSkill::TickOnSkillJudge_Implementation()
+{
+
+}
+
+void UMonsterSkill::OnSkillJudgeEnd_Implementation()
+{
+
+}
+
+void UMonsterSkill::TickAfterSkillJudge_Implementation()
+{
+
+}
+
+void UMonsterSkill::OnSkillEnd_Implementation()
+{
+
+}
 
 /**
  * 史莱姆攻击

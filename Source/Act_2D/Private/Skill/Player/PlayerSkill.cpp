@@ -2,6 +2,7 @@
 #include "Monster/Monster.h"
 #include "Player/PlayerCharacter.h"
 #include "Player/PlayerAttackComponent.h"
+#include "Utils/ActorInterface.h"
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
 
 //执行攻击

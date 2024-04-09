@@ -1,5 +1,8 @@
 #include "Monster/Slime/Slime.h"
+#include "Player/PlayerCharacter.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Utils/GlobalBlueprintFunctionLibrary.h"
 
 //构造函数
 ASlime::ASlime():Super()
@@ -42,11 +45,11 @@ void ASlime::JumpAttack()
 			Jump();
 
 			//检测已存在重叠
-			APlayerCharacter* Player = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-			bool bOverlappingPlayer=AttackCompnent->IsOverlappingActor(Player);
+			APlayerCharacter* Character = UGlobalBlueprintFunctionLibrary::GetPlayerCharacter();
+			bool bOverlappingPlayer = AttackCompnent->IsOverlappingActor(Character);
 			if (bOverlappingPlayer)
 			{
-				AttackJudge(Player);
+				AttackJudge(Character);
 			}
 		};
 		auto dlg = FTimerDelegate::CreateLambda(DelayJumpAttack);

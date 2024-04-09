@@ -1,8 +1,5 @@
 #pragma once
 
-//自定义
-#include "Utils/ActorInterface.h"
-
 //UE4
 #include "CoreMinimal.h"
 #include "PaperSprite.h"
@@ -40,7 +37,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void ExecuteHit(AActor* HitActor);
 
-	//获取击中的Actor
+	//获取击中的Actor 
 	UFUNCTION(BlueprintCallable)
 	TArray<AActor*> GetHitActors();
 

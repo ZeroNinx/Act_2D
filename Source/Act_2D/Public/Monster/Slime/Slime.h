@@ -10,8 +10,6 @@
 #include "PaperSprite.h"
 #include "PaperSpriteComponent.h"
 #include "PaperFlipbookComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Components/ArrowComponent.h"
 #include "Slime.generated.h"
 
 /**
