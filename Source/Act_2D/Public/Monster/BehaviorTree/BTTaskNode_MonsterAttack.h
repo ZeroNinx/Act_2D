@@ -3,27 +3,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Slime.h"
-#include "AIController.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTTaskNode_SlimeAttack.generated.h"
+#include "BTTaskNode_MonsterAttack.generated.h"
 
 /**
- * å²è±å§†æ”»å‡»
+ * ĞĞÎªÊ÷½Úµã£º¹ÖÎï¹¥»÷
  */
 UCLASS()
-class ACT_2D_API UBTTaskNode_SlimeAttack : public UBTTaskNode
+class ACT_2D_API UBTTaskNode_MonsterAttack : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
 public:
-	
-	//æ„é€ å‡½æ•°
-	UBTTaskNode_SlimeAttack();
+
+	//¹¹Ôìº¯Êı
+	UBTTaskNode_MonsterAttack();
 
 protected:
 
-	//æ‰§è¡Œä»»åŠ¡
+	//Ö´ĞĞÈÎÎñ
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 };

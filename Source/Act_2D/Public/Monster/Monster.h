@@ -56,6 +56,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayOverrideAnim(class UPaperZDAnimSequence* InAnimSquence);
 
+	//攻击
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Attack();
+
 	//是否朝右
 	bool bFacingRight;
 
@@ -77,10 +81,6 @@ protected:
 
 	//状态机
 	UStateMachine* StateMachine;
-
-	//攻击特性
-	UPROPERTY(BlueprintReadOnly)
-	FSkillProperty AttackProperty;
 
 	//受击效果组件
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -110,13 +110,13 @@ protected:
 	//更新状态
 	virtual void UpdateState();
 
+	//攻击函数
+	virtual void Attack_Implementation();
+
 	//受击函数
 	virtual void Hit_Implementation(AActor* Attacker, FSkillProperty HitAttackProperty) override;
 	
 	//播放死亡动画
 	virtual void PlayDeathEffect();
-
-	//受击特效
-	UPaperFlipbook* HitEffectFlipbook;
 
 };

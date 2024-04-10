@@ -214,3 +214,8 @@ void AMonster::PlayOverrideAnim(class UPaperZDAnimSequence* InAnimSquence)
 		AnimationInstance->PlayAnimationOverride(InAnimSquence);
 	}
 }
+
+void AMonster::Attack_Implementation()
+{
+
+}

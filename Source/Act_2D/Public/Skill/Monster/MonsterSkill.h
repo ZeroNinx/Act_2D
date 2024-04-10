@@ -10,7 +10,7 @@
 /**
  * 怪物技能类
  */
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class ACT_2D_API UMonsterSkill :public UObject
 {
 	GENERATED_BODY()

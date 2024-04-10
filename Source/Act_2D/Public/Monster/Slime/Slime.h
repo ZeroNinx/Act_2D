@@ -25,37 +25,12 @@ public:
 	//构造函数
 	ASlime();
 
-	//史莱姆跳跃（攻击）
-	void JumpAttack();
-
 	//被击中
 	virtual void OnHit(AActor* Attacker, FSkillProperty HitAttackProperty) override;
 
 protected:
 
-	//攻击组件重叠时
-	UFUNCTION()
-	void OnAttackComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-protected:
-
-	//攻击组件
-	UPROPERTY(EditDefaultsOnly)
-	UPaperSpriteComponent* AttackCompnent;
-
-	//攻击技能
-	UMonsterSkill* Skill;
-
-	//跳跃攻击定时器句柄
-	FTimerHandle JumpAttackHandle;
-
-	//跳跃准备时间
-	float JumpReadyTime = 0.05f;
-
-	//标记是否刚着地
-	bool bFalled = false;
-
-	//攻击判定
-	void AttackJudge(AActor* HitActor);
+	//攻击函数
+	virtual void Attack_Implementation() override;
 
 };
