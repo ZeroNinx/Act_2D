@@ -7,6 +7,7 @@
 #include "PaperZDAnimInstance.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Player/PlayerCharacter.h"
 
 //构造函数
 AMonster::AMonster()
@@ -60,6 +61,11 @@ void AMonster::SetState(EState State)
 int AMonster::GetHealthPoint()
 {
 	return HealthPoint;
+}
+
+UMonsterSkillComponent* AMonster::GetSkillComponent()
+{
+	return GetComponentByClass<UMonsterSkillComponent>();
 }
 
 //游戏开始执行
@@ -200,3 +206,11 @@ void AMonster::OnHitAnimationPlayComplete()
 	SetState(EState::Idle);
 }
 
+void AMonster::PlayOverrideAnim(class UPaperZDAnimSequence* InAnimSquence)
+{
+	UPaperZDAnimInstance* AnimationInstance = GetAnimInstance();
+	if (AnimationInstance)
+	{
+		AnimationInstance->PlayAnimationOverride(InAnimSquence);
+	}
+}

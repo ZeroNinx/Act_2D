@@ -1,22 +1,10 @@
 #pragma once
-
-//自定义
-#include "Skill/Player/PlayerSkill.h"
-#include "Utils/Types.h"
-
-//UE4
-#include "Misc/Paths.h"
 #include "CoreMinimal.h"
-#include "PaperSprite.h"
 #include "PaperSpriteComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Components/ActorComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "Utils/Types.h"
+#include "Skill/Player/PlayerSkill.h"
 #include "PlayerAttackComponent.generated.h"
 
-//互相包含
-class AMonster;
-class UStateMachine;
 class APlayerCharacter;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerAttackBegin);

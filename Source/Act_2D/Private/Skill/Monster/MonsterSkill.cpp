@@ -11,7 +11,13 @@ void UMonsterSkill::ExecuteHit_Implementation(AActor* HitActor)
 
 TArray<AActor*> UMonsterSkill::GetHitActors()
 {
-	return TArray<AActor*>();
+	TArray<AActor*> HitActors;
+	if (OwingMonster)
+	{
+		OwingMonster->GetSkillComponent()->UpdateOverlaps();
+		OwingMonster->GetSkillComponent()->GetOverlappingActors(HitActors);
+	}
+	return MoveTemp(HitActors);
 }
 
 void UMonsterSkill::OnSkillBegin_Implementation()

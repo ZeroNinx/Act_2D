@@ -3,6 +3,7 @@
 //互相包含
 #include "Monster/Monster.h"
 #include "Skill/Player/PlayerSkill.h"
+#include "Player/PlayerCharacter.h"
 #include "Player/PlayerCharacterController.h"
 #include "Utils/StateMachine.h"
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
@@ -36,6 +37,8 @@ UPlayerAttackComponent::UPlayerAttackComponent()
 //Tick函数
 void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
 	//当攻击外进入攻击
 	if (!IsAttacking())
 	{

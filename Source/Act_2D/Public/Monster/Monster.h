@@ -6,6 +6,7 @@
 #include "Utils/ActorInterface.h"
 #include "Utils/StateMachine.h"
 #include "Skill/Monster/MonsterSkill.h"
+#include "Monster/MonsterSkillComponent.h"
 
 //UE4
 #include "CoreMinimal.h"
@@ -43,9 +44,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int GetHealthPoint();
 
+	//获得技能组件
+	UFUNCTION(BlueprintCallable)
+	UMonsterSkillComponent* GetSkillComponent();
+
 	//受击动画播放完成时
 	UFUNCTION(BlueprintCallable)
 	virtual void OnHitAnimationPlayComplete();
+
+	//覆盖播放动画
+	UFUNCTION(BlueprintCallable)
+	void PlayOverrideAnim(class UPaperZDAnimSequence* InAnimSquence);
 
 	//是否朝右
 	bool bFacingRight;
