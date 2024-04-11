@@ -9,6 +9,7 @@ UMonsterSkillComponent::UMonsterSkillComponent()
 
 	//设置重叠
 	SetCollisionResponseToAllChannels(ECR_Ignore);
+	SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 
 	//设置Sprite不可见
@@ -58,6 +59,7 @@ void UMonsterSkillComponent::UseSkill(UMonsterSkill* NewSkill)
 
 	ForceSkillEnd();
 	CurrentSkill = NewSkill;
+	SetupSkill();
 	SkillBegin();
 }
 
@@ -67,6 +69,8 @@ void UMonsterSkillComponent::SetupSkill()
 	{
 		return;
 	}
+
+	CurrentSkill->OwingMonster = OwingMonster;
 
 	//设定攻击动画
 	UPaperZDAnimSequence* AttackAnimSeq = CurrentSkill->AttackOverrideSequence;

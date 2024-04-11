@@ -13,7 +13,7 @@ class UMonsterAnimInstance : public UPaperZDAnimInstance
 protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	virtual AMonster* GetOwnerMonster();
+	virtual AMonster* GetOwningMonster();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	virtual EState GetCurrentState();

@@ -40,7 +40,7 @@ void UPlayerAttackComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	//当攻击外进入攻击
-	if (!IsAttacking())
+	if (!IsAttacking() && PlayerCharacter->GetState() != EState::Hit)
 	{
 		// 获取下一个组合输入
 		FKeyCombination NextCombation = GetNextKeyCombination();

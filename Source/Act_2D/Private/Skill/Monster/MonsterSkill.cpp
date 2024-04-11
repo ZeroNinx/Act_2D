@@ -6,7 +6,11 @@
 
 void UMonsterSkill::ExecuteHit_Implementation(AActor* HitActor)
 {
-
+	if (HitActor->IsA<AMonster>())
+	{
+		return;
+	}
+	IActorInterface::Execute_Hit(HitActor, OwingMonster, SkillProperty);
 }
 
 TArray<AActor*> UMonsterSkill::GetHitActors()
@@ -32,10 +36,10 @@ void UMonsterSkill::TickBeforeSkillJudge_Implementation()
 
 void UMonsterSkill::OnSkillJudgeBegin_Implementation()
 {
-	APlayerCharacter* Character = UGlobalBlueprintFunctionLibrary::GetPlayerCharacter();
-	if (Character)
+	TArray<AActor*> HitActors = GetHitActors();
+	for (AActor* Actor : HitActors)
 	{
-		IActorInterface::Execute_Hit(Character, OwingMonster, SkillProperty);
+		ExecuteHit(Actor);
 	}
 }
 

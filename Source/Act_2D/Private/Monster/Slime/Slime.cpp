@@ -42,17 +42,25 @@ void ASlime::OnHit(AActor* Attacker, FSkillProperty HitAttackProperty)
 {
 	Super::OnHit(Attacker, HitAttackProperty);
 
+	// 受击以后结束技能
+	UMonsterSkillComponent* SkillComponent = GetSkillComponent();
+	if (SkillComponent)
+	{
+		SkillComponent->ForceSkillEnd();
+	}
+
 	float DirectMark = bFacingRight ? -1.0f : 1.0f;
 	float LightVelocyX = 200.0f * DirectMark;
 	float HeavyVelocyX = 600.0f * DirectMark;
 
+	const FVector& TempVelocity = GetCharacterMovement()->Velocity;
 	if (HitAttackProperty.HarmfulType == EAttackHarmfulType::HeavyAttack)
 	{
-		GetCharacterMovement()->Velocity = FVector(HeavyVelocyX, 0, 0);
+		GetCharacterMovement()->Velocity = FVector(HeavyVelocyX, TempVelocity.Y, TempVelocity.Z);
 	}
 	else
 	{
-		GetCharacterMovement()->Velocity = FVector(LightVelocyX, 0, 0);
+		GetCharacterMovement()->Velocity = FVector(LightVelocyX, TempVelocity.Y, TempVelocity.Z);
 	}
 
 }
@@ -70,8 +78,12 @@ void ASlime::OnJumpStateChanged()
 {
 	if (IsMovingOnGround)
 	{
+		UGlobalBlueprintFunctionLibrary::LogWarning("Slime Land");
 		//落地
-		GetAnimInstance()->JumpToNode(FName(TEXT("Land")));
+		if (GetState() != EState::Hit)
+		{
+			GetAnimInstance()->JumpToNode(FName(TEXT("Land")));
+		}
 	}
 	else
 	{

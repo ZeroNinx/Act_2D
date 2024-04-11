@@ -3,7 +3,7 @@
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
 #include "AnimSequences/Players/PaperZDAnimPlayer.h"
 
-AMonster* UMonsterAnimInstance::GetOwnerMonster()
+AMonster* UMonsterAnimInstance::GetOwningMonster()
 {
 	if (!OwingMonster)
 	{
@@ -14,7 +14,7 @@ AMonster* UMonsterAnimInstance::GetOwnerMonster()
 
 EState UMonsterAnimInstance::GetCurrentState()
 {
-	AMonster* Owner = GetOwnerMonster();
+	AMonster* Owner = GetOwningMonster();
 	if(Owner)
 	{
 		return Owner->GetState();
@@ -24,7 +24,7 @@ EState UMonsterAnimInstance::GetCurrentState()
 
 bool UMonsterAnimInstance::ShouldExitHitState_Implementation()
 {
-	AMonster* OwnerMonster = GetOwnerMonster();
+	AMonster* OwnerMonster = GetOwningMonster();
 	if (OwnerMonster)
 	{
 		// Hit中默认不退出

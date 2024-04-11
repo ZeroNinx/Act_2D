@@ -243,6 +243,11 @@ void APlayerCharacterController::AddKeyCombination_AfterDealy()
 {
 	UKismetSystemLibrary::K2_ClearAndInvalidateTimerHandle(this, DelayInputHandle);
 
+	if (PlayerCharacter->GetState() == EState::Hit)
+	{
+		return;
+	}
+
 	// 将按下的按键组合记录
 	TArray<EGameKeyType> PressedKeys;
 	for (auto It : KeyPressMap)
