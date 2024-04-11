@@ -148,6 +148,9 @@ struct FSkillProperty
 	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "状态类型"))
 	EAttackStateType StateType;
 
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "持续性技能"))
+	bool bPersistent = false;
+
 	FSkillProperty() {};
 
 	FSkillProperty(EAttackHarmfulType AttackHarmfulType, int AttackDamage)

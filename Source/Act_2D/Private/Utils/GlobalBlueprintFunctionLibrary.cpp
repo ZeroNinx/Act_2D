@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
+#include "Skill/Monster/MonsterSkill.h"
 
 UGameInstance* UGlobalBlueprintFunctionLibrary::TempGameInstance = nullptr;
 
@@ -75,6 +76,11 @@ void UGlobalBlueprintFunctionLibrary::SetPlayerCharacter(APlayerCharacter* NewPl
 	{
 		GameInstance->PlayerCharacter = NewPlayerCharacter;
 	}
+}
+
+class UMonsterSkill* UGlobalBlueprintFunctionLibrary::CreateMonsterSkill(UObject* Outer, TSubclassOf<UMonsterSkill> SkillClass)
+{
+	return NewObject<UMonsterSkill>(Outer, SkillClass);
 }
 
 UUserWidget* UGlobalBlueprintFunctionLibrary::GetMainUI()

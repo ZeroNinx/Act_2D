@@ -3,6 +3,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
+#include "PaperZDAniminstance.h"
 
 //构造函数
 ASlime::ASlime():Super()
@@ -21,6 +22,18 @@ ASlime::ASlime():Super()
 	GetCharacterMovement()->GravityScale = 0.8f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 200.0f;
 	GetCharacterMovement()->GroundFriction = 2.0f;
+
+}
+
+void ASlime::OnJumpReadyAmimEnd()
+{
+	EnterAttackState();
+
+	//设定起跳速度
+	float DirectMark = bFacingRight ? 1.0f : -1.0f;
+	float JumpSpeed = 400.0f * DirectMark;
+	GetCharacterMovement()->Velocity = FVector(JumpSpeed, 0, 0);
+	Jump();
 
 }
 
@@ -44,11 +57,30 @@ void ASlime::OnHit(AActor* Attacker, FSkillProperty HitAttackProperty)
 
 }
 
+void ASlime::EnterAttackState()
+{
+	UMonsterSkillComponent* SkillComponent = GetSkillComponent();
+	if (SkillComponent)
+	{
+		SkillComponent->UseSkill(GetAttackSkill());
+	}
+}
+
+void ASlime::OnJumpStateChanged()
+{
+	if (IsMovingOnGround)
+	{
+		//落地
+		GetAnimInstance()->JumpToNode(FName(TEXT("Land")));
+	}
+	else
+	{
+		//起跳后
+		EnterAttackState();
+	}
+}
+
 void ASlime::Attack_Implementation()
 {
-	//设定起跳速度
-	float DirectMark = bFacingRight ? 1.0f : -1.0f;
-	float JumpSpeed = 300.0f * DirectMark;
-	GetCharacterMovement()->Velocity = FVector(JumpSpeed, 0, 0);
-	Jump();
+	GetAnimInstance()->JumpToNode(FName(TEXT("JumpReady")));
 }

@@ -21,7 +21,7 @@ public:
 	UMonsterSkill() {};
 
 	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "技能属性"))
-	FSkillProperty AttackProperty;
+	FSkillProperty SkillProperty;
 
 	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "技能覆盖动画"))
 	UPaperZDAnimSequence* AttackOverrideSequence;
@@ -68,18 +68,4 @@ public:
 	//技能结束时
 	UFUNCTION(BlueprintNativeEvent)
 	void OnSkillEnd();
-};
-
-/**
- * 史莱姆攻击
- */
-UCLASS()
-class ACT_2D_API UMS_SlimeAttack :public UMonsterSkill
-{
-	GENERATED_BODY()
-
-public:
-
-	UMS_SlimeAttack();
-
 };

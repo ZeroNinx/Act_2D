@@ -25,10 +25,23 @@ public:
 	//构造函数
 	ASlime();
 
+	UFUNCTION(BlueprintCallable)
+	void OnJumpReadyAmimEnd();
+
 	//被击中
 	virtual void OnHit(AActor* Attacker, FSkillProperty HitAttackProperty) override;
 
 protected:
+
+	// 获取攻击技能
+	UFUNCTION(BlueprintImplementableEvent)
+	UMonsterSkill* GetAttackSkill();
+
+	// 进入攻击状态
+	void EnterAttackState();
+
+	// 跳跃状态改变时
+	virtual void OnJumpStateChanged() override;
 
 	//攻击函数
 	virtual void Attack_Implementation() override;

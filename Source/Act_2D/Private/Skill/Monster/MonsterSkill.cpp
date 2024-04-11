@@ -35,7 +35,7 @@ void UMonsterSkill::OnSkillJudgeBegin_Implementation()
 	APlayerCharacter* Character = UGlobalBlueprintFunctionLibrary::GetPlayerCharacter();
 	if (Character)
 	{
-		IActorInterface::Execute_Hit(Character, OwingMonster, AttackProperty);
+		IActorInterface::Execute_Hit(Character, OwingMonster, SkillProperty);
 	}
 }
 
@@ -58,13 +58,3 @@ void UMonsterSkill::OnSkillEnd_Implementation()
 {
 
 }
-
-/**
- * 史莱姆攻击
- */
-UMS_SlimeAttack::UMS_SlimeAttack()
-{
-	AttackProperty = FSkillProperty(EAttackHarmfulType::LightAttack, 1);
-}
-
-

@@ -51,7 +51,12 @@ void UMonsterSkillComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void UMonsterSkillComponent::UseSkill(UMonsterSkill* NewSkill)
 {
-	ResetSkill();
+	if (!NewSkill)
+	{
+		return;
+	}
+
+	ForceSkillEnd();
 	CurrentSkill = NewSkill;
 	SkillBegin();
 }
@@ -63,25 +68,19 @@ void UMonsterSkillComponent::SetupSkill()
 		return;
 	}
 
-	UPaperZDAnimSequence* AttackAnimSeq = CurrentSkill->AttackOverrideSequence;
-	if (!AttackAnimSeq)
-	{
-		UGlobalBlueprintFunctionLibrary::LogWarning("UMonsterSkillComponent Load AttackAnimSeq Failed");
-		return;
-	}
-
-	UPaperSprite* AttackSprite = CurrentSkill->AttackJudgeSprite;
-	if (!AttackSprite)
-	{
-		UGlobalBlueprintFunctionLibrary::LogWarning("UMonsterSkillComponent Load AttackSprite Failed");
-		return;
-	}
-
 	//设定攻击动画
-	OwingMonster->PlayOverrideAnim(AttackAnimSeq);
+	UPaperZDAnimSequence* AttackAnimSeq = CurrentSkill->AttackOverrideSequence;
+	if (AttackAnimSeq)
+	{
+		OwingMonster->PlayOverrideAnim(AttackAnimSeq);
+	}
 
 	//设置当前的判定范围
-	SetSprite(AttackSprite);
+	UPaperSprite* AttackSprite = CurrentSkill->AttackJudgeSprite;
+	if (AttackSprite)
+	{
+		SetSprite(AttackSprite);
+	}
 }
 
 void UMonsterSkillComponent::ResetSkill()
@@ -103,7 +102,20 @@ void UMonsterSkillComponent::SetSkillJudgeEnd()
 	SkillJudgeEnd();
 }
 
-void UMonsterSkillComponent::SetPlayerSkillEnd()
+void UMonsterSkillComponent::SetSkillEnd()
+{
+	if (CurrentSkill)
+	{
+		// 持续性技能不会被停止，强制停止请使用ForceSkillEnd
+		if (!CurrentSkill->SkillProperty.bPersistent)
+		{
+			ForceSkillEnd();
+		}
+	}
+
+}
+
+void UMonsterSkillComponent::ForceSkillEnd()
 {
 	SkillEnd();
 	ResetSkill();
@@ -111,24 +123,36 @@ void UMonsterSkillComponent::SetPlayerSkillEnd()
 
 void UMonsterSkillComponent::SkillBegin()
 {
-	CurrentSkill->OnSkillBegin();
-	OnSkillBegin.Broadcast();
+	if (CurrentSkill)
+	{
+		CurrentSkill->OnSkillBegin();
+		OnSkillBegin.Broadcast();
+	}
 }
 
 void UMonsterSkillComponent::SkillJudgeBegin()
 {
-	CurrentSkill->OnSkillJudgeBegin();
-	OnSkillJudgeBegin.Broadcast();
+	if (CurrentSkill)
+	{
+		CurrentSkill->OnSkillJudgeBegin();
+		OnSkillJudgeBegin.Broadcast();
+	}
 }
 
 void UMonsterSkillComponent::SkillJudgeEnd()
 {
-	CurrentSkill->OnSkillJudgeEnd();
-	OnSkillJudgeEnd.Broadcast();
+	if (CurrentSkill)
+	{
+		CurrentSkill->OnSkillJudgeEnd();
+		OnSkillJudgeEnd.Broadcast();
+	}
 }
 
 void UMonsterSkillComponent::SkillEnd()
 {
-	CurrentSkill->OnSkillEnd();
-	OnSkillEnd.Broadcast();
+	if (CurrentSkill)
+	{
+		CurrentSkill->OnSkillEnd();
+		OnSkillEnd.Broadcast();
+	}
 }

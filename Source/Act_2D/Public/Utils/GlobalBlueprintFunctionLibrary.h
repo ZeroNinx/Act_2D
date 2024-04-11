@@ -37,6 +37,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void SetPlayerCharacter(APlayerCharacter* NewPlayerCharacter);
 
+	UFUNCTION(BlueprintCallable)
+	static class UMonsterSkill* CreateMonsterSkill(UObject* Outer, TSubclassOf<UMonsterSkill> SkillClass);
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static UUserWidget* GetMainUI();
 

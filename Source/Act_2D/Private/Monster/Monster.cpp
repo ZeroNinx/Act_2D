@@ -83,6 +83,7 @@ void AMonster::Tick(float DeltaTime)
 	{
 		UpdateFacingDirection();
 		UpdateState();
+		UpdateJumpState();
 	}
 }
 
@@ -128,6 +129,21 @@ void AMonster::UpdateState()
 	{
 		StateMachine->SetState(EState::Idle);
 	}
+}
+
+void AMonster::UpdateJumpState()
+{
+	bool NewIsMovingOnGround = GetCharacterMovement()->IsMovingOnGround();
+	if (!NewIsMovingOnGround == IsMovingOnGround)
+	{
+		IsMovingOnGround = NewIsMovingOnGround;
+		OnJumpStateChanged();
+	}
+}
+
+void AMonster::OnJumpStateChanged()
+{
+
 }
 
 void AMonster::PlayDeathEffect()

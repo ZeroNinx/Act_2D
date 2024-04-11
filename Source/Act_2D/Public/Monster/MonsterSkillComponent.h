@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSkillJudgeBegin);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSkillJudgeEnd);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSkillEnd);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACT_2D_API UMonsterSkillComponent : public UPaperSpriteComponent
 {
 	GENERATED_BODY()
@@ -37,9 +37,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetSkillJudgeEnd();
 
-	//设置技能结束
+	//设置技能结束（持续性技能不受影响）
 	UFUNCTION(BlueprintCallable)
-	void SetPlayerSkillEnd();
+	void SetSkillEnd();
+
+	//强制技能结束
+	UFUNCTION(BlueprintCallable)
+	void ForceSkillEnd();
 
 public:
 

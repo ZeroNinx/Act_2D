@@ -15,7 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerAttackEnd);
 /**
  * 攻击组件类
  */
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable )
+UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ACT_2D_API UPlayerAttackComponent : public UPaperSpriteComponent
 {
 	GENERATED_BODY()

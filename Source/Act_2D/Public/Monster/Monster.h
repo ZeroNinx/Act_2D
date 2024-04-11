@@ -61,7 +61,12 @@ public:
 	void Attack();
 
 	//是否朝右
+	UPROPERTY(BlueprintReadOnly)
 	bool bFacingRight;
+
+	//是否落地
+	UPROPERTY(BlueprintReadOnly)
+	bool IsMovingOnGround;
 
 protected:
 
@@ -109,6 +114,12 @@ protected:
 
 	//更新状态
 	virtual void UpdateState();
+
+	// 更新跳跃状态
+	virtual void UpdateJumpState();
+
+	// 当跳跃改变状态时
+	virtual void OnJumpStateChanged();
 
 	//攻击函数
 	virtual void Attack_Implementation();
