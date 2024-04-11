@@ -78,7 +78,6 @@ void ASlime::OnJumpStateChanged()
 {
 	if (IsMovingOnGround)
 	{
-		UGlobalBlueprintFunctionLibrary::LogWarning("Slime Land");
 		//落地
 		if (GetState() != EState::Hit)
 		{
