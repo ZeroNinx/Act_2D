@@ -83,8 +83,8 @@ void AMonster::Tick(float DeltaTime)
 	{
 		UpdateFacingDirection();
 		UpdateState();
-		UpdateJumpState();
 	}
+	UpdateJumpState();
 }
 
 //更新朝向
