@@ -208,6 +208,11 @@ void AMonster::OnHit(AActor* Attacker, FSkillProperty HitAttackProperty)
 
 void AMonster::OnDead()
 {
+	//死亡之后，层级向后
+	FVector CurrentLocation = GetActorLocation();
+	CurrentLocation.Y -=1.0;
+	SetActorLocation(CurrentLocation);
+
 	PlayDeathEffect();
 }
 
