@@ -38,7 +38,7 @@ public:
 
 	// 是否落地
 	UPROPERTY(BlueprintReadOnly)
-	bool IsMovingOnGround;
+	bool bMovingOnGround;
 
 	//HP
 	int HealthPoint = 5;

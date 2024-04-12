@@ -4,6 +4,11 @@
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
 #include "Utils/ActorInterface.h"
 
+UMonsterSkill::UMonsterSkill()
+{
+	
+}
+
 void UMonsterSkill::ExecuteHit_Implementation(AActor* HitActor)
 {
 	if (HitActor->IsA<AMonster>())
@@ -31,21 +36,23 @@ void UMonsterSkill::OnSkillBegin_Implementation()
 
 void UMonsterSkill::TickBeforeSkillJudge_Implementation()
 {
-
+	if (SkillProperty.bEnableExecuteHitOnTick && SkillProperty.ExecuteHitOnTickBeforeJudge)
+	{
+		HitPerActorOnce();
+	}
 }
 
 void UMonsterSkill::OnSkillJudgeBegin_Implementation()
 {
-	TArray<AActor*> HitActors = GetHitActors();
-	for (AActor* Actor : HitActors)
-	{
-		ExecuteHit(Actor);
-	}
+	HitPerActorOnce();
 }
 
 void UMonsterSkill::TickOnSkillJudge_Implementation()
 {
-
+	if (SkillProperty.bEnableExecuteHitOnTick && SkillProperty.ExecuteHitOnJudgeTick)
+	{
+		HitPerActorOnce();
+	}
 }
 
 void UMonsterSkill::OnSkillJudgeEnd_Implementation()
@@ -55,10 +62,26 @@ void UMonsterSkill::OnSkillJudgeEnd_Implementation()
 
 void UMonsterSkill::TickAfterSkillJudge_Implementation()
 {
-
+	if (SkillProperty.bEnableExecuteHitOnTick && SkillProperty.ExecuteHitOnTickAfterJudge)
+	{
+		HitPerActorOnce();
+	}
 }
 
 void UMonsterSkill::OnSkillEnd_Implementation()
 {
 
+}
+
+void UMonsterSkill::HitPerActorOnce()
+{
+	TArray<AActor*>&& HitActors = GetHitActors();
+	for (AActor* Actor : HitActors)
+	{
+		if (!AlreadyHitActors.Contains(Actor))
+		{
+			ExecuteHit(Actor);
+			AlreadyHitActors.Add(Actor);
+		}
+	}
 }

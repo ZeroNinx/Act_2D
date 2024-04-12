@@ -146,7 +146,7 @@ UPlayerSkill* UPlayerAttackComponent::GetNextSkill(FKeyCombination KeyCombinatio
 	// 不在攻击，从基础配置里读取
 	if (!IsAttacking())
 	{
-		if (PlayerCharacter->IsMovingOnGround)
+		if (PlayerCharacter->bMovingOnGround)
 		{
 			// 普通技能
 			ConfigToFind = &BasicSkillConfig;

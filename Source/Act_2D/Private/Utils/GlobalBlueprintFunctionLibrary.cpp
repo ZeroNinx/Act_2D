@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "Skill/Monster/MonsterSkill.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UGameInstance* UGlobalBlueprintFunctionLibrary::TempGameInstance = nullptr;
 
@@ -81,6 +82,33 @@ void UGlobalBlueprintFunctionLibrary::SetPlayerCharacter(APlayerCharacter* NewPl
 class UMonsterSkill* UGlobalBlueprintFunctionLibrary::CreateMonsterSkill(UObject* Outer, TSubclassOf<UMonsterSkill> SkillClass)
 {
 	return NewObject<UMonsterSkill>(Outer, SkillClass);
+}
+
+void UGlobalBlueprintFunctionLibrary::AddPlayetrHorizontalVelocity(float Velocity, bool bFollowFacing)
+{
+	APlayerCharacter* PlayerCharacter = GetPlayerCharacter();
+	if (!PlayerCharacter)
+	{
+		LogWarning("UGlobalBlueprintFunctionLibrary::AddPlayetrHorizontalVelocity PlayerCharacter Invalid");
+		return;
+	}
+
+	UCharacterMovementComponent* Movementcomponent = PlayerCharacter->GetCharacterMovement();
+	if (!Movementcomponent)
+	{
+		LogWarning("UGlobalBlueprintFunctionLibrary::AddPlayetrHorizontalVelocity Movementcomponent Invalid");
+		return;
+	}
+
+	float VelocityXFix = Velocity * (bFollowFacing && PlayerCharacter->bFacingRight ? 1.0 : -1.0);
+	FVector NewVelocity = 
+	{
+		Movementcomponent->Velocity.X + VelocityXFix,
+		Movementcomponent->Velocity.Y,
+		Movementcomponent->Velocity.Z,
+	};
+
+	Movementcomponent->Velocity = NewVelocity;
 }
 
 UUserWidget* UGlobalBlueprintFunctionLibrary::GetMainUI()

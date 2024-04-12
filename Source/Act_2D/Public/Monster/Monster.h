@@ -60,13 +60,17 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Attack();
 
+	//添加水平冲量
+	UFUNCTION(BlueprintCallable)
+	void SetHorizonVelocity(float Velocity, bool bFollowFacing = true);
+
 	//是否朝右
 	UPROPERTY(BlueprintReadOnly)
 	bool bFacingRight;
 
 	//是否落地
 	UPROPERTY(BlueprintReadOnly)
-	bool IsMovingOnGround;
+	bool bMovingOnGround;
 
 protected:
 

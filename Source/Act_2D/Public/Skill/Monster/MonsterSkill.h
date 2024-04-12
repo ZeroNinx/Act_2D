@@ -18,7 +18,7 @@ class ACT_2D_API UMonsterSkill :public UObject
 public:
 
 	//构造函数
-	UMonsterSkill() {};
+	UMonsterSkill();
 
 	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "技能属性"))
 	FSkillProperty SkillProperty;
@@ -37,9 +37,11 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void ExecuteHit(AActor* HitActor);
 
-	//获取击中的Actor 
+	//获取单帧内击中的Actor 
 	UFUNCTION(BlueprintCallable)
 	TArray<AActor*> GetHitActors();
+
+public:
 
 	//技能开始时
 	UFUNCTION(BlueprintNativeEvent)
@@ -68,4 +70,14 @@ public:
 	//技能结束时
 	UFUNCTION(BlueprintNativeEvent)
 	void OnSkillEnd();
+
+private:
+	
+	//已经击中的Actor
+	UPROPERTY()
+	TSet<AActor*> AlreadyHitActors;
+
+	//对每个Actor进行一次击中判定
+	void HitPerActorOnce();
+
 };

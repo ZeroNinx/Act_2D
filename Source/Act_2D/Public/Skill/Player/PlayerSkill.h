@@ -18,9 +18,9 @@ class ACT_2D_API UPlayerSkill :public UObject
 public:
 
 	//构造函数
-	UPlayerSkill() {};
+	UPlayerSkill();
 	
-	//攻击属性
+	//技能属性
 	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "技能属性"))
 	FSkillProperty SkillProperty;
 
@@ -40,6 +40,8 @@ public:
 	//获取击中的Actor 
 	UFUNCTION(BlueprintCallable)
 	TArray<AActor*> GetHitActors();
+
+public:
 
 	//技能开始时
 	UFUNCTION(BlueprintNativeEvent)
@@ -68,5 +70,15 @@ public:
 	//技能结束时
 	UFUNCTION(BlueprintNativeEvent)
 	void OnSkillEnd();
+
+private:
+
+	//已经击中的Actor
+	UPROPERTY()
+	TSet<AActor*> AlreadyHitActors;
+
+	//对每个Actor进行一次击中判定
+	void HitPerActorOnce();
+
 };
 

@@ -5,6 +5,11 @@
 #include "Utils/ActorInterface.h"
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
 
+UPlayerSkill::UPlayerSkill()
+{
+	
+}
+
 //执行攻击
 void UPlayerSkill::ExecuteHit_Implementation(AActor* HitActor)
 {
@@ -38,20 +43,23 @@ void UPlayerSkill::OnSkillBegin_Implementation()
 
 void UPlayerSkill::TickBeforeSkillJudge_Implementation()
 {
-
+	if (SkillProperty.bEnableExecuteHitOnTick && SkillProperty.ExecuteHitOnTickBeforeJudge)
+	{
+		HitPerActorOnce();
+	}
 }
 
 void UPlayerSkill::OnSkillJudgeBegin_Implementation()
 {
-	for (AActor* HitActor : GetHitActors())
-	{
-		ExecuteHit(HitActor);
-	}
+	HitPerActorOnce();
 }
 
 void UPlayerSkill::TickOnSkillJudge_Implementation()
 {
-
+	if (SkillProperty.bEnableExecuteHitOnTick && SkillProperty.ExecuteHitOnJudgeTick)
+	{
+		HitPerActorOnce();
+	}
 }
 
 void UPlayerSkill::OnSkillJudgeEnd_Implementation()
@@ -61,11 +69,27 @@ void UPlayerSkill::OnSkillJudgeEnd_Implementation()
 
 void UPlayerSkill::TickAfterSkillJudge_Implementation()
 {
-
+	if (SkillProperty.bEnableExecuteHitOnTick && SkillProperty.ExecuteHitOnTickAfterJudge)
+	{
+		HitPerActorOnce();
+	}
 }
 
 void UPlayerSkill::OnSkillEnd_Implementation()
 {
 
+}
+
+void UPlayerSkill::HitPerActorOnce()
+{
+	TArray<AActor*>&& HitActors = GetHitActors();
+	for (AActor* Actor : HitActors)
+	{
+		if (!AlreadyHitActors.Contains(Actor))
+		{
+			ExecuteHit(Actor);
+			AlreadyHitActors.Add(Actor);
+		}
+	}
 }
 

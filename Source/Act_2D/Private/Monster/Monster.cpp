@@ -134,9 +134,9 @@ void AMonster::UpdateState()
 void AMonster::UpdateJumpState()
 {
 	bool NewIsMovingOnGround = GetCharacterMovement()->IsMovingOnGround();
-	if (!NewIsMovingOnGround == IsMovingOnGround)
+	if (!NewIsMovingOnGround == bMovingOnGround)
 	{
-		IsMovingOnGround = NewIsMovingOnGround;
+		bMovingOnGround = NewIsMovingOnGround;
 		OnJumpStateChanged();
 	}
 }
@@ -234,4 +234,23 @@ void AMonster::PlayOverrideAnim(class UPaperZDAnimSequence* InAnimSquence)
 void AMonster::Attack_Implementation()
 {
 
+}
+
+void AMonster::SetHorizonVelocity(float Velocity, bool bFollowFacing)
+{
+	UCharacterMovementComponent* Movementcomponent = GetCharacterMovement();
+	if (!Movementcomponent)
+	{
+		return;
+	}
+
+	float VelocityXFix = Velocity * (bFollowFacing && bFacingRight ? 1.0 : -1.0);
+	FVector NewVelocity =
+	{
+		VelocityXFix,
+		Movementcomponent->Velocity.Y,
+		Movementcomponent->Velocity.Z,
+	};
+
+	Movementcomponent->Velocity = NewVelocity;
 }

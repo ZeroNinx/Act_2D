@@ -164,7 +164,7 @@ void APlayerCharacterController::JumpPressed()
 	KeyPressMap.Add(EGameKeyType::Jump, true);
 
 	//当可移动时
-	if (IsAllowMove() && PlayerCharacter->IsMovingOnGround)
+	if (IsAllowMove() && PlayerCharacter->bMovingOnGround)
 	{
 		PlayerCharacter->Jump();
 	}
@@ -214,7 +214,7 @@ bool APlayerCharacterController::IsAllowMove()
 
 	if (PlayerCharacter->GetState() == EState::Attack)
 	{
-		if (PlayerCharacter->IsMovingOnGround)
+		if (PlayerCharacter->bMovingOnGround)
 		{
 			return false;
 		}

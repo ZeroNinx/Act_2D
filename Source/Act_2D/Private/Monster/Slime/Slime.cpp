@@ -49,18 +49,16 @@ void ASlime::OnHit(AActor* Attacker, FSkillProperty HitAttackProperty)
 		SkillComponent->ForceSkillEnd();
 	}
 
-	float DirectMark = bFacingRight ? -1.0f : 1.0f;
-	float LightVelocyX = 200.0f * DirectMark;
-	float HeavyVelocyX = 600.0f * DirectMark;
-
-	const FVector& TempVelocity = GetCharacterMovement()->Velocity;
-	if (HitAttackProperty.HarmfulType == EAttackHarmfulType::HeavyAttack)
+	if (HitAttackProperty.SkillType == ESkillType::HarmfulAttack)
 	{
-		GetCharacterMovement()->Velocity = FVector(HeavyVelocyX, TempVelocity.Y, TempVelocity.Z);
-	}
-	else
-	{
-		GetCharacterMovement()->Velocity = FVector(LightVelocyX, TempVelocity.Y, TempVelocity.Z);
+		if (HitAttackProperty.HarmfulType == EAttackHarmfulType::LightAttack)
+		{
+			SetHorizonVelocity(-200.f);
+		}
+		else if (HitAttackProperty.HarmfulType == EAttackHarmfulType::HeavyAttack)
+		{
+			SetHorizonVelocity(-600.f);
+		}
 	}
 
 }
@@ -76,9 +74,18 @@ void ASlime::EnterAttackState()
 
 void ASlime::OnJumpStateChanged()
 {
-	if (IsMovingOnGround)
+	if (bMovingOnGround)
 	{
 		//落地
+		
+		//结束技能
+		UMonsterSkillComponent* SkillComponent = GetSkillComponent();
+		if (SkillComponent)
+		{
+			SkillComponent->ForceSkillEnd();
+		}
+
+		// 播放落地动画
 		if (GetState() != EState::Hit)
 		{
 			GetAnimInstance()->JumpToNode(FName(TEXT("Land")));

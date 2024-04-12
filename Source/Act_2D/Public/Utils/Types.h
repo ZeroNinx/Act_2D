@@ -112,7 +112,6 @@ UENUM(BlueprintType)
 enum class ESkillType : uint8
 {
 	HarmfulAttack	UMETA(DisplayName = "伤害类"),
-	StateAttack		UMETA(DisplayName = "状态类"),
 };
 
 //伤害类型
@@ -121,13 +120,6 @@ enum class EAttackHarmfulType : uint8
 {
 	LightAttack		UMETA(DisplayName = "轻攻击"),
 	HeavyAttack		UMETA(DisplayName = "重攻击"),
-};
-
-//状态类型
-UENUM(BlueprintType)
-enum class EAttackStateType : uint8 
-{
-	Default
 };
 
 //技能属性结构体
@@ -145,25 +137,26 @@ struct FSkillProperty
 	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "伤害数值"))
 	int32 Damage = 0;
 
-	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "状态类型"))
-	EAttackStateType StateType;
-
 	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "持续性技能"))
 	bool bPersistent = false;
 
-	FSkillProperty() {};
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "启用在Tick中击中每个Actor一次", Category = "Tick设置"))
+	bool bEnableExecuteHitOnTick = false;
 
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "Judge前的Tick击中每个Actor", Category = "Tick设置"))
+	bool ExecuteHitOnTickBeforeJudge = false;
+
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "Judge时的Tick击中每个Actor", Category = "Tick设置"))
+	bool ExecuteHitOnJudgeTick = false;
+
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "Judge后的Tick击中每个Actor", Category = "Tick设置"))
+	bool ExecuteHitOnTickAfterJudge = false;
+
+	FSkillProperty() {};
 	FSkillProperty(EAttackHarmfulType AttackHarmfulType, int AttackDamage)
 	{
 		SkillType = ESkillType::HarmfulAttack;
 		HarmfulType = AttackHarmfulType;
 		Damage = AttackDamage;
 	}
-
-	FSkillProperty(EAttackStateType AttackStateType)
-	{
-		SkillType = ESkillType::StateAttack;
-		StateType = AttackStateType;
-	}
-
 };

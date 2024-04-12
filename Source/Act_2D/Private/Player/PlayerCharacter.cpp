@@ -102,7 +102,7 @@ void APlayerCharacter::UpdateDirection()
 
 void APlayerCharacter::OnJumpStateChanged()
 {
-	if (!IsMovingOnGround)
+	if (!bMovingOnGround)
 	{
 		// 开始腾空
 	}
@@ -165,9 +165,9 @@ void APlayerCharacter::UpdateState()
 void APlayerCharacter::UpdateJumpState()
 {
 	bool NewIsMovingOnGround = GetCharacterMovement()->IsMovingOnGround();
-	if (!NewIsMovingOnGround == IsMovingOnGround)
+	if (!NewIsMovingOnGround == bMovingOnGround)
 	{
-		IsMovingOnGround = NewIsMovingOnGround;
+		bMovingOnGround = NewIsMovingOnGround;
 		OnJumpStateChanged();
 	}
 }

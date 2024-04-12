@@ -19,8 +19,22 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void SetGetGameInstance(UGameInstance* GameInstance);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static class APlayerCharacter* GetPlayerCharacter();
+		
+	UFUNCTION(BlueprintCallable)
+	static void SetPlayerCharacter(APlayerCharacter* NewPlayerCharacter);
+
 	UFUNCTION(BlueprintCallable)
 	static UGameInstance* GetGameInstance();
+
+	UFUNCTION(BlueprintCallable)
+	static void SetMainUI(UUserWidget* NewUI);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static UUserWidget* GetMainUI();
+
+public:
 
 	UFUNCTION(BlueprintCallable)
 	static void LogWarning(FString LogText);
@@ -31,20 +45,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void SetGlobalDelay(float TimeFlowRate, float Duration);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static APlayerCharacter* GetPlayerCharacter();
-
-	UFUNCTION(BlueprintCallable)
-	static void SetPlayerCharacter(APlayerCharacter* NewPlayerCharacter);
-
 	UFUNCTION(BlueprintCallable)
 	static class UMonsterSkill* CreateMonsterSkill(UObject* Outer, TSubclassOf<UMonsterSkill> SkillClass);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static UUserWidget* GetMainUI();
-
 	UFUNCTION(BlueprintCallable)
-	static void SetMainUI(UUserWidget* NewUI);
+	static void AddPlayetrHorizontalVelocity(float Velocity, bool bFollowFacing);
 
 private:
 
