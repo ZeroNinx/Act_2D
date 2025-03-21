@@ -233,7 +233,7 @@ void APlayerCharacterController::AddKeyCombination()
 	{
 		if (!DelayInputHandle.IsValid())
 		{
-			DelayInputHandle = UKismetSystemLibrary::K2_SetTimer(this, "AddKeyCombination_AfterDealy", AddKeyCombinationDelayTime, false, AddKeyCombinationDelayTime);
+			DelayInputHandle = UKismetSystemLibrary::K2_SetTimer(this, "AddKeyCombination_AfterDealy", AddKeyCombinationDelayTime, false);
 		}
 	}
 

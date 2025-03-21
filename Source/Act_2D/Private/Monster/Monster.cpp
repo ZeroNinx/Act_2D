@@ -4,6 +4,7 @@
 #include "Monster/Monster.h"
 #include "Monster/MonsterController.h"
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
+#include "Utils/Types.h"
 #include "PaperZDAnimInstance.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -16,6 +17,14 @@ AMonster::AMonster()
 	PrimaryActorTick.bCanEverTick = true;
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+
+	//设定半透明材质
+	UMaterialInterface* TranslucentMaterial = LoadObject<UMaterialInterface>(this, TEXT("/Paper2D/TranslucentUnlitSpriteMaterial.TranslucentUnlitSpriteMaterial"));
+	if (IsValid(TranslucentMaterial))
+	{
+		GetSprite()->SetMaterial(0, TranslucentMaterial);
+		GetSprite()->SetTranslucentSortPriority(TSP_MONSTER);
+	}
 
 	//状态机
 	StateMachine = CreateDefaultSubobject<UStateMachine>(TEXT("State Machine"));

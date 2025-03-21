@@ -1,6 +1,10 @@
 #pragma once
 #include "Types.generated.h"
 
+#define TSP_SCENE 0
+#define TSP_MONSTER 50
+#define TSP_CHARACTER 100
+
 // 游戏按键类型
 UENUM(BlueprintType)
 enum class EGameKeyType: uint8

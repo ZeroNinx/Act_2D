@@ -5,6 +5,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Utils/GlobalBlueprintFunctionLibrary.h"
 #include "Utils/UIInterface.h"
+#include "Utils/Types.h"
 #include "PaperZDAnimInstance.h"
 
 //构造函数
@@ -18,6 +19,14 @@ APlayerCharacter::APlayerCharacter()
 	GetCapsuleComponent()->SetCapsuleHalfHeight(70.0f);
 	GetSprite()->SetRelativeLocation(FVector(0.0f, 0.0f, 8.0f));
 	GetSprite()->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+
+	//设定半透明材质
+	UMaterialInterface* TranslucentMaterial = LoadObject<UMaterialInterface>(this, TEXT("/Paper2D/TranslucentUnlitSpriteMaterial.TranslucentUnlitSpriteMaterial"));
+	if (IsValid(TranslucentMaterial))
+	{
+		GetSprite()->SetMaterial(0, TranslucentMaterial);
+		GetSprite()->SetTranslucentSortPriority(TSP_CHARACTER);
+	}
 
 	//设定移动组件
 	GetCharacterMovement()->GravityScale = 2.5f;
