@@ -107,8 +107,11 @@ protected:
 
 protected:
 
-	//游戏开始执行
+	//启动时执行
 	virtual void BeginPlay() override;
+
+	//销毁时执行
+	virtual void BeginDestroy() override;
 
 	//每帧执行
 	virtual void Tick(float DeltaTime) override;

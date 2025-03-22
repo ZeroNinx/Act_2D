@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/PlayerCharacter.h"
+#include "Monster/MonsterLayerOffsetSystem.h"
 
 //构造函数
 AMonster::AMonster()
@@ -17,14 +18,6 @@ AMonster::AMonster()
 	PrimaryActorTick.bCanEverTick = true;
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-
-	//设定半透明材质
-	UMaterialInterface* TranslucentMaterial = LoadObject<UMaterialInterface>(this, TEXT("/Paper2D/TranslucentUnlitSpriteMaterial.TranslucentUnlitSpriteMaterial"));
-	if (IsValid(TranslucentMaterial))
-	{
-		GetSprite()->SetMaterial(0, TranslucentMaterial);
-		GetSprite()->SetTranslucentSortPriority(TSP_MONSTER);
-	}
 
 	//状态机
 	StateMachine = CreateDefaultSubobject<UStateMachine>(TEXT("State Machine"));
@@ -82,6 +75,22 @@ void AMonster::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//设定半透明材质及渲染层级
+	UMaterialInterface* TranslucentMaterial = LoadObject<UMaterialInterface>(this, TEXT("/Paper2D/TranslucentUnlitSpriteMaterial.TranslucentUnlitSpriteMaterial"));
+	if (IsValid(TranslucentMaterial))
+	{
+		GetSprite()->SetMaterial(0, TranslucentMaterial);
+		GetSprite()->SetTranslucentSortPriority(FMonsterLayerOffsetSystem::GetNextOffset());
+	}
+
+}
+
+void AMonster::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	//销毁时，回收层级
+	FMonsterLayerOffsetSystem::RecycleOffset(GetSprite()->TranslucencySortPriority);
 }
 
 //每帧执行
@@ -217,11 +226,6 @@ void AMonster::OnHit(AActor* Attacker, FSkillProperty HitAttackProperty)
 
 void AMonster::OnDead()
 {
-	//死亡之后，层级向后
-	FVector CurrentLocation = GetActorLocation();
-	CurrentLocation.Y -=1.0;
-	SetActorLocation(CurrentLocation);
-
 	PlayDeathEffect();
 }
 
